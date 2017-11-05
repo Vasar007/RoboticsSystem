@@ -6,7 +6,8 @@
 
 
 
-int connectToRobotServer(SOCKET ans, const char* serveraddr, int port1, int disconnectTime2) {
+int connectToRobotServer(SOCKET ans, const char* serveraddr, int port1, int disconnectTime2) 
+{
 	unsigned long value = 1;
 	if (ioctlsocket(ans, FIONBIO, &value) == SOCKET_ERROR)
 		return INVALID_SOCKET;
