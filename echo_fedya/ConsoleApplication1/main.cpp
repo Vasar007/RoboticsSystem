@@ -20,6 +20,7 @@
 #define SleepTime 50
 
 #pragma comment( lib, "wsock32.lib" )
+#pragma comment( lib, "ws2_32.lib " )
 
 bool f = true;
 

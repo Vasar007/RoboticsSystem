@@ -12,6 +12,8 @@
 
 struct addrinfo *_serverAddr;
 
+#pragma comment( lib, "ws2_32.lib " )
+
 template<typename T>
 class ServerTCP
 {
