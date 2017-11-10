@@ -11,8 +11,6 @@
 #include <map>
 #include <fstream>
 
-#pragma comment( lib, "ws2_32.lib " )
-
 
 bool f = true;
 
