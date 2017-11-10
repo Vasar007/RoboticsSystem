@@ -30,7 +30,7 @@ void WinsockInterface::initWinsock()
 	std::cout << "Initializing Winsock...\n";
 	if (WSAStartup(MAKEWORD(2, 2), &_wsaData) != 0)
 	{
-		std::cout << "\nFAILDE. ERROR CODE: " << WSAGetLastError() << std::endl;
+		std::cout << "\nFAILED. ERROR CODE: " << WSAGetLastError() << std::endl;
 		system("pause");
 		exit(ErrorType::FAILED_INITIALIZE_WSDATA);
 	}
