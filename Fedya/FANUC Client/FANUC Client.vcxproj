@@ -162,6 +162,7 @@
     <ClInclude Include="tcpServer.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="fedya_config.txt" />
     <Text Include="logs.txt" />
     <Text Include="saver.txt" />
     <Text Include="sets.txt" />
