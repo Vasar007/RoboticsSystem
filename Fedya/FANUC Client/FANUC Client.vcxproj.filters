@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Заголовочные файлы\RAMComunication">
-      <UniqueIdentifier>{2f5357f2-74c4-4895-9caf-6b1f3817c400}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Заголовочные файлы\Conteiners">
       <UniqueIdentifier>{c713abaa-7e39-4b84-9849-cb7d10d97746}</UniqueIdentifier>
     </Filter>
@@ -44,12 +41,6 @@
     <ClInclude Include="MyShower.hpp">
       <Filter>Заголовочные файлы\ConsoleInteface</Filter>
     </ClInclude>
-    <ClInclude Include="sharingMemory.hpp">
-      <Filter>Заголовочные файлы\RAMComunication</Filter>
-    </ClInclude>
-    <ClInclude Include="SharingMemoryRead.hpp">
-      <Filter>Заголовочные файлы\RAMComunication</Filter>
-    </ClInclude>
     <ClInclude Include="RobotCoord.hpp">
       <Filter>Заголовочные файлы\Conteiners</Filter>
     </ClInclude>
@@ -58,9 +49,6 @@
     </ClInclude>
     <ClInclude Include="MyThread.hpp">
       <Filter>Заголовочные файлы\ModificatedClasses</Filter>
-    </ClInclude>
-    <ClInclude Include="SharingMemoryWrite.hpp">
-      <Filter>Заголовочные файлы\RAMComunication</Filter>
     </ClInclude>
     <ClInclude Include="SocketWorking.hpp">
       <Filter>Заголовочные файлы\winSock</Filter>

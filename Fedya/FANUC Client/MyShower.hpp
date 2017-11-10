@@ -39,6 +39,7 @@ namespace myInterface
 			_stringNumber = 0;
 			return getInstance();
 		}
+
 	public:
 
 		//метод добавления строки в интерфейс
@@ -103,6 +104,7 @@ namespace myInterface
 			_mt.unlock();
 			update();
 		}
+
 		~MyShower()
 		{
 			_list.clear();
