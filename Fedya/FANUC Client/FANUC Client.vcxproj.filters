@@ -73,5 +73,6 @@
     <Text Include="logs.txt" />
     <Text Include="sets.txt" />
     <Text Include="saver.txt" />
+    <Text Include="fedya_config.txt" />
   </ItemGroup>
 </Project>
