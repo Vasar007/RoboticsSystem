@@ -1,7 +1,6 @@
-#pragma once
 #ifndef ROBOT_CONNECT
-
 #define ROBOT_CONECT
+#pragma once
 
 #include <fstream>
 #include <string>
@@ -27,7 +26,7 @@ class RobotConnect
 
 	SOCKET _sockSend, _sockRecv; //создаём сокет приема и отправки
 
-	MyQueue<T> *_sendingQueue, *_recivingQueue;//очереди точек на отправку и прием
+	MyQueue<T>* _sendingQueue, *_recivingQueue;//очереди точек на отправку и прием
 
 	MyQueue<T> _cloneQueue;//очередь точек на обработке у робота
 
@@ -86,23 +85,29 @@ class RobotConnect
 		return 0;
 	}
 
-	static void reverseStream(std::mutex *mt, bool *f, RobotConnect *ins) {
+	static void reverseStream(std::mutex *mt, bool *f, RobotConnect *ins) 
+	{
 		long long prevConnetectedTime = clock();
 		bool wasFirstPoint = false;
 		T rc;
 		int was = 1, sleepBonus = 0;
 		ins->_connected = true;
-		while (0 == 0) {
+		while (true) 
+		{
 			if (ins->_robotRecieve->readCoord() == -15) {
-				if ((clock() - prevConnetectedTime > ins->_disconnectTime2 + sleepBonus) && wasFirstPoint) {
+				if ((clock() - prevConnetectedTime > ins->_disconnectTime2 + sleepBonus) && wasFirstPoint) 
+				{
 					ins->_forcedRestart = true;
 				}//*/
-				if ((clock() - prevConnetectedTime > ins->_disconnectTime1*was + sleepBonus) && wasFirstPoint) {
+				if ((clock() - prevConnetectedTime > ins->_disconnectTime1*was + sleepBonus) && wasFirstPoint) 
+				{
 					ins->_connected = false;
-					if (ins->_cloneQueue.empty()) {
+					if (ins->_cloneQueue.empty()) 
+					{
 						ins->_robotSend->sendPrevCoord();
 					}
-					else {
+					else 
+					{
 						sleepBonus = ins->_robotRecieve->_prevCoord.difference(ins->_cloneQueue.front()) / ins->_robotSpeed;
 					}
 
@@ -127,7 +132,8 @@ class RobotConnect
 				wasFirstPoint = true;
 			}
 			mt->lock();
-			if (!(*f)) {
+			if (!(*f)) 
+			{
 				mt->unlock();
 				break;
 			}
@@ -136,11 +142,13 @@ class RobotConnect
 		}
 	}
 
-	static void sendParalel(std::mutex *mt, bool *f, RobotConnect *ins) {
+	static void sendParalel(std::mutex *mt, bool *f, RobotConnect *ins) 
+	{
 
 		ins->_robotSend->resendCloneQueue();
 
-		while (0 == 0) {
+		while (true) 
+		{
 			if (ins->_connected)
 			{
 				const std::pair<bool, RobotCoord> tryPull = ins->_sendingQueue->pull();
@@ -148,9 +156,11 @@ class RobotConnect
 					ins->_robotSend->sendRobotCoord(tryPull.second);//отправляем буфер
 			}
 			mt->lock();
-			if (!(*f)) {
+			if (!(*f)) 
+			{
 				mt->unlock();
-				if (ins->_connected) {
+				if (ins->_connected) 
+				{
 					while (!ins->_sendingQueue->empty()) {
 						const RobotCoord rc = ins->_sendingQueue->front();
 						ins->_sendingQueue->pop();
@@ -167,9 +177,9 @@ class RobotConnect
 
 	int startWorking()
 	{
-
 		const int iResult = conRobot();
-		if (iResult) {
+		if (iResult) 
+		{
 			std::cout << "Conection error " << iResult << " " << WSAGetLastError() << std::endl;
 			closesocket(_sockSend);
 			closesocket(_sockRecv);
@@ -197,14 +207,17 @@ class RobotConnect
 		return 0;
 	}
 
-	void tryConnect() {
+	void tryConnect() 
+	{
 		int steps = 0;
-		while (startWorking() < 0) {
+		while (startWorking() < 0)
+		{
 			myInterface::MyShower::getInstance().show("reconecting");
 			Sleep(_disconnectTime2);
 			myInterface::MyShower::getInstance().update();
 			++steps;
-			if (steps >= 3) {
+			if (steps >= 3) 
+			{
 				healServerSecondConnection();
 				steps = 0;
 			}
@@ -226,8 +239,8 @@ class RobotConnect
 	}
 
 
-	void restart() {
-
+	void restart()
+	{
 		finishWorking();
 
 		tryConnect();
@@ -267,7 +280,8 @@ public:
 	RobotConnect(std::string configFileName, MyQueue<T> *sendingQueue, MyQueue<T> *recivingQueue):
 	_sendingQueue(sendingQueue),_recivingQueue(recivingQueue)
 	{
-		_portr = _disconnectTime1 = _disconnectTime2 = _ports = _robotSpeed = _segtime = _syscoord = -1;
+		_portr = _disconnectTime1 = _disconnectTime2 = _ports = _robotSpeed = _segtime = 
+		_syscoord = -1;
 		_sockRecv = _sockSend = INVALID_SOCKET;
 		_connected = _forcedRestart = false;
 		_robotSend = nullptr;
@@ -276,7 +290,7 @@ public:
 		std::ifstream in(configFileName);
 		if(!in)
 		{
-			myInterface::MyShower::getInstance().show("can not open file: " + configFileName);
+			myInterface::MyShower::getInstance().show("cannot open file: " + configFileName);
 			std::exception exp("cannot open file");
 			throw exp;
 		}
@@ -315,4 +329,4 @@ public:
 	}
 };
 
-#endif // !ROBOT_CONNECT
+#endif // ROBOT_CONNECT

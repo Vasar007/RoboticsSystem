@@ -13,7 +13,6 @@
 #include <iostream>
 #include <conio.h>
 #include "MyShower.hpp"
-#include "sharingMemory.hpp"
 #include "RobotComunication.hpp"
 #include "MyQueue.hpp"
 #include "tcpServer.hpp"
@@ -41,7 +40,7 @@ int main(int argc, char* argv[])
 	myInterface::MyShower::getInstance().update();
 
 	int iResult = 0;
-	while (0 == 0) {
+	while (true) {
 		if (_kbhit()) {
 			const char c = _getch();
 			if (c == '+') {

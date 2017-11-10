@@ -26,7 +26,7 @@ public:
 			_interfaceId1 = myInterface::MyShower::getInstance().addField(
 				myInterface::Field(std::string("size of ") + comment + ": ", &_sizeOfQueue));
 			_interfaceId2 = myInterface::MyShower::getInstance().addField(
-				myInterface::Field(std::string("time difference betwen inserting and erasing point in ") + comment + ": ", &_timeDifference));
+				myInterface::Field(std::string("time difference between inserting and erasing point in ") + comment + ": ", &_timeDifference));
 		}
 	}
 
