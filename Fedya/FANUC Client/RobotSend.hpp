@@ -9,14 +9,15 @@ template<typename T>
 class RobotSend
 {
 	SOCKET _sockSend;
-	MyQueue<T> *_cloneQueue;
+	MyQueue<T>* _cloneQueue;
 	int _acyrancy;
 
 	int sendCoord(T rc)
 	{
 		std::string str = rc.toString();
 		_cloneQueue->push(rc);
-		if (send(_sockSend, str.c_str(), str.size(), 0) == SOCKET_ERROR) {
+		if (send(_sockSend, str.c_str(), str.size(), 0) == SOCKET_ERROR) 
+		{
 			closesocket(_sockSend);
 			return 1;
 		}

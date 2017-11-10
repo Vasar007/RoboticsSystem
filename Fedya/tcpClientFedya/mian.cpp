@@ -1,20 +1,20 @@
-// main.cpp : Defines the entry point for echo_fedya.
-//
-
-#include"roboSender.hpp"
-#include<conio.h>
+#include "roboSender.hpp"
+#include <conio.h>
 
 
 
-int connectToRobotServer(SOCKET ans, const char* serveraddr, int port1, int disconnectTime2) {
+int connectToRobotServer(SOCKET ans, const char* serveraddr, int port1, int disconnectTime2)
+{
 	unsigned long value = 1;
 	if (ioctlsocket(ans, FIONBIO, &value) == SOCKET_ERROR)
 		return INVALID_SOCKET;
 
+	std::string serverIP = "127.0.0.1";
+
 	sockaddr_in destAddr;
 	destAddr.sin_family = AF_INET;
 	destAddr.sin_port = htons(port1);
-	destAddr.sin_addr.s_addr = inet_addr(serveraddr);
+	inet_pton(AF_INET, serverIP.c_str(), &destAddr.sin_addr);
 
 	// адрес сервера получен – пытаемся установить соединение 
 	if (connect(ans, reinterpret_cast<sockaddr *>(&destAddr), sizeof destAddr) == SOCKET_ERROR) {
@@ -61,47 +61,48 @@ int connectToRobotServer(SOCKET ans, const char* serveraddr, int port1, int disc
 }
 
 int main() {
-	int tmp,L;
+	int L;
 	RoboSender rs;
 	char buf[64];
 
 	RobotCoord rc;
-	int stepc,stepu;
+	int stepc, stepu;
 
-#ifdef JOINT
-	stepc = stepu = 10000;
-#else
+
+	//if JOINT
+	//stepc = stepu = 10000;
+
 	stepu = 15000;
 	stepc = 100000;
-#endif
 
 	rc._typeOfMoving = 0;
 	rc._segTime = 10;
-#ifdef JOINT
+
+	//if JOINT
 	/*rc.Xr = 55000;
 	rc.Yr = -45000;
 	rc.Zr = 0;
 	rc.Uw = 0;
 	rc.Up = 0;
-	rc.Uz = 0;//*/
+	rc.Uz = 0;
 	rc._xr = 0;
 	rc._yr = 0;
 	rc._zr = 0;
 	rc._uw = 0;
 	rc._up = -90000;
-	rc._uz = 0;//*/
-#else
+	rc._uz = 0;*/
+
 	rc._xr = 985000;
 	rc._yr = 0;
 	rc._zr = 940000;
 	rc._uw = -180000;
 	rc._up = 0;
 	rc._uz = 0;
-#endif
-	while (0==0) {
+
+	while (0 == 0) {
 		ZeroMemory(buf, 64);
 		L = recv(rs.getSoc(), buf, 63, 0);
-		if(L>0)
+		if (L > 0)
 			std::cout << buf;
 
 		if (_kbhit()) {
@@ -155,36 +156,37 @@ int main() {
 				rc._segTime = 10;
 			}
 			else if (c == 'H') {
-#ifdef JOINT
-				rc._xr = 0;
-				rc._yr = 0;
-				rc._zr = 0;
-				rc._uw = 0;
-				rc._up = -90000;
-				rc._uz = 0;
-				rc._segTime = 300;
-#else
+
+				//	if JOINT
+				//rc._xr = 0;
+				//rc._yr = 0;
+				//rc._zr = 0;
+				//rc._uw = 0;
+				//rc._up = -90000;
+				//rc._uz = 0;
+				//rc._segTime = 300;
+
 				rc._xr = 985000;
 				rc._yr = 0;
 				rc._zr = 940000;
 				rc._uw = -180000;
 				rc._up = 0;
 				rc._uz = 0;
-#endif
+
 			}
-			else if(c == '3')
+			else if (c == '3')
 			{
 				rc._control = 3;
 			}
-			else if(c == '4')
+			else if (c == '4')
 			{
 				rc._control = 4;
 			}
-			else if(c == '5')
+			else if (c == '5')
 			{
 				rc._control = 5;
 			}
-			else if(c == '+')
+			else if (c == '+')
 			{
 				std::cin >> rc;
 			}

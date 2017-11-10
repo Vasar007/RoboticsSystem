@@ -1,8 +1,6 @@
-#pragma once
-
 #ifndef TCP_SERVER
-
 #define TCP_SERVER
+#pragma once
 
 #include <WinSock2.h>
 #include "MyThread.hpp"
@@ -10,7 +8,10 @@
 #include "SocketWorking.hpp"
 #include "tcpConnection.hpp"
 
-struct addrinfo *_serverAddr;
+#pragma comment( lib, "ws2_32.lib " )
+
+
+struct addrinfo* _serverAddr;
 
 template<typename T>
 class ServerTCP
@@ -32,7 +33,8 @@ class ServerTCP
 	int initialise(int port)
 	{
 		_main = SocketWorking::getInstance().getFreeSocket();
-		if (_main == INVALID_SOCKET) {
+		if (_main == INVALID_SOCKET) 
+		{
 			//freeaddrinfo(server_addr);
 			return WSAGetLastError();
 		}
@@ -43,7 +45,8 @@ class ServerTCP
 		destAddr.sin_port = htons(port);
 		destAddr.sin_addr.s_addr = INADDR_ANY;
 
-		if (bind(_main, reinterpret_cast<sockaddr *>(&destAddr), sizeof(destAddr)) < 0) {
+		if (bind(_main, reinterpret_cast<sockaddr *>(&destAddr), sizeof(destAddr)) < 0) 
+		{
 			closesocket(_main);
 			_main = INVALID_SOCKET;
 			std::cout << WSAGetLastError();
@@ -51,7 +54,8 @@ class ServerTCP
 		}
 		//binding socket
 
-		if (listen(_main, SOMAXCONN) < 0) {
+		if (listen(_main, SOMAXCONN) < 0) 
+		{
 			closesocket(_main);
 			_main = INVALID_SOCKET;
 			return WSAGetLastError();
@@ -65,7 +69,7 @@ class ServerTCP
 
 	static void tcpWorkin(std::mutex *mt, bool *f, ServerTCP *ins)
 	{
-		while (0 == 0)
+		while (true)
 		{
 			mt->lock();
 			if (!*f)
@@ -83,7 +87,7 @@ class ServerTCP
 	static void tcpWorkout(std::mutex *mt, bool *f, ServerTCP *ins)
 	{
 		ins->_prevRecieve = clock();
-		while (0 == 0)
+		while (true)
 		{
 			mt->lock();
 			if (!*f)
@@ -105,7 +109,7 @@ class ServerTCP
 
 	static void oneConnection(std::mutex *mt, bool *f, ServerTCP* instance, MyQueue<T> *sendQueue, MyQueue<T> *recieveQueue)
 	{
-		while (0 == 0)
+		while (true)
 		{
 			mt->lock();
 			if (!*f)
@@ -131,7 +135,8 @@ class ServerTCP
 
 		fd_set s_set = { 1,{ instance->_main } };
 		timeval timeout = { instance->_timeOut / 500, 0 };
-		while (0 == 0) {
+		while (true) 
+		{
 			mt->lock();
 			if (!*f)
 			{
@@ -141,7 +146,8 @@ class ServerTCP
 			mt->unlock();
 			s_set.fd_count = 1;
 			const int selectRes = select(0, &s_set, nullptr, nullptr, &timeout);
-			if (selectRes == SOCKET_ERROR) {
+			if (selectRes == SOCKET_ERROR) 
+			{
 				int t = GetLastError();
 				return;
 			}
@@ -170,7 +176,8 @@ public:
 
 	int tryAccept(MyQueue<T> *sendQueue, MyQueue<T> *recieveQueue)
 	{
-		if (!_socketConnectionsQueue.empty()) {
+		if (!_socketConnectionsQueue.empty()) 
+		{
 			SOCKET connectedSocket = _socketConnectionsQueue.front();
 			_socketConnectionsQueue.pop();
 			_contcp = new ConnectionTCP<T>(connectedSocket, sendQueue, recieveQueue);
@@ -183,7 +190,8 @@ public:
 
 	int forceAccept(MyQueue<T> *sendQueue, MyQueue<T> *recieveQueue)
 	{
-		while (_socketConnectionsQueue.empty()) {
+		while (_socketConnectionsQueue.empty()) 
+		{
 			Sleep(100);
 		}
 		SOCKET connectedSocket = _socketConnectionsQueue.front();
