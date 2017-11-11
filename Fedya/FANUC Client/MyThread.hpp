@@ -1,75 +1,85 @@
-#pragma once
-
-
 #ifndef MY_THREAD_DEF
-
 #define MY_THREAD_DEF
+#pragma once
 
 #include<thread>
 #include<mutex>
 
-//обертка над потоками
+
 struct MyThread 
 {
 	std::thread _work;
 	std::mutex _mt;
 	bool _flag = true;
 
+	/**
+	 * \brief default constructor
+	 */
 	MyThread() = default;
 
+	/**
+	 * \brief constructor with starting new thread
+	 * \tparam Fn static function
+	 * \tparam Args params of static function
+	 * \param fn link to static function
+	 * \param arg params whick tale this staitc function
+	 */
 	template <typename Fn, typename... Args>
-	explicit MyThread(Fn&& fn, Args&&... arg)
-	{
-		_flag = true;
-		std::thread th(fn, &_mt, &_flag, arg...);
-		_work.swap(th);
-	}
+	explicit MyThread(Fn&& fn, Args&&... arg);
 
-	//обмен потоков
-	void swap(std::thread& th)
-	{
-		_work.swap(th);
-	}
+	/**
+	 * \brief method for swapping threads
+	 * \param th thread for swapping
+	 */
+	void swap(std::thread& th);
 
-	//обмен потоков
-	void swap(MyThread& th) noexcept
-	{
-		swap(th._work);
-	}
+	/**
+	 * \brief function for swapping threads
+	 * \param th thread for swapping
+	 */
+	void swap(MyThread& th) noexcept;
 
-	//проверка на возможность синхронизации
-	bool joinable() const
-	{
-		return _work.joinable();
-	}
+	/**
+	 * \brief function for checking if this thread may be joind
+	 * \return true if this thread may be joind, else false
+	 */
+	bool joinable() const;
 
-	//запуск нового потока
+	/**
+	 * \brief function for starting new thread
+	 * \tparam Fn static function
+	 * \tparam Args params of static function
+	 * \param fn link to static function
+	 * \param arg params whick tale this staitc function
+	 */
 	template <typename Fn, typename... Args>
-	void startThread(Fn&& fn, Args&&... arg)
-	{
-		join();
-		_flag = true;
-		std::thread th(fn, &_mt, &_flag, arg...);
-		_work.swap(th);
-	}
+	void startThread(Fn&& fn, Args&&... arg);
 
-	//завершение нового потока
-	void join()
-	{
-		if (joinable()) 
-		{
-			_mt.lock();
-			_flag = false;
-			_mt.unlock();
-			_work.join();
-		}
-	}
+	/**
+	 * \brief function for stopping current thread
+	 */
+	void join();
 
-	~MyThread()
-	{
-		join();
-	}
+	/**
+	 * \brief default destructor
+	 */
+	~MyThread();
 };
 
 
-#endif // !MyThread_def
+
+
+template <typename Fn, typename ... Args>
+void MyThread::startThread(Fn&& fn, Args&&... arg)
+{
+	//finishing current thread
+	join();
+
+	//starting new thread
+	_flag = true;
+	std::thread th(fn, &_mt, &_flag, arg...);
+	_work.swap(th);
+}
+//*/
+
+#endif // MyThread_def

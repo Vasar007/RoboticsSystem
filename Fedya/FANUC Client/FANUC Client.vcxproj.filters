@@ -28,10 +28,16 @@
     <Filter Include="Заголовочные файлы\ConsoleInteface">
       <UniqueIdentifier>{33db4b7e-70f1-4081-9d88-433746b5bb6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\ModificatedClasses">
+      <UniqueIdentifier>{9ab094a7-60cc-4b56-a581-9e822384bc60}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="MyThread.cpp">
+      <Filter>Файлы исходного кода\ModificatedClasses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
