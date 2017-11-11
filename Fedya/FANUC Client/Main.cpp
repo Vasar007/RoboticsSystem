@@ -17,6 +17,8 @@
 #include "MyQueue.hpp"
 #include "tcpServer.hpp"
 
+#include"RobotCoord.hpp"
+
 int main(int argc, char* argv[])
 {
 	SocketWorking::getInstance().initialise();

@@ -7,13 +7,12 @@
 #include "MyQueue.hpp"
 #include "SocketWorking.hpp"
 #include "tcpConnection.hpp"
+#include<Ws2tcpip.h>
 
 #pragma comment( lib, "ws2_32.lib " )
 
 
 struct addrinfo* serverAddr;
-
-#pragma comment( lib, "ws2_32.lib " )
 
 template<typename T>
 class ServerTcp
