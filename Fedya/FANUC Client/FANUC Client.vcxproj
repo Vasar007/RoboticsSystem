@@ -148,6 +148,8 @@
     <ClCompile Include="MyThread.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MyQueueDifintion.hpp" />
+    <ClInclude Include="MyThreadDifintion.hpp" />
     <ClInclude Include="RobotCoord.hpp" />
     <ClInclude Include="RobotComunication.hpp" />
     <ClInclude Include="Field.hpp" />

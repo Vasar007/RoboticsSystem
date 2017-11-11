@@ -78,20 +78,6 @@ struct MyThread
 	~MyThread();
 };
 
-
-
-
-template <typename Fn, typename ... Args>
-void MyThread::startThread(Fn&& fn, Args&&... arg)
-{
-	//finishing current thread
-	join();
-
-	//starting new thread
-	_flag = true;
-	std::thread th(fn, &_mt, &_flag, arg...);
-	_work.swap(th);
-}
-//*/
+#include "MyThreadDifintion.hpp"
 
 #endif // MyThread_def

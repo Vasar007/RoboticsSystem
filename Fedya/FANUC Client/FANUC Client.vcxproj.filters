@@ -31,6 +31,12 @@
     <Filter Include="Файлы исходного кода\ModificatedClasses">
       <UniqueIdentifier>{9ab094a7-60cc-4b56-a581-9e822384bc60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Заголовочные файлы\template difinitions">
+      <UniqueIdentifier>{439ebc74-e491-443d-8a34-b927221c1f45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\template difinitions\ModificatedClasses">
+      <UniqueIdentifier>{ffe7d613-5078-480f-bd88-6f14c25f0073}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -76,6 +82,12 @@
     </ClInclude>
     <ClInclude Include="tcpConnection.hpp">
       <Filter>Заголовочные файлы\winSock</Filter>
+    </ClInclude>
+    <ClInclude Include="MyThreadDifintion.hpp">
+      <Filter>Заголовочные файлы\template difinitions\ModificatedClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="MyQueueDifintion.hpp">
+      <Filter>Заголовочные файлы\template difinitions\ModificatedClasses</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
