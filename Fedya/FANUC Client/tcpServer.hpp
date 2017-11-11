@@ -20,7 +20,7 @@ class ServerTcp
 {
 	SOCKET _main;
 
-	ConnectionTcp<T> *_contcp;
+	ConnectionTCP<T> *_contcp;
 	MyThread _conSocketWorkin, _conSocketWorkout;
 	MyThread _oneConnection;
 	MyThread _paralelAccept;
@@ -182,7 +182,7 @@ public:
 		{
 			SOCKET connectedSocket = _socketConnectionsQueue.front();
 			_socketConnectionsQueue.pop();
-			_contcp = new ConnectionTcp<T>(connectedSocket, sendQueue, recieveQueue);
+			_contcp = new ConnectionTCP<T>(connectedSocket, sendQueue, recieveQueue);
 			_conSocketWorkin.startThread(tcpWorkin, this);
 			_conSocketWorkout.startThread(tcpWorkout, this);
 			return 0;
@@ -198,7 +198,7 @@ public:
 		}
 		SOCKET connectedSocket = _socketConnectionsQueue.front();
 		_socketConnectionsQueue.pop();
-		_contcp = new ConnectionTcp<T>(connectedSocket, sendQueue, recieveQueue);
+		_contcp = new ConnectionTCP<T>(connectedSocket, sendQueue, recieveQueue);
 		_conSocketWorkin.startThread(tcpWorkin, this);
 		_conSocketWorkout.startThread(tcpWorkout, this);
 		return 0;

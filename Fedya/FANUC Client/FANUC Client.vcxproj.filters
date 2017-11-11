@@ -40,6 +40,9 @@
     <Filter Include="Файлы исходного кода\winSock">
       <UniqueIdentifier>{087da938-61da-48b4-851a-d72a0e0a0da3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Заголовочные файлы\template difinitions\winSock">
+      <UniqueIdentifier>{f4335fa8-709e-4018-8602-85e77f420825}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -50,6 +53,9 @@
     </ClCompile>
     <ClCompile Include="MyQueue.cpp">
       <Filter>Файлы исходного кода\ModificatedClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="tcpConnection.cpp">
+      <Filter>Файлы исходного кода\winSock</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="MyQueueDifintion.hpp">
       <Filter>Заголовочные файлы\template difinitions\ModificatedClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="tcpConnectionDifinition.hpp">
+      <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
