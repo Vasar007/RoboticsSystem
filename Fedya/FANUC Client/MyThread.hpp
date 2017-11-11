@@ -6,11 +6,23 @@
 #include<mutex>
 
 
+/**
+ * \brief class for working threads
+ */
 struct MyThread 
 {
+	/**
+	 * \brief current thread
+	 */
 	std::thread _work;
+	/**
+	 * \brief mutex for locking curretn thread
+	 */
 	std::mutex _mt;
-	bool _flag = true;
+	/**
+	 * \brief flag for finishing or continuing current thread
+	 */
+	bool _flag{ false };
 
 	/**
 	 * \brief default constructor

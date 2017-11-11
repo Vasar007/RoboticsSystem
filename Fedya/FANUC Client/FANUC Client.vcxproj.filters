@@ -39,6 +39,9 @@
     <ClCompile Include="MyThread.cpp">
       <Filter>Файлы исходного кода\ModificatedClasses</Filter>
     </ClCompile>
+    <ClCompile Include="MyQueue.cpp">
+      <Filter>Файлы исходного кода\ModificatedClasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Field.hpp">
