@@ -54,8 +54,8 @@ class RoboSender
 public:
 	explicit RoboSender(int port = 7070)
 	{
-		WSADATA WsaData;
-		if (WSAStartup(MAKEWORD(2, 2), &WsaData) != NO_ERROR)
+		WSADATA wsaData;
+		if (WSAStartup(MAKEWORD(2, 2), &wsaData) != NO_ERROR)
 		{
 			std::cout << "WSAStartup error: " << WSAGetLastError() << '\n';
 			_soc = INVALID_SOCKET;
@@ -65,12 +65,12 @@ public:
 		{
 			_soc = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-			std::string serverIP = "127.0.0.1";
+			std::string serverIp = "127.0.0.1";
 
 			sockaddr_in destAddr;
 			destAddr.sin_family = AF_INET;
 			destAddr.sin_port = htons(port);
-			inet_pton(AF_INET, serverIP.c_str(), &destAddr.sin_addr);
+			inet_pton(AF_INET, serverIp.c_str(), &destAddr.sin_addr);
 
 			if (connect(_soc, reinterpret_cast<sockaddr *>(&destAddr), sizeof destAddr) == SOCKET_ERROR)
 			{

@@ -18,13 +18,13 @@ class WinsockInterface
 	public:
 		enum ErrorType
 		{
-			FAILED_INITIALIZE_WSDATA = -1,
-			FAILED_CREATE_SOCKET = -2,
-			FAILED_BIND = -3,
-			FAILED_ACCEPT = -4,
-			FAILED_LISTEN = -5,
-			FAILED_SELECT_CALL = -6,
-			FAILED_ACCEPT_NEW_CLIENT = -7
+			failedInitializeWsdata = -1,
+			failedCreateSocket = -2,
+			failedBind = -3,
+			failedAccept = -4,
+			failedListen = -5,
+			failedSelectCall = -6,
+			failedAcceptNewClient = -7
 		};
 	
 	
@@ -44,7 +44,7 @@ class WinsockInterface
 	
 		char*			 _message;
 	
-		const std::map<int, std::string> _TABLE_OF_ERRORS =
+		const std::map<int, std::string> _tableOfErrors =
 		{
 			{ 6,	 "Specified event object handle is invalid." },
 			{ 8,	 "Insufficient memory available." },

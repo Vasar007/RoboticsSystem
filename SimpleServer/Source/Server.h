@@ -8,9 +8,9 @@
 class Server : public WinsockInterface
 {
 	private:		
-		const int		 _BACKLOG = 10;
+		const int		 _backlog = 10;
 
-		const int		 _MAX_CLIENTS = 32;
+		const int		 _maxClients = 32;
 	
 		std::string		 _serverIP;
 

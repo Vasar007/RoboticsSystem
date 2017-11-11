@@ -4,9 +4,9 @@
 #include <thread>
 
 
-Client::Client(int port, std::string serverIP)
+Client::Client(int port, std::string serverIp)
 : WinsockInterface()
-, _serverIP(serverIP)
+, _serverIP(serverIp)
 {
 	tryConnect(port);
 	sendData("2580");
@@ -15,11 +15,11 @@ Client::Client(int port, std::string serverIP)
 bool Client::tryConnect(int port)
 {
 	// Set socket settings.
-	const char* serverIP = _serverIP.c_str();
+	const char* serverIp = _serverIP.c_str();
 
 	_serverAddress.sin_family = AF_INET;
 	_serverAddress.sin_port = htons(port);
-	inet_pton(AF_INET, serverIP, &_serverAddress.sin_addr);
+	inet_pton(AF_INET, serverIp, &_serverAddress.sin_addr);
 
 	// The connection to the server.
 	if (connect(_masterSocket, reinterpret_cast<sockaddr*>(&_serverAddress),
@@ -56,8 +56,8 @@ void Client::waitLoop()
 
 		if (valRead == SOCKET_ERROR)
 		{
-			int error_code = WSAGetLastError();
-			if (error_code == WSAECONNRESET)
+			int errorCode = WSAGetLastError();
+			if (errorCode == WSAECONNRESET)
 			{
 				// Get IP address back and print it.
 				inet_ntop(AF_INET, &address.sin_addr, message, INET_ADDRSTRLEN);
@@ -70,7 +70,7 @@ void Client::waitLoop()
 			}
 			else
 			{
-				std::cout << "recv failed with error code: " << error_code << std::endl;
+				std::cout << "recv failed with error code: " << errorCode << std::endl;
 			}
 		}
 		if (valRead == 0)
@@ -98,14 +98,14 @@ void Client::waitLoop()
 	}
 }
 
-std::string Client::getServerIP() const
+std::string Client::getServerIp() const
 {
 	return _serverIP;
 }
 
-void Client::setServerIP(std::string newServerIP)
+void Client::setServerIp(std::string newServerIp)
 {
-	_serverIP = newServerIP;
+	_serverIP = newServerIp;
 }
 
 void Client::tryReconnect(int port)

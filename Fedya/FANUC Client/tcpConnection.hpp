@@ -8,16 +8,16 @@
 #include "MyQueue.hpp"
 
 template<typename T>
-class ConnectionTCP
+class ConnectionTcp
 {
 	SOCKET _soc;
 	MyQueue<T> *_sendQueue, *_reciveQueue;
 	std::string _sbuf;
 
 public:
-	ConnectionTCP() = default;
+	ConnectionTcp() = default;
 
-	ConnectionTCP(SOCKET soc, MyQueue<T> *sendQueue, MyQueue<T> *reciveQueue) :
+	ConnectionTcp(SOCKET soc, MyQueue<T> *sendQueue, MyQueue<T> *reciveQueue) :
 		_soc(soc), _sendQueue(sendQueue), _reciveQueue(reciveQueue)
 	{
 

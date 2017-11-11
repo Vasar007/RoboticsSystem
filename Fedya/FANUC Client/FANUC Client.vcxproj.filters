@@ -37,6 +37,9 @@
     <Filter Include="Заголовочные файлы\template difinitions\ModificatedClasses">
       <UniqueIdentifier>{ffe7d613-5078-480f-bd88-6f14c25f0073}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\winSock">
+      <UniqueIdentifier>{087da938-61da-48b4-851a-d72a0e0a0da3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">

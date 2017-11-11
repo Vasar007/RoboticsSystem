@@ -10,7 +10,7 @@ Server::Server(int port, int backlog)
 , _serverIP()
 , _clientSockets()
 {
-	_clientSockets.resize(_MAX_CLIENTS);
+	_clientSockets.resize(_maxClients);
 
 	bindSocket(port);
 	listenOn(backlog);
@@ -25,7 +25,7 @@ void Server::waitLoop()
 	sockaddr_in address;
 
 	SOCKET socket;
-	SOCKET new_socket;
+	SOCKET newSocket;
 
 	std::cout << "\n\n\nWaiting for connections...\n\n";
 
@@ -40,7 +40,7 @@ void Server::waitLoop()
 		FD_SET(_masterSocket, &_readfds);
 
 		// Add child sockets to fd set.
-		for (int i = 0; i < _MAX_CLIENTS; i++)
+		for (int i = 0; i < _maxClients; i++)
 		{
 			socket= _clientSockets[i];
 			if (socket> 0)
@@ -56,31 +56,31 @@ void Server::waitLoop()
 		{
 			std::cout << "\nSELECT CALL FAILED WITH ERROR CODE: " << WSAGetLastError() << std::endl;
 			system("pause");
-			exit(ErrorType::FAILED_SELECT_CALL);
+			exit(ErrorType::failedSelectCall);
 		}
 
 		// If something happened on the master socket, then it's an incoming connection.
 		if (FD_ISSET(_masterSocket, &_readfds))
 		{
-			if ((new_socket = accept(_masterSocket, reinterpret_cast<sockaddr*>(&address),
+			if ((newSocket = accept(_masterSocket, reinterpret_cast<sockaddr*>(&address),
 				static_cast<int*>(&addrlen))) == SOCKET_ERROR)
 			{
 				perror("accept");
 				system("pause");
-				exit(ErrorType::FAILED_ACCEPT_NEW_CLIENT);
+				exit(ErrorType::failedAcceptNewClient);
 			}
 
 			// Get IP address back and print it.
 			inet_ntop(AF_INET, &address.sin_addr, message, INET_ADDRSTRLEN);
 
 			// Inform user of socket number — used in send and receive commands.
-			std::cout << "New connection, socket fd is " << new_socket << ", ip is: " << 
+			std::cout << "New connection, socket fd is " << newSocket << ", ip is: " << 
 				message << ", port: " << ntohs(address.sin_port) << '\n';
 
 			std::string tmp = "ECHO";
 			const char* mes = tmp.c_str();
 			// Send new connection greeting message.
-			if (send(new_socket, mes, strlen(mes), 0) != strlen(mes))
+			if (send(newSocket, mes, strlen(mes), 0) != strlen(mes))
 			{
 				perror("send failed");
 			}
@@ -88,11 +88,11 @@ void Server::waitLoop()
 			std::cout << "Welcome message sent successfully.\n\n";
 
 			// Add new socket to array of sockets.
-			for (int i = 0; i < _MAX_CLIENTS; i++)
+			for (int i = 0; i < _maxClients; i++)
 			{
 				if (_clientSockets[i] == 0)
 				{
-					_clientSockets[i] = new_socket;
+					_clientSockets[i] = newSocket;
 					std::cout << "Adding to list of sockets at index " << i << '\n';
 					break;
 				}
@@ -100,7 +100,7 @@ void Server::waitLoop()
 		}
 
 		// Else its some IO operation on some other socket. :)
-		for (int i = 0; i < _MAX_CLIENTS; i++)
+		for (int i = 0; i < _maxClients; i++)
 		{
 			socket = _clientSockets[i];
 			// If client presend in read sockets.            
@@ -117,8 +117,8 @@ void Server::waitLoop()
 
 				if (valRead == SOCKET_ERROR)
 				{
-					int error_code = WSAGetLastError();
-					if (error_code == WSAECONNRESET)
+					int errorCode = WSAGetLastError();
+					if (errorCode == WSAECONNRESET)
 					{
 						// Get IP address back and print it.
 						inet_ntop(AF_INET, &address.sin_addr, message, INET_ADDRSTRLEN);
@@ -132,7 +132,7 @@ void Server::waitLoop()
 					}
 					else
 					{
-						std::cout << "recv failed with error code: " << error_code << std::endl;
+						std::cout << "recv failed with error code: " << errorCode << std::endl;
 					}
 				}
 				if (valRead == 0)

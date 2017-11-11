@@ -40,7 +40,7 @@ void go(SOCKET stGet, SOCKET stSend)
 
 		setsockopt(stGet, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&timeout), sizeof(timeout));
 		ZeroMemory(buf, 256);
-		int L = recv(stGet, buf, 255, 0);
+		int l = recv(stGet, buf, 255, 0);
 		sbuf += buf;
 
 		if (!was)
@@ -49,7 +49,7 @@ void go(SOCKET stGet, SOCKET stSend)
 			sbuf = sbuf.substr(1);
 		}
 
-		if (L > 0)
+		if (l > 0)
 		{
 			int tmp = 0;
 			std::string str = "";
@@ -83,7 +83,7 @@ void go(SOCKET stGet, SOCKET stSend)
 	}
 }
 
-struct addrinfo *server_addr;
+struct addrinfo *serverAddr;
 
 int initialise(SOCKET& soc, int port1)
 {
@@ -95,12 +95,12 @@ int initialise(SOCKET& soc, int port1)
 	}
 	//creating socket
 
-	sockaddr_in dest_addr;
-	dest_addr.sin_family = AF_INET;
-	dest_addr.sin_port = htons(port1);
-	dest_addr.sin_addr.s_addr = INADDR_ANY;
+	sockaddr_in destAddr;
+	destAddr.sin_family = AF_INET;
+	destAddr.sin_port = htons(port1);
+	destAddr.sin_addr.s_addr = INADDR_ANY;
 
-	if (bind(soc, reinterpret_cast<sockaddr *>(&dest_addr), sizeof(dest_addr)) < 0)
+	if (bind(soc, reinterpret_cast<sockaddr *>(&destAddr), sizeof(destAddr)) < 0)
 	{
 		closesocket(soc);
 		soc = INVALID_SOCKET;
@@ -117,7 +117,7 @@ int initialise(SOCKET& soc, int port1)
 	}
 	//let socket be connetable
 
-	freeaddrinfo(server_addr);
+	freeaddrinfo(serverAddr);
 	//cleaning addres
 	return 0;
 }
@@ -127,8 +127,8 @@ int main() {
 	SOCKET soc1 = INVALID_SOCKET;
 	SOCKET soc2 = INVALID_SOCKET;
 
-	WSADATA WsaData;
-	if (WSAStartup(MAKEWORD(2, 2), &WsaData) != NO_ERROR)
+	WSADATA wsaData;
+	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != NO_ERROR)
 	{
 		std::cout << "WSAStartup error: " << WSAGetLastError();
 		system("pause");
@@ -151,8 +151,8 @@ int main() {
 		return 3;
 	}
 
-	sockaddr_in dest_addr;
-	int tvp = sizeof(dest_addr);
+	sockaddr_in destAddr;
+	int tvp = sizeof(destAddr);
 
 	std::thread th;
 
@@ -160,8 +160,8 @@ int main() {
 	{
 		SOCKET st1 = INVALID_SOCKET;
 		SOCKET st2 = INVALID_SOCKET;
-		st1 = accept(soc1, reinterpret_cast<sockaddr *>(&dest_addr), &tvp);
-		st2 = accept(soc2, reinterpret_cast<sockaddr *>(&dest_addr), &tvp);
+		st1 = accept(soc1, reinterpret_cast<sockaddr *>(&destAddr), &tvp);
+		st2 = accept(soc2, reinterpret_cast<sockaddr *>(&destAddr), &tvp);
 
 		std::cout << "+1\n";
 

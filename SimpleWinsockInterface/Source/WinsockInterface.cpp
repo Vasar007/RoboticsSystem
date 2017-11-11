@@ -32,7 +32,7 @@ void WinsockInterface::initWinsock()
 	{
 		std::cout << "\nFAILDE. ERROR CODE: " << WSAGetLastError() << std::endl;
 		system("pause");
-		exit(ErrorType::FAILED_INITIALIZE_WSDATA);
+		exit(ErrorType::failedInitializeWsdata);
 	}
 	std::cout << "Initialized Winsock.\n";
 }
@@ -45,7 +45,7 @@ void WinsockInterface::initSocket(int aiProtocol)
 	{
 		std::cout << "\nCOULD NOT CREATE SOCKET." << std::endl;
 		system("pause");
-		exit(ErrorType::FAILED_CREATE_SOCKET);
+		exit(ErrorType::failedCreateSocket);
 	}
 	std::cout << "Socket created.\n";
 
@@ -64,7 +64,7 @@ void WinsockInterface::bindSocket(int port)
 	{
 		std::cout << "\nBIND FAILED." << std::endl;
 		system("pause");
-		exit(ErrorType::FAILED_BIND);
+		exit(ErrorType::failedBind);
 	}
 	std::cout << "Bind done.\n";
 }
@@ -78,7 +78,7 @@ void WinsockInterface::listenOn(int backlog) const
 	{
 		std::cout << "\nLISTEN FAILED." << std::endl;
 		system("pause");
-		exit(ErrorType::FAILED_LISTEN);
+		exit(ErrorType::failedListen);
 	}
 	std::cout << "Enabled listening.\n\n";
 }
@@ -86,11 +86,11 @@ void WinsockInterface::listenOn(int backlog) const
 bool WinsockInterface::tryConnect(int port, std::string ip)
 {
 	// Set socket settings again.
-	const char* serverIP = ip.c_str();
+	const char* serverIp = ip.c_str();
 
 	_serverAddress.sin_family = AF_INET;
 	_serverAddress.sin_port = htons(port);
-	inet_pton(AF_INET, serverIP, &_serverAddress.sin_addr);
+	inet_pton(AF_INET, serverIp, &_serverAddress.sin_addr);
 
 	// The connection to the server.
 	if (connect(_masterSocket, reinterpret_cast<sockaddr*>(&_serverAddress),

@@ -8,9 +8,9 @@ int main()
 {
 	std::cout << "Simple console server by Vasar v 0.1\n" << std::endl;
 
-	const int PORT		= 9999;
-	const int BACKLOG	= 10;
-	Server server(PORT, BACKLOG);
+	const int port		= 9999;
+	const int backlog	= 10;
+	Server server(port, backlog);
 
 	server.run();
 
