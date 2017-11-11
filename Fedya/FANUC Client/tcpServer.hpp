@@ -5,228 +5,150 @@
 #include <WinSock2.h>
 #include "MyThread.hpp"
 #include "MyQueue.hpp"
-#include "SocketWorking.hpp"
 #include "tcpConnection.hpp"
-#include<Ws2tcpip.h>
 
-#pragma comment( lib, "ws2_32.lib " )
-
-
-struct addrinfo* serverAddr;
-
+/**
+ * \brief Class impliments server for client connections.
+ * \tparam T Type of cordinates for comunication.
+ */
 template<typename T>
 class ServerTcp
 {
+	/**
+	 * \brief Main SOCKET for binding.
+	 */
 	SOCKET _main;
 
-	ConnectionTCP<T> *_contcp;
-	MyThread _conSocketWorkin, _conSocketWorkout;
+	/**
+	 * \brief Class for processing client connection.
+	 */
+	ConnectionTCP<T>* _contcp;
+	
+	/**
+	 * \brief Paralel thread for reciving new points from client.
+	 */
+	MyThread _conSocketWorkin;
+	
+	/**
+	 * \brief Paralel thread for sending points to client.
+	 */
+	MyThread _conSocketWorkout;
+	
+	/**
+	 * \brief Paralel thread for support one connection.
+	 */
 	MyThread _oneConnection;
+	
+	/**
+	 * \brief Paralel thread for accepting new clients.
+	 */
 	MyThread _paralelAccept;
 
+	/**
+	 * \brief Queue of SOCKET for communication with clients.
+	 */
 	MyQueue<SOCKET> _socketConnectionsQueue;
 
+	/**
+	 * \brief time of previous point acception.
+	 */
 	int _prevRecieve;
+	
+	/**
+	 * \brief Time for waiting before disconnect.
+	 */
 	int _timeOut;
 
+	/**
+	 * \brief Flag if we are connected.
+	 */
 	bool _connected = false;
 
-	int initialise(int port)
-	{
-		_main = SocketWorking::getInstance().getFreeSocket();
-		if (_main == INVALID_SOCKET) 
-		{
-			//freeaddrinfo(server_addr);
-			return WSAGetLastError();
-		}
-		//creating socket
+	/**
+	 * \brief Method for intialsing listening SOCKET.
+	 * \param port Port for listening.
+	 * \return 0 if no errors, else code of error.
+	 */
+	int initialise(int port);
 
-		sockaddr_in destAddr;
-		destAddr.sin_family = AF_INET;
-		destAddr.sin_port = htons(port);
-		destAddr.sin_addr.s_addr = INADDR_ANY;
+	/**
+	 * \brief Static function for paralel reciving points.
+	 * \param mt Mutex for locking thread.
+	 * \param f Flag for ending thread.
+	 * \param ins Instance of this class.
+	 */
+	static void tcpWorkin(std::mutex* mt, bool* f, ServerTcp* ins);
 
-		if (bind(_main, reinterpret_cast<sockaddr *>(&destAddr), sizeof(destAddr)) < 0) 
-		{
-			closesocket(_main);
-			_main = INVALID_SOCKET;
-			std::cout << WSAGetLastError();
-			return WSAGetLastError();
-		}
-		//binding socket
+	/**
+	 * \brief Static function for paralel sending points
+	 * \param mt Mutex for locking thread.
+	 * \param f Flag for ending thread.
+	 * \param ins Instance of this class.
+	 */
+	static void tcpWorkout(std::mutex* mt, bool* f, ServerTcp* ins);
 
-		if (listen(_main, SOMAXCONN) < 0) 
-		{
-			closesocket(_main);
-			_main = INVALID_SOCKET;
-			return WSAGetLastError();
-		}
-		//let socket be connetable
+	/**
+	 * \brief Static function for supporting oneactual connection.
+	 * \param mt Mutex for locking thread.
+	 * \param f Flag for ending thread.
+	 * \param instance Instance of this class.
+	 * \param sendQueue Pointer to Queue of sending points.
+	 * \param recieveQueue Pointer to queue of reciving points.
+	 */
+	static void oneConnection(std::mutex* mt, bool* f, ServerTcp* instance, MyQueue<T>* sendQueue,
+	                          MyQueue<T>* recieveQueue);
 
-		freeaddrinfo(serverAddr);
-		//cleaning addres
-		return 0;
-	}
-
-	static void tcpWorkin(std::mutex *mt, bool *f, ServerTcp *ins)
-	{
-		while (true)
-		{
-			mt->lock();
-			if (!*f)
-			{
-				mt->unlock();
-				break;
-			}
-			mt->unlock();
-
-			ins->_contcp->sendCoord();
-
-			Sleep(10);
-		}
-	}
-	static void tcpWorkout(std::mutex *mt, bool *f, ServerTcp *ins)
-	{
-		ins->_prevRecieve = clock();
-		while (true)
-		{
-			mt->lock();
-			if (!*f)
-			{
-				mt->unlock();
-				break;
-			}
-			mt->unlock();
-
-			if (ins->_contcp->recvCoord() == 0)
-				ins->_prevRecieve = clock();
-
-			if (clock() - ins->_prevRecieve > ins->_timeOut)
-				ins->_connected = false;
-
-			Sleep(10);
-		}
-	}
-
-	static void oneConnection(std::mutex *mt, bool *f, ServerTcp* instance, MyQueue<T> *sendQueue, MyQueue<T> *recieveQueue)
-	{
-		while (true)
-		{
-			mt->lock();
-			if (!*f)
-			{
-				mt->unlock();
-				break;
-			}
-			mt->unlock();
-			if (!instance->_socketConnectionsQueue.empty())
-			{
-				instance->closeServer();
-				instance->forceAccept(sendQueue, recieveQueue);
-				instance->_connected = true;
-			}
-			Sleep(10);
-		}
-	}
-
-	static void paralelAccept(std::mutex *mt, bool *f, ServerTcp* instance)
-	{
-		unsigned long value = 1;
-		ioctlsocket(instance->_main, FIONBIO, &value);
-
-		fd_set sSet = { 1,{ instance->_main } };
-		timeval timeout = { instance->_timeOut / 500, 0 };
-		while (true) 
-		{
-			mt->lock();
-			if (!*f)
-			{
-				mt->unlock();
-				break;
-			}
-			mt->unlock();
-			sSet.fd_count = 1;
-			const int selectRes = select(0, &sSet, nullptr, nullptr, &timeout);
-			if (selectRes == SOCKET_ERROR) 
-			{
-				int t = GetLastError();
-				return;
-			}
-			if (selectRes)
-			{
-				SOCKADDR_IN nsa;
-				int sizeofNsa = sizeof(nsa);
-
-				const SOCKET connectedSocket = accept(instance->_main, reinterpret_cast<SOCKADDR *>(&nsa), &sizeofNsa);
-				if (connectedSocket == INVALID_SOCKET)
-					continue;
-				instance->_socketConnectionsQueue.push(connectedSocket);
-			}
-			Sleep(10);
-		}
-	}
+	/**
+	 * \brief Satic function for paralel accepting new clients.
+	 * \param mt Mutex for locking thread.
+	 * \param f Flag for ending thread.
+	 * \param instance Instance of this class.
+	 */
+	static void paralelAccept(std::mutex* mt, bool* f, ServerTcp* instance);
 
 public:
 
-	explicit ServerTcp(int port, int timeOut) :_timeOut(timeOut)
-	{
-		initialise(port);
-		_contcp = nullptr;
-		_paralelAccept.startThread(paralelAccept, this);
-	}
+	/**
+	 * \brief Constructor:(
+	 * \param port Port for finding new clients.
+	 * \param timeOut Time for checking new points.
+	 */
+	explicit ServerTcp(int port, int timeOut);
 
-	int tryAccept(MyQueue<T> *sendQueue, MyQueue<T> *recieveQueue)
-	{
-		if (!_socketConnectionsQueue.empty()) 
-		{
-			SOCKET connectedSocket = _socketConnectionsQueue.front();
-			_socketConnectionsQueue.pop();
-			_contcp = new ConnectionTCP<T>(connectedSocket, sendQueue, recieveQueue);
-			_conSocketWorkin.startThread(tcpWorkin, this);
-			_conSocketWorkout.startThread(tcpWorkout, this);
-			return 0;
-		}
-		return -1;
-	}
+	/**
+	 * \brief Method for trying to accept any connection.
+	 * \param sendQueue Pointer to queue of sending points.
+	 * \param recieveQueue Pointer to queue of reciving queue.
+	 * \return 0 if no errors, -1 if no connections.
+	 */
+	int tryAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue);
 
-	int forceAccept(MyQueue<T> *sendQueue, MyQueue<T> *recieveQueue)
-	{
-		while (_socketConnectionsQueue.empty()) 
-		{
-			Sleep(100);
-		}
-		SOCKET connectedSocket = _socketConnectionsQueue.front();
-		_socketConnectionsQueue.pop();
-		_contcp = new ConnectionTCP<T>(connectedSocket, sendQueue, recieveQueue);
-		_conSocketWorkin.startThread(tcpWorkin, this);
-		_conSocketWorkout.startThread(tcpWorkout, this);
-		return 0;
-	}
+	/**
+	 * \brief Method for accepting new client.
+	 * \param sendQueue Pointer to queue of sending points.
+	 * \param recieveQueue Pointer to queue of reciving points.
+	 * \return 0 if no errors, else non-zero.
+	 */
+	int forceAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue);
 
-	void supportOneConnection(MyQueue<T> *sendQueue, MyQueue<T> *recieveQueue)
-	{
-		_oneConnection.startThread(oneConnection, this, sendQueue, recieveQueue);
+	/**
+	 * \brief Method for starting working in one client mode.
+	 * \param sendQueue Pointer to queue of sending points.
+	 * \param recieveQueue Pointer to queue of reciving points.
+	 */
+	void supportOneConnection(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue);
 
-	}
+	/**
+	 * \brief Method for finishing working.
+	 */
+	void closeServer();
 
-	void closeServer()
-	{
-		_conSocketWorkin.join();
-		_conSocketWorkout.join();
-		if (_contcp != nullptr)
-		{
-			delete _contcp;
-			_contcp = nullptr;
-		}
-	}
-
-	~ServerTcp()
-	{
-		_paralelAccept.join();
-		_oneConnection.join();
-		closeServer();
-	}
-
+	/**
+	 * \brief Default destructor.
+	 */
+	~ServerTcp();
 };
+
+#include "tcpServerDifinition.hpp"
 
 #endif

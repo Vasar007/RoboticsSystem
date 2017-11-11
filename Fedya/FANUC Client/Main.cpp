@@ -8,6 +8,7 @@
 #define WITHOUT_POINTS_SAVER
 //#define WITHOUT_INTERFACE
 
+#include "tcpServer.hpp"
 #include <string>
 #include <windows.h>
 #include <iostream>
@@ -15,7 +16,7 @@
 #include "MyShower.hpp"
 #include "RobotComunication.hpp"
 #include "MyQueue.hpp"
-#include "tcpServer.hpp"
+
 
 #include"RobotCoord.hpp"
 

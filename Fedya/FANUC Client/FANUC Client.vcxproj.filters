@@ -60,6 +60,9 @@
     <ClCompile Include="SocketWorking.cpp">
       <Filter>Файлы исходного кода\winSock</Filter>
     </ClCompile>
+    <ClCompile Include="tcpServer.cpp">
+      <Filter>Файлы исходного кода\winSock</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Field.hpp">
@@ -105,6 +108,9 @@
       <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
     </ClInclude>
     <ClInclude Include="SocketWorkingDifinition.hpp">
+      <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
+    </ClInclude>
+    <ClInclude Include="tcpServerDifinition.hpp">
       <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
     </ClInclude>
   </ItemGroup>
