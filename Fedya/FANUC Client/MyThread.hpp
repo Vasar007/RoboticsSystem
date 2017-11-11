@@ -7,73 +7,73 @@
 
 
 /**
- * \brief class for working threads
+ * \brief Class for working threads.
  */
 struct MyThread 
 {
 	/**
-	 * \brief current thread
+	 * \brief Current thread.
 	 */
 	std::thread _work;
 	/**
-	 * \brief mutex for locking curretn thread
+	 * \brief Mutex for locking curretn thread.
 	 */
 	std::mutex _mt;
 	/**
-	 * \brief flag for finishing or continuing current thread
+	 * \brief Flag for finishing or continuing current thread.
 	 */
 	bool _flag{ false };
 
 	/**
-	 * \brief default constructor
+	 * \brief Default constructor.
 	 */
 	MyThread() = default;
 
 	/**
-	 * \brief constructor with starting new thread
-	 * \tparam Fn static function
-	 * \tparam Args params of static function
-	 * \param fn link to static function
-	 * \param arg params whick tale this staitc function
+	 * \brief Constructor with starting new thread.
+	 * \tparam Fn Static function.
+	 * \tparam Args Params of static function.
+	 * \param fn Link to static function.
+	 * \param arg Params whick tale this staitc function.
 	 */
 	template <typename Fn, typename... Args>
 	explicit MyThread(Fn&& fn, Args&&... arg);
 
 	/**
-	 * \brief method for swapping threads
-	 * \param th thread for swapping
+	 * \brief Method for swapping threads.
+	 * \param th Thread for swapping.
 	 */
 	void swap(std::thread& th);
 
 	/**
-	 * \brief function for swapping threads
-	 * \param th thread for swapping
+	 * \brief Function for swapping threads.
+	 * \param th MyThread for swapping.
 	 */
 	void swap(MyThread& th) noexcept;
 
 	/**
-	 * \brief function for checking if this thread may be joind
-	 * \return true if this thread may be joind, else false
+	 * \brief Function for checking if this thread may be joind.
+	 * \return True if this thread may be joind, else false.
 	 */
 	bool joinable() const;
 
 	/**
-	 * \brief function for starting new thread
-	 * \tparam Fn static function
-	 * \tparam Args params of static function
-	 * \param fn link to static function
-	 * \param arg params whick tale this staitc function
+	 * \brief Function for starting new thread.
+	 * \tparam Fn Static function.
+	 * \tparam Args Params of static function.
+	 * \param fn Link to static function.
+	 * \param arg Params whick tale this staitc function.
 	 */
 	template <typename Fn, typename... Args>
 	void startThread(Fn&& fn, Args&&... arg);
 
 	/**
-	 * \brief function for stopping current thread
+	 * \brief Function for stopping current thread.
 	 */
 	void join();
 
 	/**
-	 * \brief default destructor
+	 * \brief Default destructor.
 	 */
 	~MyThread();
 };

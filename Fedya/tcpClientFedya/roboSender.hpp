@@ -81,7 +81,6 @@ public:
 			}
 			else
 			{
-
 				struct timeval timeout;
 				timeout.tv_sec = 100;
 				timeout.tv_usec = 0;
