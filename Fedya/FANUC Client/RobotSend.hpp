@@ -1,8 +1,7 @@
+#ifndef ROBOT_SEND
+#define ROBOT_SEND
 #pragma once
 
-#ifndef ROBOT_SEND
-
-#define ROBOT_SEND
 #include "MyQueue.hpp"
 
 /**

@@ -148,6 +148,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MyQueue.cpp" />
     <ClCompile Include="MyThread.cpp" />
+    <ClCompile Include="RobotRecieve.cpp" />
     <ClCompile Include="RobotSend.cpp" />
     <ClCompile Include="SocketWorking.cpp" />
     <ClCompile Include="tcpConnection.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="MyShower.hpp" />
     <ClInclude Include="MyThread.hpp" />
     <ClInclude Include="RobotRecieve.hpp" />
+    <ClInclude Include="RobotRecieveDifinition.hpp" />
     <ClInclude Include="RobotSend.hpp" />
     <ClInclude Include="RobotSendDifinition.hpp" />
     <ClInclude Include="SocketWorking.hpp" />

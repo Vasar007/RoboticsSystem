@@ -1,122 +1,63 @@
+#ifndef ROBOT_RECIEVE
+#define ROBOT_RECIEVE
 #pragma once
 
-#ifndef ROBOT_RECIEVE
+#include "MyQueue.hpp"
 
-#define ROBOT_RECIEVE
-#include <fstream>
-
-std::ofstream out("logs2.txt");
-
+/**
+ * \brief Class for aupprting reciving points from robot.
+ * \tparam T Type of points for reciving.
+ */
 template<typename T>
 class RobotRecieve
 {
+	/**
+	 * \brief SOCKET for accesing points.
+	 */
 	SOCKET _sockRecv;
+	
+	/**
+	 * \brief Queue of points which proceed on robot.
+	 */
 	MyQueue<T>* _cloneQueue;
+	
+	/**
+	 * \brief Queue of points which was recived from robot.
+	 */
 	MyQueue<T>* _returnQueue;
+	
+	/**
+	 * \brief String which was recived from robot.
+	 */
 	std::string _sbuf;
+	
+	/**
+	 * \brief Max time delay between reciving points.
+	 */
 	int _readTime;
 public:
 
+	/**
+	 * \brief Previous recived point.
+	 */
 	T _prevCoord;
 
-	//Функция приема:
-	int readCoord()
-	{
-		char recvbuf[128];
-		ZeroMemory(recvbuf, 128);
-		T rc;
+	/**
+	 * \brief Method for recveving and parsing points from robot.
+	 * \return 0 if smth was recived, else non-zero.
+	 */
+	int readCoord();
 
-		struct timeval timeout;
-		timeout.tv_sec = _readTime;
-		timeout.tv_usec = 0;
-		setsockopt(_sockRecv, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&timeout), sizeof timeout); //для unix-систем убрать (char*)
-
-		const int iResult = recv(_sockRecv, recvbuf, 127, 0);
-
-		if (iResult <= 0)  // Даня, ты этот кусок не менял, я заметил!!! Это же я его писал :D
-		{
-			if (errno != EAGAIN && errno != EWOULDBLOCK)
-			{
-				return -15;
-			}
-		}
-		else
-		{
-
-			_sbuf += recvbuf;
-#ifdef WITH_COSTUL_SHOULD_REMOVE
-
-			if((std::string(recvbuf)).size() == 38)
-			{
-				sscanf_s(_sbuf.c_str(), "%d %d %d %d %d %d %d", &rc._xr, &rc._yr, &rc._zr, &rc._uw, &rc._up, &rc._uz, &rc._segTime);
-				_sbuf = "";
-				rc._typeOfMoving = 0;
-				rc._control = 0;
-				if (!_cloneQueue->empty()) {
-					_cloneQueue->pop();
-				}
-				_returnQueue->push(rc);
-			}
-#endif
-			int coordsNumber = 0;
-			for (int i = 0;i < _sbuf.size();i++) 
-			{
-				if (_sbuf[i] != ' ') {
-
-					while (i < _sbuf.size() && _sbuf[i] != ' ')
-						i++;
-					if (i < _sbuf.size() && _sbuf[i] == ' ')
-						++coordsNumber;
-				}
-				if (coordsNumber == 7) 
-				{
-					sscanf_s(_sbuf.c_str(), "%d %d %d %d %d %d %d", &rc._xr, &rc._yr, &rc._zr, &rc._uw, &rc._up, &rc._uz, &rc._segTime);
-					rc._typeOfMoving = 0;
-					rc._control = 0;
-					_returnQueue->push(rc);
-					_prevCoord = rc;
-					if (!_cloneQueue->empty()) 
-					{
-						_cloneQueue->pop();
-					}
-					_sbuf = _sbuf.substr(i);
-					i = 0;
-					coordsNumber = 0;
-				}
-			}
-			out << _sbuf << "\n1 "<<fflush;
-			/*
-			bool f = false;
-			for(int i=0;i<_sbuf.size();i++)
-			{
-				if(_sbuf[i]!=' ')
-				{
-					f = true;
-					break;
-				}
-			}
-			if(f)
-				out << "from fanuc not complit pocket|" << _sbuf << "\n"<<fflush;//*/
-
-#ifdef LOCAL_DEBUG
-			std::cout << "--------------:";
-			for (int i = 0;i < iResult;i++)
-				putchar(recvbuf[i]);
-			putchar('\n');
-#endif // LOCAL_DEBUG
-
-		}
-		return 0;
-	}
-
-	RobotRecieve(SOCKET socRecv, MyQueue<T> *cloneQueue, MyQueue<T> *returnQueue, int readTime)
-	: _sockRecv(socRecv)
-	, _cloneQueue(cloneQueue)
-	, _returnQueue(returnQueue)
-	, _readTime(readTime)
-	{
-		_sbuf = "";
-	}
+	/**
+	 * \brief Constructor
+	 * \param socRecv SOCKET for reciving.
+	 * \param cloneQueue Poiner to queue of points which was send.
+	 * \param returnQueue Pointer to queue of points which recived.
+	 * \param readTime Max time delay between reciving points.
+	 */
+	RobotRecieve(SOCKET socRecv, MyQueue<T>* cloneQueue, MyQueue<T>* returnQueue, int readTime);
 };
+
+#include "RobotRecieveDifinition.hpp"
 
 #endif
