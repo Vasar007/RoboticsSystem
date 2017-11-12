@@ -5,81 +5,75 @@
 #define ROBOT_SEND
 #include "MyQueue.hpp"
 
+/**
+ * \brief Class for supporting sending to robot.
+ * \tparam T Type of cordinates.
+ */
 template<typename T>
 class RobotSend
 {
+	/**
+	 * \brief SOCKET from what we send to robot.
+	 */
 	SOCKET _sockSend;
+	
+	/**
+	 * \brief Pointer to MyQueue where stored points which is on processig on robot.
+	 */
 	MyQueue<T>* _cloneQueue;
+	
+	/**
+	 * \brief Distance in 6 dimsional space which means if diference betwin two points is greater tha it so we should send next point two times for bieng sure we was in this positin.
+	 */
 	int _acyrancy;
 
-	int sendCoord(T rc)
-	{
-		std::string str = rc.toString();
-		_cloneQueue->push(rc);
-		if (send(_sockSend, str.c_str(), str.size(), 0) == SOCKET_ERROR) 
-		{
-			closesocket(_sockSend);
-			return 1;
-		}
-		return 0;
-	}
+	/**
+	 * \brief Method for sending point and adding it to cloneQueue.
+	 * \param rc point which we send.
+	 * \return 0 if no error, else non-zero.
+	 */
+	int sendCoord(T rc);
 
 public:
+	/**
+	 * \brief Flag if was first point sent.
+	 */
 	bool _wasFirstPoint;
+	
+	/**
+	 * \brief Previous point which we send.
+	 */
 	T _prevCoord;
 
-	RobotSend(SOCKET soc, MyQueue<T> *cloneQueue, int acyrancy = 1000):
-	_sockSend(soc),_cloneQueue(cloneQueue),_acyrancy(acyrancy)
-	{
-		_wasFirstPoint = false;
-	}
+	/**
+	 * \brief Constructor.
+	 * \param soc SOCKET from which we send points.
+	 * \param cloneQueue Pointer to queue with points which in process.
+	 * \param acyrancy Distance in 6 dimsional space which means if diference betwin two points is greater tha it so we should send next point two times for bieng sure we was in this positin.
+	 */
+	RobotSend(SOCKET soc, MyQueue<T>* cloneQueue, int acyrancy = 1000);
 
-	int sendRobotCoord(T rc, bool forceSend = false) {
+	/**
+	 * \brief Function for sending point to robot.
+	 * \param rc Point which should be send to robot.
+	 * \param forceSend Flag if this point should be send in any case.
+	 * \return 0 if point was send, else 1.
+	 */
+	int sendRobotCoord(T rc, bool forceSend = false);
 
-		if (forceSend == _wasFirstPoint || _prevCoord != rc) {
+	/**
+	 * \brief Function for sending previous point to robot.
+	 * \return 0 if point was send, else 1.
+	 */
+	int sendPrevCoord();
 
-			if (_prevCoord.difference(rc) > _acyrancy || !_wasFirstPoint) 
-			{
-				sendCoord(rc);
-			}
-
-			_prevCoord = rc;
-
-			sendCoord(rc);
-			_wasFirstPoint = true;
-
-#ifdef LOCAL_DEBUG
-			std::cout << (std::string)"++++++++++++++:" + (std::string)str;
-			putchar('\n');
-#endif // LOCAL_DEBUG
-
-			return 0;
-		}
-		return 1;
-	}
-
-	int sendPrevCoord()
-	{
-		if(_wasFirstPoint)
-		{
-			sendCoord(_prevCoord);
-			return 0;
-		}
-		return 1;
-	}
-
-	int resendCloneQueue()
-	{
-		MyQueue<T> send;
-		if(!_cloneQueue->empty())
-			_cloneQueue->swap(send);
-		while(!send.empty())
-		{
-			sendRobotCoord(send.front());
-			send.pop();
-		}
-		return 0;
-	}
+	/**
+	 * \brief Function for sending points in cloneQueue(which was sended to robot but wasn't confermed there's complit)
+	 * \return 0 if points was send.
+	 */
+	int resendCloneQueue();
 };
+
+#include "RobotSendDifinition.hpp"
 
 #endif

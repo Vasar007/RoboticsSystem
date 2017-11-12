@@ -43,6 +43,12 @@
     <Filter Include="Заголовочные файлы\template difinitions\winSock">
       <UniqueIdentifier>{f4335fa8-709e-4018-8602-85e77f420825}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\RobotConnection">
+      <UniqueIdentifier>{95d1b3b2-e382-41ce-8410-831d7dc69aff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\template difinitions\RobotConnection">
+      <UniqueIdentifier>{891e73d0-5621-46e8-9116-9020b9dd591c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -62,6 +68,9 @@
     </ClCompile>
     <ClCompile Include="tcpServer.cpp">
       <Filter>Файлы исходного кода\winSock</Filter>
+    </ClCompile>
+    <ClCompile Include="RobotSend.cpp">
+      <Filter>Файлы исходного кода\RobotConnection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="tcpServerDifinition.hpp">
       <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotSendDifinition.hpp">
+      <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
