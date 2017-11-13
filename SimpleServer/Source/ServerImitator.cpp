@@ -29,7 +29,6 @@ void ServerImitator::waitLoop()
 	SOCKADDR_IN address;
 
 	SOCKET clientSocket;
-	SOCKET newSocket;
 
 	std::cout << "\n\n\nWaiting for connections...\n\n";
 
@@ -66,8 +65,9 @@ void ServerImitator::waitLoop()
 		// If something happened on the master socket, then it's an incoming connection.
 		if (FD_ISSET(_socketRecive, &_readfds))
 		{ 
-			if ((newSocket = accept(_socketRecive, reinterpret_cast<SOCKADDR*>(&address),
-				static_cast<int*>(&addrLen))) == SOCKET_ERROR)
+			SOCKET newSocket = accept(_socketRecive, reinterpret_cast<SOCKADDR*>(&address),
+			                          static_cast<int*>(&addrLen));
+			if (newSocket == SOCKET_ERROR)
 			{
 				perror("Accept failed.");
 				system("pause");
