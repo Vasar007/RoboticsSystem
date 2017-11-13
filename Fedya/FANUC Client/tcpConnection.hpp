@@ -1,80 +1,63 @@
-#pragma once
-
 #ifndef TCP_CONNECTION
-
 #define TCP_CONNECTION
+#pragma once
 
 #include <WinSock2.h>
 #include "MyQueue.hpp"
 
+/**
+ * \brief Class for processing clint.
+ * \tparam T Type of cord which we recive and send.
+ */
 template<typename T>
 class ConnectionTCP
 {
+	/**
+	 * \brief SOCKET from which we comunicate.
+	 */
 	SOCKET _soc;
-	MyQueue<T> *_sendQueue, *_reciveQueue;
+
+	/**
+	 * \brief Queue of points which we send.
+	 */
+	MyQueue<T>* _sendQueue;
+	
+	/**
+	 * \brief Queue of points which we recive.
+	 */
+	MyQueue<T>* _reciveQueue;
+	
+	/**
+	 * \brief String of resived bytes which we parse to take points.
+	 */
 	std::string _sbuf;
 
 public:
+	/**
+	 * \brief Default constructor.
+	 */
 	ConnectionTCP() = default;
 
-	ConnectionTCP(SOCKET soc, MyQueue<T> *sendQueue, MyQueue<T> *reciveQueue) :
-		_soc(soc), _sendQueue(sendQueue), _reciveQueue(reciveQueue)
-	{
+	/**
+	 * \brief Constructor for starting workig.
+	 * \param soc SOCKET for comunication.
+	 * \param sendQueue Queue for sending.
+	 * \param reciveQueue Queue for reciving.
+	 */
+	ConnectionTCP(SOCKET soc, MyQueue<T>* sendQueue, MyQueue<T>* reciveQueue);
 
-	}
-	void sendCoord()
-	{
-		if (!_sendQueue->empty())
-		{
-			std::string mes = _sendQueue->front().toString();
-			_sendQueue->pop();
-			mes += "\n";
-			send(_soc, mes.c_str(), mes.size(), 0);
-		}
-	}
-	int recvCoord()
-	{
-		char buf[256];
-		ZeroMemory(buf, 256);
-		T rc;
+	/**
+	 * \brief Function for sending font point from sending queue to client.
+	 */
+	void sendCoord();
 
-		struct timeval timeout;
-		timeout.tv_sec = 100;
-		timeout.tv_usec = 0;
-		setsockopt(_soc, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&timeout), sizeof(timeout));
-
-		ZeroMemory(buf, 256);
-		const int l = recv(_soc, buf, 255, 0);
-		if (l<=0 && errno!=0 && errno != EAGAIN && errno != EWOULDBLOCK)
-		{
-			int t = errno;
-			return -15;
-		}
-		if (l > 0)
-		{
-			_sbuf += buf;
-			int tmp = 0;
-			for (int i = 0;i < _sbuf.size() && tmp < 9;++i) {
-				if (_sbuf[i] != ' ') {
-					for (;i < _sbuf.size() && ((_sbuf[i] >= '0' && _sbuf[i] <= '9') || _sbuf[i] == '-');++i);
-					if (i < _sbuf.size() && _sbuf[i] != ' ')
-						return _sbuf[i];
-					tmp++;
-				}
-				if (tmp == 9) {
-					
-					sscanf_s(_sbuf.c_str(), "%d %d %d %d %d %d %d %d %d",
-						&rc._xr, &rc._yr, &rc._zr, &rc._uw, &rc._up, &rc._uz, &rc._segTime, &rc._typeOfMoving, &rc._control);
-					_reciveQueue->push(rc);
-					_sbuf = _sbuf.substr(i);
-					tmp = 0;
-					i = 0;
-				}
-			}
-			return 0;
-		}
-		return 1;
-	}
+	/**
+	 * \brief Function for reciving point from client and adding to recvqueue.
+	 * \return 0 if point was recived, 1 if SOCKET haven't recive any pocket, -15 if was winSock error.
+	 */
+	int recvCoord();
 };
+
+#include "tcpConnectionDifinition.hpp"
 
 #endif

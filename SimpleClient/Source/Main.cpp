@@ -8,9 +8,9 @@ int main()
 {
 	std::cout << "Simple console client by Vasar v 0.1\n" << std::endl;
 
-	const int PORT = 9999;
-	const std::string SERVER_IP = "192.168.0.101";
-	Client client(PORT, SERVER_IP);
+	const int port = 9999;
+	const std::string serverIp = "192.168.0.101";
+	Client client(port, serverIp);
 
 	client.run();
 

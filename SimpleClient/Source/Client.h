@@ -20,13 +20,13 @@ class Client : public WinsockInterface
 
 		void waitLoop() override;
 
-		std::string getServerIP() const;
+		std::string getServerIp() const;
 
 
 	public:
-		explicit Client(int port, std::string serverIP);
+		explicit Client(int port, std::string serverIp);
 
-		void setServerIP(std::string newServerIP);
+		void setServerIp(std::string newServerIp);
 		void run() override;
 };
 

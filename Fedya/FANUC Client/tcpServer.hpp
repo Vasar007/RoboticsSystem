@@ -11,12 +11,12 @@
 #pragma comment( lib, "ws2_32.lib " )
 
 
-struct addrinfo* _serverAddr;
+struct addrinfo* serverAddr;
 
 #pragma comment( lib, "ws2_32.lib " )
 
 template<typename T>
-class ServerTCP
+class ServerTcp
 {
 	SOCKET _main;
 
@@ -64,12 +64,12 @@ class ServerTCP
 		}
 		//let socket be connetable
 
-		freeaddrinfo(_serverAddr);
+		freeaddrinfo(serverAddr);
 		//cleaning addres
 		return 0;
 	}
 
-	static void tcpWorkin(std::mutex *mt, bool *f, ServerTCP *ins)
+	static void tcpWorkin(std::mutex *mt, bool *f, ServerTcp *ins)
 	{
 		while (true)
 		{
@@ -86,7 +86,7 @@ class ServerTCP
 			Sleep(10);
 		}
 	}
-	static void tcpWorkout(std::mutex *mt, bool *f, ServerTCP *ins)
+	static void tcpWorkout(std::mutex *mt, bool *f, ServerTcp *ins)
 	{
 		ins->_prevRecieve = clock();
 		while (true)
@@ -109,7 +109,7 @@ class ServerTCP
 		}
 	}
 
-	static void oneConnection(std::mutex *mt, bool *f, ServerTCP* instance, MyQueue<T> *sendQueue, MyQueue<T> *recieveQueue)
+	static void oneConnection(std::mutex *mt, bool *f, ServerTcp* instance, MyQueue<T> *sendQueue, MyQueue<T> *recieveQueue)
 	{
 		while (true)
 		{
@@ -130,12 +130,12 @@ class ServerTCP
 		}
 	}
 
-	static void paralelAccept(std::mutex *mt, bool *f, ServerTCP* instance)
+	static void paralelAccept(std::mutex *mt, bool *f, ServerTcp* instance)
 	{
 		unsigned long value = 1;
 		ioctlsocket(instance->_main, FIONBIO, &value);
 
-		fd_set s_set = { 1,{ instance->_main } };
+		fd_set sSet = { 1,{ instance->_main } };
 		timeval timeout = { instance->_timeOut / 500, 0 };
 		while (true) 
 		{
@@ -146,8 +146,8 @@ class ServerTCP
 				break;
 			}
 			mt->unlock();
-			s_set.fd_count = 1;
-			const int selectRes = select(0, &s_set, nullptr, nullptr, &timeout);
+			sSet.fd_count = 1;
+			const int selectRes = select(0, &sSet, nullptr, nullptr, &timeout);
 			if (selectRes == SOCKET_ERROR) 
 			{
 				int t = GetLastError();
@@ -169,7 +169,7 @@ class ServerTCP
 
 public:
 
-	explicit ServerTCP(int port, int timeOut) :_timeOut(timeOut)
+	explicit ServerTcp(int port, int timeOut) :_timeOut(timeOut)
 	{
 		initialise(port);
 		_contcp = nullptr;
@@ -221,7 +221,7 @@ public:
 		}
 	}
 
-	~ServerTCP()
+	~ServerTcp()
 	{
 		_paralelAccept.join();
 		_oneConnection.join();

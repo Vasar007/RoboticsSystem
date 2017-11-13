@@ -9,12 +9,12 @@ int connectToRobotServer(SOCKET ans, const char* serveraddr, int port1, int disc
 	if (ioctlsocket(ans, FIONBIO, &value) == SOCKET_ERROR)
 		return INVALID_SOCKET;
 
-	std::string serverIP = "127.0.0.1";
+	std::string serverIp = "127.0.0.1";
 
 	sockaddr_in destAddr;
 	destAddr.sin_family = AF_INET;
 	destAddr.sin_port = htons(port1);
-	inet_pton(AF_INET, serverIP.c_str(), &destAddr.sin_addr);
+	inet_pton(AF_INET, serverIp.c_str(), &destAddr.sin_addr);
 
 	// адрес сервера получен – пытаемся установить соединение 
 	if (connect(ans, reinterpret_cast<sockaddr *>(&destAddr), sizeof destAddr) == SOCKET_ERROR) {
@@ -61,7 +61,7 @@ int connectToRobotServer(SOCKET ans, const char* serveraddr, int port1, int disc
 }
 
 int main() {
-	int L;
+	int l;
 	RoboSender rs;
 	char buf[64];
 
@@ -101,8 +101,8 @@ int main() {
 
 	while (0 == 0) {
 		ZeroMemory(buf, 64);
-		L = recv(rs.getSoc(), buf, 63, 0);
-		if (L > 0)
+		l = recv(rs.getSoc(), buf, 63, 0);
+		if (l > 0)
 			std::cout << buf;
 
 		if (_kbhit()) {
