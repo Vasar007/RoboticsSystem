@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 	
 	fanuc.startMainLoop();
 
-	ServerTcp<RobotCoord> serv(7070,1000);
+	ServerTCP<RobotCoord> serv(9997,1000);
 
 	//serv.forceAccept(&fromFanucToOtherProces, &fromOtherProcesToFanuc, 1000);
 	serv.supportOneConnection(&fromFanucToOtherProces, &fromOtherProcesToFanuc);

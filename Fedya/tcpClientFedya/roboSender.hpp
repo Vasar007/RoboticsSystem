@@ -14,7 +14,7 @@
 struct RobotCoord
 {
 	int _xr, _yr, _zr, _uw, _up, _uz, _segTime, _typeOfMoving, _control;
-	bool operator != (RobotCoord rc) const
+	bool operator != (const RobotCoord& rc) const
 	{
 		return rc._control != _control ||
 			rc._segTime != _segTime ||
@@ -36,14 +36,16 @@ struct RobotCoord
 	{
 		char locBuf[128];
 		std::fill(locBuf, locBuf + 128, 0);
-		sprintf_s(locBuf, "%d %d %d %d %d %d %d %d %d ", _xr, _yr, _zr, _uw, _up, _uz, _segTime, _typeOfMoving, _control);
+		sprintf_s(locBuf, "%d %d %d %d %d %d %d %d %d ", _xr, _yr, _zr, _uw,
+				  _up, _uz, _segTime, _typeOfMoving, _control);
 		return static_cast<std::string>(locBuf);
 	}
 };//структура пакета предачи
 
 inline std::istream& operator >> (std::istream& in, RobotCoord& rc)
 {
-	in >> rc._xr >> rc._yr >> rc._zr >> rc._uw >> rc._up >> rc._uz >> rc._segTime >> rc._typeOfMoving >> rc._control;
+	in >> rc._xr >> rc._yr >> rc._zr >> rc._uw >> rc._up >> rc._uz >>
+		rc._segTime >> rc._typeOfMoving >> rc._control;
 	return in;
 }
 
@@ -72,7 +74,8 @@ public:
 			destAddr.sin_port = htons(port);
 			inet_pton(AF_INET, serverIp.c_str(), &destAddr.sin_addr);
 
-			if (connect(_soc, reinterpret_cast<sockaddr *>(&destAddr), sizeof destAddr) == SOCKET_ERROR)
+			if (connect(_soc, reinterpret_cast<sockaddr *>(&destAddr), sizeof destAddr) ==
+				SOCKET_ERROR)
 			{
 				std::cout << "connect error: " << WSAGetLastError() << '\n';
 				closesocket(_soc);
@@ -81,10 +84,12 @@ public:
 			}
 			else
 			{
-				struct timeval timeout;
+
+				timeval timeout;
 				timeout.tv_sec = 100;
 				timeout.tv_usec = 0;
-				setsockopt(_soc, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&timeout), sizeof(timeout));
+				setsockopt(_soc, SOL_SOCKET, SO_RCVTIMEO, 
+						   reinterpret_cast<char*>(&timeout), sizeof(timeout));
 				_valid = true;
 			}
 		}
@@ -102,7 +107,7 @@ public:
 		return INVALID_SOCKET;
 	}//вернуть сокет
 
-	void sendCoord(RobotCoord rc)
+	void sendCoord(const RobotCoord& rc)
 	{
 		if (_valid)
 		{
