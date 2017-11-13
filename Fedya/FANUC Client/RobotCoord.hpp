@@ -26,7 +26,7 @@ struct RobotCoord
 	}
 
 	//рассчет модуля вектора между кординатами
-	double difference(RobotCoord rc) const
+	double difference(const RobotCoord& rc) const
 	{
 		return sqrt((_xr - rc._xr)*(_xr - rc._xr) +
 			(_yr - rc._yr)*(_yr - rc._yr) +

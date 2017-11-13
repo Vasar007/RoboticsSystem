@@ -15,15 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Server.cpp">
+    <ClCompile Include="Source\Main.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Main.cpp">
+    <ClCompile Include="Source\ServerImitator.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Server.h">
+    <ClInclude Include="Source\ServerImitator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

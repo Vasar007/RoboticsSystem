@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FANUC Client", "FANUC Client\FANUC Client.vcxproj", "{F4A2744E-BAA8-438F-B935-134946ADEFFD}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B3E88421-B083-46B5-B5CE-CFFB120D252D} = {B3E88421-B083-46B5-B5CE-CFFB120D252D}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "echo_fedya", "..\echo_fedya\ConsoleApplication1\ConsoleApplication1.vcxproj", "{B3E88421-B083-46B5-B5CE-CFFB120D252D}"
 EndProject

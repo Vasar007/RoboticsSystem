@@ -6,11 +6,11 @@
 
 int main()
 {
-	std::cout << "Simple console client by Vasar v 0.1\n" << std::endl;
+	std::cout << "Console client for connecting to FanucM20iA v 0.1\n\\n";
 
-	const int PORT = 9999;
+	const int SERVER_PORT		= 9997;
 	const std::string SERVER_IP = "192.168.0.101";
-	Client client(PORT, SERVER_IP);
+	Client client(SERVER_PORT, SERVER_IP);
 
 	client.run();
 

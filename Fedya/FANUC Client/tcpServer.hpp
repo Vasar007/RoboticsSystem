@@ -13,8 +13,6 @@
 
 struct addrinfo* _serverAddr;
 
-#pragma comment( lib, "ws2_32.lib " )
-
 template<typename T>
 class ServerTCP
 {
@@ -102,8 +100,8 @@ class ServerTCP
 			if (ins->_contcp->recvCoord() == 0)
 				ins->_prevRecieve = clock();
 
-			if (clock() - ins->_prevRecieve > ins->_timeOut)
-				ins->_connected = false;
+			//if (clock() - ins->_prevRecieve > ins->_timeOut)
+			//	ins->_connected = false;
 
 			Sleep(10);
 		}
@@ -159,6 +157,7 @@ class ServerTCP
 				int sizeofNsa = sizeof(nsa);
 
 				const SOCKET connectedSocket = accept(instance->_main, reinterpret_cast<SOCKADDR *>(&nsa), &sizeofNsa);
+			
 				if (connectedSocket == INVALID_SOCKET)
 					continue;
 				instance->_socketConnectionsQueue.push(connectedSocket);

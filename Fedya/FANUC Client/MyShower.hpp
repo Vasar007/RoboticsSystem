@@ -43,7 +43,7 @@ namespace myInterface
 	public:
 
 		//метод добавления строки в интерфейс
-		int addField(Field field)
+		int addField(const Field& field)
 		{
 			_mt.lock();
 			_list[++_pos] = field;

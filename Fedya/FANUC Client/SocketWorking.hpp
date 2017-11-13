@@ -69,7 +69,7 @@ public:
 	{
 		if (!_isInitialised)
 			initialise();
-		const SOCKET ans = socket(AF_INET, SOCK_STREAM, 0);
+		const SOCKET ans = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		return ans;
 	}
 
@@ -87,6 +87,7 @@ public:
 		if (!_isInitialised)
 			initialise();
 		const SOCKET ans = getFreeSocket();
+
 		unsigned long value = 1;
 		if (ioctlsocket(ans, FIONBIO, &value) == SOCKET_ERROR)
 			return INVALID_SOCKET;
@@ -94,7 +95,8 @@ public:
 		sockaddr_in destAddr;
 		destAddr.sin_family = AF_INET;
 		destAddr.sin_port = htons(port);
-		destAddr.sin_addr.s_addr = inet_addr(serveraddr);
+		//destAddr.sin_addr.s_addr = inet_addr(serveraddr);
+		inet_pton(AF_INET, serveraddr, &destAddr.sin_addr);
 
 		// адрес сервера получен Ц пытаемс€ установить соединение 
 		if (connect(ans, reinterpret_cast<sockaddr *>(&destAddr), sizeof destAddr) == SOCKET_ERROR) {
@@ -125,7 +127,22 @@ public:
 					return INVALID_SOCKET;
 				}
 				if (FD_ISSET(ans, &write))
+				{
+					char* message = new char[1024];
+					memset(message, 0, 1024);
+
+					// Get IP address back and print it.
+					inet_ntop(AF_INET, &destAddr.sin_addr, message, INET_ADDRSTRLEN);
+
+					// Inform user of socket number Ч used in send and receive commands.
+					std::cout << "New connection, socket fd is " << ans << ", ip is: " <<
+						message << ", port: " << ntohs(destAddr.sin_port) << '\n';
+
+					volatile auto mes = message;
+					volatile auto por = ntohs(destAddr.sin_port);
+
 					return ans;
+				}
 
 				if (FD_ISSET(ans, &err)) {
 					WSASetLastError(result);
@@ -137,6 +154,7 @@ public:
 				return INVALID_SOCKET;
 			}
 		}
+
 		return ans;
 	}
 

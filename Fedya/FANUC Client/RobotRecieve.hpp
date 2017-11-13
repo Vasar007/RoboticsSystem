@@ -1,8 +1,7 @@
+#ifndef ROBOT_RECIEVE
+#define ROBOT_RECIEVE
 #pragma once
 
-#ifndef ROBOT_RECIEVE
-
-#define ROBOT_RECIEVE
 #include <fstream>
 
 std::ofstream out("logs2.txt");
@@ -26,15 +25,17 @@ public:
 		ZeroMemory(recvbuf, 128);
 		T rc;
 
-		struct timeval timeout;
+		timeval timeout;
 		timeout.tv_sec = _readTime;
 		timeout.tv_usec = 0;
 		setsockopt(_sockRecv, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&timeout), sizeof timeout); //дл€ unix-систем убрать (char*)
 
 		const int iResult = recv(_sockRecv, recvbuf, 127, 0);
-
-		if (iResult <= 0)  // ƒан€, ты этот кусок не мен€л, € заметил!!! Ёто же € его писал :D
+		// ј вот тут и не работает
+		if (iResult <= 0)  
 		{
+			std::cout << "recv failed with error code: " << WSAGetLastError() << std::endl;
+
 			if (errno != EAGAIN && errno != EWOULDBLOCK)
 			{
 				return -15;
@@ -42,22 +43,8 @@ public:
 		}
 		else
 		{
-
 			_sbuf += recvbuf;
-#ifdef WITH_COSTUL_SHOULD_REMOVE
-
-			if((std::string(recvbuf)).size() == 38)
-			{
-				sscanf_s(_sbuf.c_str(), "%d %d %d %d %d %d %d", &rc._xr, &rc._yr, &rc._zr, &rc._uw, &rc._up, &rc._uz, &rc._segTime);
-				_sbuf = "";
-				rc._typeOfMoving = 0;
-				rc._control = 0;
-				if (!_cloneQueue->empty()) {
-					_cloneQueue->pop();
-				}
-				_returnQueue->push(rc);
-			}
-#endif
+			myInterface::MyShower::getInstance().show(_sbuf);
 			int coordsNumber = 0;
 			for (int i = 0;i < _sbuf.size();i++) 
 			{
@@ -113,9 +100,9 @@ public:
 	: _sockRecv(socRecv)
 	, _cloneQueue(cloneQueue)
 	, _returnQueue(returnQueue)
+	, _sbuf()
 	, _readTime(readTime)
 	{
-		_sbuf = "";
 	}
 };
 
