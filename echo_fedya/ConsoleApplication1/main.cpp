@@ -14,15 +14,15 @@
 #pragma comment( lib, "ws2_32.lib " )
 
 
-bool f = true;
+bool flag = true;
 
-void go(SOCKET stGet, SOCKET stSend)
+void go(const SOCKET& stSend, const SOCKET& stGet)
 {
 	char buf[256];
 	std::string sbuf;
 	bool was = false;
 
-	struct timeval timeout;
+	timeval timeout;
 	timeout.tv_sec = 100;
 	timeout.tv_usec = 0;
 	setsockopt(stGet, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&timeout), sizeof(timeout));
@@ -35,12 +35,13 @@ void go(SOCKET stGet, SOCKET stSend)
 				break;
 			if (c == '-')
 			{
-				f = false;
+				flag = false;
 				break;
 			}
 		}
 
-		setsockopt(stGet, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&timeout), sizeof(timeout));
+		setsockopt(stGet, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&timeout),
+			sizeof(timeout));
 		ZeroMemory(buf, 256);
 		int L = recv(stGet, buf, 255, 0);
 		sbuf += buf;
@@ -61,7 +62,8 @@ void go(SOCKET stGet, SOCKET stSend)
 				{
 					if (tmp != 7 && tmp != 8)
 						str += " ";
-					for (i; i < sbuf.size() && ((sbuf[i] >= '0' && sbuf[i] <= '9') || sbuf[i] == '-'); i++)
+					for (i; i < sbuf.size() && ((sbuf[i] >= '0' && sbuf[i] <= '9') 
+						|| sbuf[i] == '-'); i++)
 					{
 						if (tmp != 7 && tmp != 8)
 							str += sbuf[i];
@@ -76,7 +78,7 @@ void go(SOCKET stGet, SOCKET stSend)
 					send(stSend, str.c_str(), str.size(), 0);
 					tmp = 0;
 					i = 0;
-					str = "";
+					str.clear();
 				}
 			}
 		}
@@ -102,7 +104,7 @@ int initialise(SOCKET& soc, int port1)
 	dest_addr.sin_port = htons(port1);
 	dest_addr.sin_addr.s_addr = INADDR_ANY;
 
-	if (bind(soc, reinterpret_cast<sockaddr *>(&dest_addr), sizeof(dest_addr)) < 0)
+	if (bind(soc, reinterpret_cast<sockaddr*>(&dest_addr), sizeof(dest_addr)) < 0)
 	{
 		closesocket(soc);
 		soc = INVALID_SOCKET;
@@ -117,7 +119,7 @@ int initialise(SOCKET& soc, int port1)
 		soc = INVALID_SOCKET;
 		return WSAGetLastError();
 	}
-	//let socket be connetable
+	//let socket be connectable
 
 	freeaddrinfo(server_addr);
 	//cleaning addres
@@ -156,9 +158,9 @@ int main() {
 	sockaddr_in dest_addr;
 	int tvp = sizeof(dest_addr);
 
-	std::thread th;
+	//std::thread th;
 
-	while (f)
+	while (flag)
 	{
 		SOCKET st1 = INVALID_SOCKET;
 		SOCKET st2 = INVALID_SOCKET;
@@ -167,11 +169,13 @@ int main() {
 
 		std::cout << "+1\n";
 
-		go(st1, st2);
+		go(st2, st1);
 	}
 
 	closesocket(soc1);
 	closesocket(soc2);
 	WSACleanup();
 	//cleaning
+
+	return 0;
 }

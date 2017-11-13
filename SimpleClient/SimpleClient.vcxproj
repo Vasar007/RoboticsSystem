@@ -79,7 +79,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\Users\vasar\Documents\Visual Studio 2017\Projects\FANUC\SimpleWinsockInterface\Source</AdditionalIncludeDirectories>
@@ -87,7 +87,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -115,9 +115,11 @@
   <ItemGroup>
     <ClCompile Include="Source\Client.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\RobotData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Client.h" />
+    <ClInclude Include="Source\RobotData.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleWinsockInterface\SimpleWinsockInterface.vcxproj">

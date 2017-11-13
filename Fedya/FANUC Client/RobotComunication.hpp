@@ -153,7 +153,10 @@ class RobotConnect
 			{
 				const std::pair<bool, RobotCoord> tryPull = ins->_sendingQueue->pull();
 				if (tryPull.first)
+				{
+					//std::cout << "1\n";
 					ins->_robotSend->sendRobotCoord(tryPull.second);//отправляем буфер
+				}
 			}
 			mt->lock();
 			if (!(*f)) 
@@ -252,7 +255,7 @@ class RobotConnect
 	{
 		ins->tryConnect();
 
-		while(0==0)
+		while(true)
 		{
 			mt->lock();
 			if(!*f)
@@ -278,7 +281,7 @@ public:
 	bool _forcedRestart;
 
 	RobotConnect(std::string configFileName, MyQueue<T> *sendingQueue, MyQueue<T> *recivingQueue):
-	_sendingQueue(sendingQueue),_recivingQueue(recivingQueue)
+	_sendingQueue(sendingQueue),_recivingQueue(recivingQueue),_cloneQueue("cloneQueue")
 	{
 		_portr = _disconnectTime1 = _disconnectTime2 = _ports = _robotSpeed = _segtime = 
 		_syscoord = -1;

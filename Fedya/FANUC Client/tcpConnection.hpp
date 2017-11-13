@@ -32,6 +32,7 @@ public:
 			send(_soc, mes.c_str(), mes.size(), 0);
 		}
 	}
+
 	int recvCoord()
 	{
 		char buf[256];
@@ -39,7 +40,7 @@ public:
 		T rc;
 
 		struct timeval timeout;
-		timeout.tv_sec = 100;
+		timeout.tv_sec = 1000;
 		timeout.tv_usec = 0;
 		setsockopt(_soc, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&timeout), sizeof(timeout));
 

@@ -2,57 +2,58 @@
 
 #include <iostream>
 #include <thread>
+#include <string>
 
 
-Client::Client(int port, std::string serverIP)
+Client::Client(const int serverPort, const std::string& serverIP)
 : WinsockInterface()
 , _serverIP(serverIP)
 {
-	tryConnect(port);
-	sendData("2580");
+	tryConnect(serverPort, serverIP, _socketSend, _socketSendAddress);
+	setTimeout(_socketSend, 100, 0);
 }
 
-bool Client::tryConnect(int port)
+void Client::setTimeout(const SOCKET& socketForSetting, long seconds, long microseconds) const
 {
-	// Set socket settings.
-	const char* serverIP = _serverIP.c_str();
-
-	_serverAddress.sin_family = AF_INET;
-	_serverAddress.sin_port = htons(port);
-	inet_pton(AF_INET, serverIP, &_serverAddress.sin_addr);
-
-	// The connection to the server.
-	if (connect(_masterSocket, reinterpret_cast<sockaddr*>(&_serverAddress),
-		sizeof(_serverAddress)) == SOCKET_ERROR)
-	{
-		std::cout << "\nConnection to server was failed." << std::endl;
-		return false;
-		//system("pause");
-		//exit(ErrorTypes::FAILED_CONNECT);
-	}
-	std::cout << "Connected successfully.\n" << std::endl;
-	return true;
+	TIMEVAL timeout;
+	timeout.tv_sec  = seconds;
+	timeout.tv_usec = microseconds;
+	setsockopt(socketForSetting, SOL_SOCKET, SO_RCVTIMEO,
+			   reinterpret_cast<char*>(&timeout), sizeof(timeout));
 }
 
 void Client::waitLoop()
 {
-	int addrlen = sizeof(struct sockaddr_in);
+	int addrlen = sizeof(SOCKADDR_IN);
 
-	char* message = new char[_MAXRECV];
+	SOCKADDR_IN address;
 
-	sockaddr_in address;
+	//RobotData robotData;
+
+	RobotData robotDataDefault;
+	robotDataDefault.mValues = { 985000, 0, 940000, -180000 , 0, 0 };
+	robotDataDefault.mParameters = { 10, 0, 0 };
+
+	sendData(_socketSend, robotDataDefault.toString());
+
+	robotDataDefault.mValues[0] += 10000;
+	robotDataDefault.mValues[1] += 10000;
+	robotDataDefault.mValues[2] += 10000;
+
+	
+	sendData(_socketSend, robotDataDefault.toString());
 
 	std::cout << "\n\n\nWaiting for reply...\n\n";
 
 	while (true)
 	{
-		memset(message, 0, _MAXRECV);
+		memset(_message, 0, _MAXRECV);
 
 		// Get details of the client.
-		getpeername(_masterSocket, reinterpret_cast<sockaddr*>(&address),
-			static_cast<int*>(&addrlen));
+		getpeername(_socketSend, reinterpret_cast<SOCKADDR*>(&address),
+					static_cast<int*>(&addrlen));
 
-		int valRead = recv(_masterSocket, _buffer, _MAXRECV, 0);
+		int valRead = recv(_socketSend, _buffer, _MAXRECV, 0);
 
 		if (valRead == SOCKET_ERROR)
 		{
@@ -60,9 +61,10 @@ void Client::waitLoop()
 			if (error_code == WSAECONNRESET)
 			{
 				// Get IP address back and print it.
-				inet_ntop(AF_INET, &address.sin_addr, message, INET_ADDRSTRLEN);
+				inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
+
 				// Somebody disconnected, get his details and print.
-				std::cout << "Server disconnected unexpectedly, ip " << message << " , port " <<
+				std::cout << "Server disconnected unexpectedly, ip " << _message << " , port " <<
 					ntohs(address.sin_port) << '\n';
 
 				_isRunning = false;
@@ -76,25 +78,39 @@ void Client::waitLoop()
 		if (valRead == 0)
 		{
 			// Get IP address back and print it.
-			inet_ntop(AF_INET, &address.sin_addr, message, INET_ADDRSTRLEN);
+			inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
+
 			// Somebody disconnected, get his details and print.
-			std::cout << "Server disconnected, ip " << message << " , port " <<
+			std::cout << "Server disconnected, ip " << _message << " , port " <<
 				ntohs(address.sin_port) << '\n';
 		}
 
 		// Echo back the message that came in.
-		else
+		else if (valRead > 0)
 		{
 			// Add null character, if you want to use with printf/puts or other string 
 			// handling functions.
 			_buffer[valRead] = '\0';
+
 			// Get IP address back and print it.
-			inet_ntop(AF_INET, &address.sin_addr, message, INET_ADDRSTRLEN);
-			std::cout << message << ":" << ntohs(address.sin_port) << " - " << _buffer << '\n';
-			send(_masterSocket, _buffer, valRead, 0);
+			inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
+			std::cout << _message << ":" << ntohs(address.sin_port) << " - " << _buffer << '\n';
+
+			std::cout << _buffer << '\n';
+			//send(_socketSend, _buffer, valRead, 0);
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		//std::cin >> robotData;
+
+		//std::string temp = "985000 0 940000 180000 0 0 10 0 0 ";
+
+		robotDataDefault.mValues[0] += 10000;
+		robotDataDefault.mValues[1] += 10000;
+		robotDataDefault.mValues[2] += 10000;
+
+		sendData(_socketSend, robotDataDefault.toString()); //robotData.toString()
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 	}
 }
 
@@ -103,19 +119,19 @@ std::string Client::getServerIP() const
 	return _serverIP;
 }
 
-void Client::setServerIP(std::string newServerIP)
+void Client::setServerIP(const std::string& newServerIP)
 {
 	_serverIP = newServerIP;
 }
 
-void Client::tryReconnect(int port)
+void Client::tryReconnect(const int port)
 {
 	while (!_isRunning)
 	{
-		closesocket(_masterSocket);
+		closesocket(_socketSend);
 
-		initSocket();
-		_isRunning = tryConnect(port);
+		initSocket(_socketSend);
+		_isRunning = tryConnect(port, _serverIP, _socketSend, _socketSendAddress);
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	}

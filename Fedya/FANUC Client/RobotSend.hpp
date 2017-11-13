@@ -15,6 +15,8 @@ class RobotSend
 	int sendCoord(T rc)
 	{
 		std::string str = rc.toString();
+		//myInterface::MyShower::getInstance().show(str);
+
 		_cloneQueue->push(rc);
 		if (send(_sockSend, str.c_str(), str.size(), 0) == SOCKET_ERROR) 
 		{
