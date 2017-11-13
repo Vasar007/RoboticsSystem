@@ -2,6 +2,8 @@
 #define ROBOT_SEND
 #pragma once
 
+#include <winsock2.h>
+
 #include "MyQueue.hpp"
 
 /**

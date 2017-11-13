@@ -75,6 +75,9 @@
     <ClCompile Include="RobotRecieve.cpp">
       <Filter>Файлы исходного кода\RobotConnection</Filter>
     </ClCompile>
+    <ClCompile Include="RobotComunication.cpp">
+      <Filter>Файлы исходного кода\RobotConnection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Field.hpp">
@@ -129,6 +132,9 @@
       <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
     </ClInclude>
     <ClInclude Include="RobotRecieveDifinition.hpp">
+      <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotComunicationDifinition.hpp">
       <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
     </ClInclude>
   </ItemGroup>

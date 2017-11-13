@@ -2,6 +2,8 @@
 #define ROBOT_RECIEVE_DIFINITION
 #pragma once
 
+#include "MyQueue.hpp"
+
 template <typename T>
 int RobotRecieve<T>::readCoord()
 {

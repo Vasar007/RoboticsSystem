@@ -1,9 +1,7 @@
 // Пример непростого TCP клиента
 
-#define WINSOCK_DEPRECATED_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN
 
-#define WITH_COSTUL_SHOULD_REMOVE
 
 #define WITHOUT_POINTS_SAVER
 //#define WITHOUT_INTERFACE

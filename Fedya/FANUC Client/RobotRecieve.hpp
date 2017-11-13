@@ -2,7 +2,11 @@
 #define ROBOT_RECIEVE
 #pragma once
 
+
+#include <winsock2.h>
+
 #include "MyQueue.hpp"
+
 
 /**
  * \brief Class for aupprting reciving points from robot.

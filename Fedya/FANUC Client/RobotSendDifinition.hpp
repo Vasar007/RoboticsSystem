@@ -2,6 +2,8 @@
 #define ROBOT_SEND_DIFINITION
 #pragma once
 
+#include "MyQueue.hpp"
+
 template <typename T>
 int RobotSend<T>::sendCoord(T rc)
 {
