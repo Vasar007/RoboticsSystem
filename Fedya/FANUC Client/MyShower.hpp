@@ -112,5 +112,6 @@ namespace myInterface
 	};
 }
 
-	//*/
+#include "MyShowerDifinition.hpp"
+
 #endif

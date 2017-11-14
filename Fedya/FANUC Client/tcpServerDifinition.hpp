@@ -8,7 +8,7 @@
 static addrinfo* serverAddr22;
 
 template <typename T>
-int ServerTcp<T>::initialise(int port)
+int ServerTCP<T>::initialise(int port)
 {
 	_main = SocketWorking::getInstance().getFreeSocket();
 	if (_main == INVALID_SOCKET)
@@ -46,7 +46,7 @@ int ServerTcp<T>::initialise(int port)
 }
 
 template <typename T>
-void ServerTcp<T>::tcpWorkin(std::mutex* mt, bool* f, ServerTcp* ins)
+void ServerTCP<T>::tcpWorkin(std::mutex* mt, bool* f, ServerTCP* ins)
 {
 	while (true)
 	{
@@ -65,7 +65,7 @@ void ServerTcp<T>::tcpWorkin(std::mutex* mt, bool* f, ServerTcp* ins)
 }
 
 template <typename T>
-void ServerTcp<T>::tcpWorkout(std::mutex* mt, bool* f, ServerTcp* ins)
+void ServerTCP<T>::tcpWorkout(std::mutex* mt, bool* f, ServerTCP* ins)
 {
 	ins->_prevRecieve = clock();
 	while (true)
@@ -89,7 +89,7 @@ void ServerTcp<T>::tcpWorkout(std::mutex* mt, bool* f, ServerTcp* ins)
 }
 
 template <typename T>
-void ServerTcp<T>::oneConnection(std::mutex* mt, bool* f, ServerTcp* instance, MyQueue<T>* sendQueue,
+void ServerTCP<T>::oneConnection(std::mutex* mt, bool* f, ServerTCP* instance, MyQueue<T>* sendQueue,
 	MyQueue<T>* recieveQueue)
 {
 	while (true)
@@ -112,7 +112,7 @@ void ServerTcp<T>::oneConnection(std::mutex* mt, bool* f, ServerTcp* instance, M
 }
 
 template <typename T>
-void ServerTcp<T>::paralelAccept(std::mutex* mt, bool* f, ServerTcp* instance)
+void ServerTCP<T>::paralelAccept(std::mutex* mt, bool* f, ServerTCP* instance)
 {
 	unsigned long value = 1;
 	ioctlsocket(instance->_main, FIONBIO, &value);
@@ -150,7 +150,7 @@ void ServerTcp<T>::paralelAccept(std::mutex* mt, bool* f, ServerTcp* instance)
 }
 
 template <typename T>
-ServerTcp<T>::ServerTcp(int port, int timeOut) : _timeOut(timeOut)
+ServerTCP<T>::ServerTCP(int port, int timeOut) : _timeOut(timeOut)
 {
 	initialise(port);
 	_contcp = nullptr;
@@ -158,7 +158,7 @@ ServerTcp<T>::ServerTcp(int port, int timeOut) : _timeOut(timeOut)
 }
 
 template <typename T>
-int ServerTcp<T>::tryAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
+int ServerTCP<T>::tryAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 {
 	if (!_socketConnectionsQueue.empty())
 	{
@@ -173,7 +173,7 @@ int ServerTcp<T>::tryAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 }
 
 template <typename T>
-int ServerTcp<T>::forceAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
+int ServerTCP<T>::forceAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 {
 	while (_socketConnectionsQueue.empty())
 	{
@@ -188,13 +188,13 @@ int ServerTcp<T>::forceAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 }
 
 template <typename T>
-void ServerTcp<T>::supportOneConnection(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
+void ServerTCP<T>::supportOneConnection(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 {
 	_oneConnection.startThread(oneConnection, this, sendQueue, recieveQueue);
 }
 
 template <typename T>
-void ServerTcp<T>::closeServer()
+void ServerTCP<T>::closeServer()
 {
 	_conSocketWorkin.join();
 	_conSocketWorkout.join();
@@ -206,7 +206,7 @@ void ServerTcp<T>::closeServer()
 }
 
 template <typename T>
-ServerTcp<T>::~ServerTcp()
+ServerTCP<T>::~ServerTCP()
 {
 	_paralelAccept.join();
 	_oneConnection.join();

@@ -49,6 +49,12 @@
     <Filter Include="Заголовочные файлы\template difinitions\RobotConnection">
       <UniqueIdentifier>{891e73d0-5621-46e8-9116-9020b9dd591c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Заголовочные файлы\template difinitions\ConsoleInterface">
+      <UniqueIdentifier>{02f3ccb7-4094-4251-9129-05ae5c360bab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\ConsoleInterface">
+      <UniqueIdentifier>{2a30c8b9-7a09-418e-a5a1-d9a310481c54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -77,6 +83,12 @@
     </ClCompile>
     <ClCompile Include="RobotComunication.cpp">
       <Filter>Файлы исходного кода\RobotConnection</Filter>
+    </ClCompile>
+    <ClCompile Include="Filed.cpp">
+      <Filter>Файлы исходного кода\ConsoleInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="MyShower.cpp">
+      <Filter>Файлы исходного кода\ConsoleInterface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +148,12 @@
     </ClInclude>
     <ClInclude Include="RobotComunicationDifinition.hpp">
       <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
+    </ClInclude>
+    <ClInclude Include="FiledDifinition.hpp">
+      <Filter>Заголовочные файлы\template difinitions\ConsoleInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="MyShowerDifinition.hpp">
+      <Filter>Заголовочные файлы\template difinitions\ConsoleInterface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

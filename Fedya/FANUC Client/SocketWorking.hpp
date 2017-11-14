@@ -54,7 +54,6 @@ public:
 	 * \return New SOCKET.
 	 */
 	SOCKET getFreeSocket();
-				}
 
 	/**
 	 * \brief Method for deleting SOCKET.

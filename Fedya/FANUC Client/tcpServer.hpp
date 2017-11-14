@@ -12,7 +12,7 @@
  * \tparam T Type of cordinates for comunication.
  */
 template<typename T>
-class ServerTcp
+class ServerTCP
 {
 	/**
 	 * \brief Main SOCKET for binding.
@@ -77,7 +77,7 @@ class ServerTcp
 	 * \param f Flag for ending thread.
 	 * \param ins Instance of this class.
 	 */
-	static void tcpWorkin(std::mutex* mt, bool* f, ServerTcp* ins);
+	static void tcpWorkin(std::mutex* mt, bool* f, ServerTCP* ins);
 
 	/**
 	 * \brief Static function for paralel sending points
@@ -85,7 +85,7 @@ class ServerTcp
 	 * \param f Flag for ending thread.
 	 * \param ins Instance of this class.
 	 */
-	static void tcpWorkout(std::mutex* mt, bool* f, ServerTcp* ins);
+	static void tcpWorkout(std::mutex* mt, bool* f, ServerTCP* ins);
 
 	/**
 	 * \brief Static function for supporting oneactual connection.
@@ -95,7 +95,7 @@ class ServerTcp
 	 * \param sendQueue Pointer to Queue of sending points.
 	 * \param recieveQueue Pointer to queue of reciving points.
 	 */
-	static void oneConnection(std::mutex* mt, bool* f, ServerTcp* instance, MyQueue<T>* sendQueue,
+	static void oneConnection(std::mutex* mt, bool* f, ServerTCP* instance, MyQueue<T>* sendQueue,
 	                          MyQueue<T>* recieveQueue);
 
 	/**
@@ -104,7 +104,7 @@ class ServerTcp
 	 * \param f Flag for ending thread.
 	 * \param instance Instance of this class.
 	 */
-	static void paralelAccept(std::mutex* mt, bool* f, ServerTcp* instance);
+	static void paralelAccept(std::mutex* mt, bool* f, ServerTCP* instance);
 
 public:
 
@@ -113,7 +113,7 @@ public:
 	 * \param port Port for finding new clients.
 	 * \param timeOut Time for checking new points.
 	 */
-	explicit ServerTcp(int port, int timeOut);
+	explicit ServerTCP(int port, int timeOut);
 
 	/**
 	 * \brief Method for trying to accept any connection.
@@ -146,7 +146,7 @@ public:
 	/**
 	 * \brief Default destructor.
 	 */
-	~ServerTcp();
+	~ServerTCP();
 };
 
 #include "tcpServerDifinition.hpp"

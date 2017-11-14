@@ -103,7 +103,7 @@ int initialise(SOCKET& soc, int port1)
 	destAddr.sin_port = htons(port1);
 	destAddr.sin_addr.s_addr = INADDR_ANY;
 
-	if (bind(soc, reinterpret_cast<sockaddr*>(&dest_addr), sizeof(dest_addr)) < 0)
+	if (bind(soc, reinterpret_cast<sockaddr*>(&destAddr), sizeof(destAddr)) < 0)
 	{
 		closesocket(soc);
 		soc = INVALID_SOCKET;

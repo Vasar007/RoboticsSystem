@@ -7,7 +7,7 @@
 
 Client::Client(const int serverPort, const std::string& serverIP)
 : WinsockInterface()
-, _serverIP(serverIp)
+, _serverIP(serverIP)
 {
 	tryConnect(serverPort, serverIP, _socketSend, _socketSendAddress);
 	setTimeout(_socketSend, 100, 0);
@@ -114,14 +114,14 @@ void Client::waitLoop()
 	}
 }
 
-std::string Client::getServerIp() const
+std::string Client::getServerIP() const
 {
 	return _serverIP;
 }
 
 void Client::setServerIP(const std::string& newServerIP)
 {
-	_serverIP = newServerIp;
+	_serverIP = newServerIP;
 }
 
 void Client::tryReconnect(const int port)

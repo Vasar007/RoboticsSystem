@@ -1,6 +1,7 @@
 #include "SocketWorking.hpp"
 
 #include<Ws2tcpip.h>
+#include <winsock2.h>
 #include<iostream>
 
 SocketWorking::SocketWorking()

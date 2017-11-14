@@ -6,72 +6,70 @@
 #include <string>
 #include <vector>
 #include <Windows.h>
-#include <iostream>
 
+/**
+ * \brief 
+ */
 namespace myInterface 
 {
-	//струтура одной строки интерфейса
-	//текст и (число или строка из массива строк)
-	struct Field
+	/**
+	 * \brief Class of filed showing.
+	 */
+	class Field
 	{
+		/**
+		 * \brief Discription of this field.
+		 */
 		std::string _mes;
+		
+		/**
+		 * \brief Pointer to int for showing
+		 */
 		int* _val;
+		
+		/**
+		 * \brief Vector of strings for showing.
+		 */
 		std::vector<std::string> _param;
 
+	public:
+
+		/**
+		 * \brief Default constructor.
+		 */
 		Field() = default;
-		
-		Field(std::string mes, int* num) 
-		: _mes(mes)
-		, _val(num)
-		{
-		}
 
-		Field(std::string mes, int* num, std::vector<std::string> var) 
-		: _mes(mes)
-		, _val(num)
-		, _param(var)
-		{
-		}
+		/**
+		 * \brief Constructor for showing number.
+		 * \param mes String with discription of this field.
+		 * \param num Pointer to unt for showing.
+		 */
+		Field(std::string mes, int* num);
 
-		//функция быстрого обовления параметра
-		void showQuick(HANDLE hconsole, int line) const
-		{
-			COORD coord;
-			coord.X = _mes.size() + 1;
-			coord.Y = line;
-			SetConsoleCursorPosition(hconsole, coord);
-			if (_param.size() == 0)
-			{
-				printf("%d         ", *_val);
-			}
-			else if (*_val >= 0 && *_val <= _param.size())
-			{
-				printf("%s         ", _param[*_val].c_str());
-			}
-			else
-			{
-				printf("-1              ");
-			}
+		/**
+		 * \brief Constructor with strings for field.
+		 * \param mes String with discription of field.
+		 * \param num Pointer to int for sowing.
+		 * \param var Vector of strings for showing.
+		 */
+		Field(std::string mes, int* num, std::vector<std::string> var);
 
-		}
+		/**
+		 * \brief Method for "quick" ouputting this field.
+		 * \param hconsole HANDLE of console.
+		 * \param line Number of this field.
+		 */
+		void showQuick(HANDLE hconsole, int line) const;
 
-		//функция обновления строки
-		void show() const
-		{
-			if (_param.size() == 0)
-			{
-				std::cout << _mes << " " << *_val << "\n";
-			}
-			else if (*_val >= 0 && *_val <= _param.size())
-			{
-				std::cout << _mes << " " << _param[*_val] << "\n";
-			}
-			else
-			{
-				std::cout << _mes << " -1\n";
-			}
-		}
+		/**
+		 * \brief Method for outputting this field.
+		 */
+		void show() const;
 	};
+
+	
 }
-//*/
+
+#include "FiledDifinition.hpp"
+
 #endif

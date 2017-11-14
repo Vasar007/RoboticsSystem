@@ -44,7 +44,7 @@ void WinsockInterface::initWinsock(WSADATA& wsaData) const
 	{
 		std::cout << "\n\nFAILED. ERROR CODE: " << WSAGetLastError() << std::endl;
 		system("pause");
-		exit(ErrorType::failedInitializeWsdata);
+		exit(ErrorType::FAILED_INITIALIZE_WSDATA);
 	}
 
 	std::cout << " done.\n";
@@ -61,7 +61,7 @@ void WinsockInterface::initSocket(SOCKET& socketForInit, const int aiProtocol) c
 	{
 		std::cout << "\nCOULD NOT CREATE SOCKET." << std::endl;
 		system("pause");
-		exit(ErrorType::failedCreateSocket);
+		exit(ErrorType::FAILED_CREATE_SOCKET);
 	}
 
 	std::cout << "Socket created.\n";
@@ -84,7 +84,7 @@ void WinsockInterface::bindSocket(const SOCKET& socketForBind, SOCKADDR_IN& sock
 	{
 		std::cout << "\nBIND FAILED." << std::endl;
 		system("pause");
-		exit(ErrorType::failedBind);
+		exit(ErrorType::FAILED_BIND);
 	}
 
 	std::cout << "Bind done.\n";
@@ -100,7 +100,7 @@ void WinsockInterface::listenOn(const SOCKET& socketForLst, const int backlog) c
 	{
 		std::cout << "\nLISTEN FAILED." << std::endl;
 		system("pause");
-		exit(ErrorType::failedListen);
+		exit(ErrorType::FAILED_LISTEN);
 	}
 
 	std::cout << "Enabled listening.\n";
