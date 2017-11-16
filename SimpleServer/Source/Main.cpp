@@ -11,8 +11,11 @@ int main()
 	const int PORT_SENDING	= 9998;
 	const int PORT_RECIVING	= 9999;
 	const int BACKLOG		= 10;
+	
 	ServerImitator server(PORT_SENDING, PORT_RECIVING, BACKLOG);
 
+	server.init();
+	server.launch();
 	server.run();
 
 	std::system("pause");
