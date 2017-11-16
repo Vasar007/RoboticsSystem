@@ -3,7 +3,6 @@
 #pragma once
 
 #include <array>
-#include <string>
 
 
 /**
@@ -36,15 +35,15 @@ struct RobotData
 				RobotData();
 
 	/**
-	 * \brief  Convert object to string.
-	 * \return String which contains all data of this object.
+	 * \brief	Convert object to string.
+	 * \return	String which contains all data of this object.
 	 */
 	std::string toString() const;
 
 	/**
 	 * \brief			Operator overloading for istream.
 	 * \param cin		Refrence to the original istream.
-	 * \param robotData Object for records.
+	 * \param robotData	Object for records.
 	 * \return			Aa reference to the original istream object.
 	 */
 	friend std::istream& operator>>(std::istream& cin, RobotData& robotData);

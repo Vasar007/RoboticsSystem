@@ -1,7 +1,7 @@
-#include "RobotData.h"
-
 #include <sstream>
 #include <iostream>
+
+#include "RobotData.h"
 
 
 RobotData::RobotData()
