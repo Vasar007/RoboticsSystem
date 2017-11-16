@@ -1,23 +1,43 @@
-#include "ServerImitator.h"
-
 #include <iostream>
 #include <thread>
 #include <conio.h>
 #include <string>
+#include <algorithm>
+
+#include "ServerImitator.h"
 
 
 ServerImitator::ServerImitator(const int sendingPort, const int recivingPort, const int backlog)
-: WinsockInterface()
-, _readfds()
-, _clientSockets()
+	: WinsockInterface()
+	, _sendingPort(sendingPort)
+	, _recivingPort(recivingPort)
+	, _backlog(backlog)
+	, _readfds()
+	, _clientSockets()
+{
+	_clientSockets.resize(_MAX_CLIENTS);
+}
+
+ServerImitator::ServerImitator(ServerImitator&& other) noexcept
+	: WinsockInterface()
+	, _sendingPort(other._sendingPort)
+	, _recivingPort(other._recivingPort)
+	, _backlog(other._backlog)
+	, _readfds()
+	, _clientSockets()
 {
 	_clientSockets.resize(_MAX_CLIENTS);
 
-	bindSocket(_socketSend, _socketSendAddress, sendingPort);
-	bindSocket(_socketRecive, _socketReciveAddress, recivingPort);
+	utils::swap(*this, other);
+}
 
-	listenOn(_socketSend, backlog);
-	listenOn(_socketRecive, backlog);
+ServerImitator& ServerImitator::operator=(ServerImitator&& other) noexcept
+{
+	if (this != &other)
+	{
+		utils::swap(*this, other);
+	}
+	return *this;
 }
 
 void ServerImitator::waitLoop()
@@ -40,7 +60,7 @@ void ServerImitator::waitLoop()
 		FD_ZERO(&_readfds);
 
 		// Add master socket to fd set.
-		FD_SET(_socketRecive, &_readfds);
+		FD_SET(_socketReceive, &_readfds);
 
 		// Add child sockets to fd set.
 		for (int i = 0; i < _MAX_CLIENTS; i++)
@@ -63,10 +83,10 @@ void ServerImitator::waitLoop()
 		}
 
 		// If something happened on the master socket, then it's an incoming connection.
-		if (FD_ISSET(_socketRecive, &_readfds))
+		if (FD_ISSET(_socketReceive, &_readfds))
 		{ 
-			SOCKET newSocket = accept(_socketRecive, reinterpret_cast<SOCKADDR*>(&address),
-			                          static_cast<int*>(&addrLen));
+			SOCKET newSocket = accept(_socketReceive, reinterpret_cast<SOCKADDR*>(&address),
+										static_cast<int*>(&addrLen));
 			if (newSocket == SOCKET_ERROR)
 			{
 				perror("Accept failed.");
@@ -83,9 +103,7 @@ void ServerImitator::waitLoop()
 
 			std::string tmp = "985000 0 940000 - 180000 0 0 10 0 0 ";
 			const char* mes = tmp.c_str();
-
-			std::size_t length = strlen(mes);
-			int intLength = static_cast<int>(length);
+			int intLength	= static_cast<int>(strlen(mes));
 
 			// Send new connection chacking message.
 			if (send(newSocket, mes, intLength, 0) != intLength)
@@ -165,11 +183,12 @@ void ServerImitator::waitLoop()
 					inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
 					std::cout << _message << ':' << ntohs(address.sin_port) << " - " << 
 						_buffer << '\n';
-					//send(clientSocket, _buffer, valRead, 0);
 
 					sbuf += _buffer;
 					
 					std::string toSending = parseData(sbuf);
+
+					///toSending = "985000 0 940000 180000 0 0 10 ";
 
 					if (!toSending.empty())
 					{
@@ -189,39 +208,40 @@ void ServerImitator::run()
 	waitLoop();
 }
 
-std::string ServerImitator::parseData(std::string& data) const
+void ServerImitator::launch()
 {
-	int tmp = 0;
-	std::string str = "";
-	for (size_t j = 0; j < data.size() && tmp < 9; j++)
+	bindSocket(_socketSend, _socketSendAddress, _sendingPort);
+	bindSocket(_socketReceive, _socketReceiveAddress, _recivingPort);
+
+	listenOn(_socketSend, _backlog);
+	listenOn(_socketReceive, _backlog);
+}
+
+std::string ServerImitator::parseData(const std::string& data) const
+{
+	std::string result;
+	std::vector<std::string> strStorage;
+	utils::split(data, strStorage);
+
+	strStorage.erase(std::remove(strStorage.begin(), strStorage.end(), ""), strStorage.end());
+
+	const std::size_t NUMBER_OF_COORDINATES_IN_ONE_STRUCTURE = 9u;
+
+	if (strStorage.size() % NUMBER_OF_COORDINATES_IN_ONE_STRUCTURE != 0u)
 	{
-		if (data[j] != ' ')
-		{
-			if (tmp != 7 && tmp != 8)
-			{
-				str += " ";
-			}
-			for (j; j < data.size() && ((data[j] >= '0' && data[j] <= '9')
-				|| data[j] == '-'); j++)
-			{
-				if (tmp != 7 && tmp != 8)
-				{
-					str += data[j];
-				}
-			}
-			tmp++;
-		}
-		if (tmp == 9)
-		{
-			//std::cout << clock() << " " << sbuf.substr(0, j) << '\n';
-			data = data.substr(j);
-			//str += " ";
-			str = "985000 0 940000 180000 0 0 10 ";
-			tmp = 0;
-			j = 0;
-			str.clear();
-		}
+		return { "" };
 	}
 
-	return tmp == 9 ? str : "";
+	for (const auto& strDatum : strStorage)
+	{
+		if (!utils::isCorrectNumber(strDatum))
+		{
+			result.clear();
+			break;
+		}
+
+		result += strDatum;
+	}
+
+	return result;
 }
