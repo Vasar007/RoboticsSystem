@@ -36,7 +36,6 @@ int ConnectionTCP<T>::recvCoord()
 	const int l = recv(_soc, buf, 255, 0);
 	if (l <= 0 && errno != 0 && errno != EAGAIN && errno != EWOULDBLOCK)
 	{
-		int t = errno;
 		return -15;
 	}
 	if (l > 0)

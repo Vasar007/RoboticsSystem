@@ -3,90 +3,142 @@
 #ifndef MY_SHOWER
 
 #define MY_SHOWER
-#include "Field.hpp"
+#include "StaticField.hpp"
+#include "MyThread.hpp"
 #include <map>
 #include <mutex>
+#include <vector>
 
 namespace myInterface 
 {
 	//синглтон интерфейса
 	class MyShower
 	{
-		std::map<int, Field> _list;
-		int _pos;
-		HANDLE _hConsole;
-		std::mutex _mt;
-		int _stringNumber;
+		std::vector<Message> _logs;
 
-		MyShower()
-		{
-			_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-			_pos = 0;
-			_stringNumber = 0;
-		}
+		std::map<int, Message> _list;
 		
-		MyShower(const MyShower&)
-		{
-			_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-			_pos = 0;
-			_stringNumber = 0;
-		}
+		HANDLE _hConsole;
+
+		bool _needFullUpdate;
 		
-		MyShower& operator = (MyShower &)
+		std::mutex _mt;
+
+		int _lineNumber = 0;
+
+		MyThread _paralelShower;
+
+		static void paralelShower(std::mutex *mt, bool *flag, MyShower *instance)
+		{
+			int logsShown = 0;
+
+			COORD coord;
+			coord.X = 0;
+
+			while(true)
+			{
+				mt->lock();
+				if(!*flag)
+				{
+					mt->unlock();
+					break;
+				}
+				mt->unlock();
+				instance->_mt.lock();
+				int curLine = 0;
+				if (instance->_needFullUpdate) 
+				{
+					
+					system("cls");
+
+					for (auto& it : instance->_list)
+					{
+						it.second.show();
+						++curLine;
+					}
+
+					++curLine;
+					coord.Y = curLine++;
+					SetConsoleCursorPosition(instance->_hConsole, coord);
+
+					std::cout << "Logs:\n";
+
+					logsShown = 0;
+
+					for (auto& it : instance->_logs)
+					{
+						it.show();
+						++curLine;
+						++logsShown;
+					}
+
+					instance->_needFullUpdate = false;
+				}
+				else 
+				{
+					for (auto& it : instance->_list)
+					{
+						it.second.showQuick(instance->_hConsole, curLine++);
+					}
+
+					coord.Y = curLine + 2 + logsShown;
+					SetConsoleCursorPosition(instance->_hConsole, coord);
+
+
+					for(size_t i = logsShown;i<instance->_logs.size();i++)
+					{
+						instance->_logs[i].show();
+					}
+				}
+				
+				instance->_mt.unlock();
+
+				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+			}
+		}
+
+		MyShower(): _needFullUpdate(true)
 		{
 			_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-			_pos = 0;
-			_stringNumber = 0;
-			return getInstance();
+			_paralelShower.startThread(paralelShower, this);
 		}
+
+		MyShower(const MyShower&) = delete;
+		
+		MyShower(const MyShower&&) = delete;
+
+		MyShower& operator = (MyShower &) = delete;
+
+		MyShower& operator = (MyShower &&) = delete;
 
 	public:
 
 		//метод добавления строки в интерфейс
-		int addField(const Field& field)
+		int addLine(Message& line)
 		{
 			_mt.lock();
-			_list[++_pos] = field;
+			_list.insert( std::make_pair( ++_lineNumber ,line ));
+			//_list[++_lineNumber] = line;
+			_needFullUpdate = true;
 			_mt.unlock();
-			update();
-			return _pos;
-		}
-		
-		//метод перерисовывания всего интерфейса 
-		void update()
-		{
-			_mt.lock();
-			system("cls");
-			_stringNumber = 0;
-			for (auto it = _list.begin();it != _list.end();++it, ++_stringNumber)
-			{
-				it->second.show();
-			}
-			_mt.unlock();
+			return _lineNumber;
 		}
 
-		//метод бытрого обовления параметров 
-		void updateQiuck()
+		void showLog(std::string str)
 		{
-			COORD coord;
-			int i = 0;
-			_mt.lock();
-			for (auto it = _list.begin();it != _list.end();++it, ++i)
-			{
-				it->second.showQuick(_hConsole, i);
-			}
-			coord.X = 0;
-			coord.Y = _stringNumber;
-			SetConsoleCursorPosition(_hConsole, coord);
-			_mt.unlock();
+			_logs.emplace_back(Field<std::string>("+ " + str,""));
 		}
 
 		//метод вывода дополнительной информации
 		template<typename T>
-		void show(T obj)
+		void showLog(std::string str,T obj)
 		{
-			std::cout << obj << "\n";
-			++_stringNumber;
+			_logs.emplace_back(Field<T>("+ " + str,obj));
+		}
+
+		void clearLog()
+		{
+			_logs.clear();
 		}
 
 		//метод возвращающий реализацию класса
@@ -97,21 +149,23 @@ namespace myInterface
 		}
 
 		//метод удаления поля по индексу
-		void deleteField(int fieldId)
+		void deleteLine(int fieldId)
 		{
 			_mt.lock();
 			_list.erase(fieldId);
+			_needFullUpdate = true;
 			_mt.unlock();
-			update();
 		}
 
 		~MyShower()
 		{
 			_list.clear();
+			_logs.clear();
+			_paralelShower.join();
 		}
 	};
 }
 
-#include "MyShowerDifinition.hpp"
+#include "MyShowerDifinition.inl"
 
 #endif

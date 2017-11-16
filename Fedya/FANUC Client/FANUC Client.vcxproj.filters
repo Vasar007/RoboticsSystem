@@ -84,17 +84,20 @@
     <ClCompile Include="RobotComunication.cpp">
       <Filter>Файлы исходного кода\RobotConnection</Filter>
     </ClCompile>
-    <ClCompile Include="Filed.cpp">
+    <ClCompile Include="MyShower.cpp">
       <Filter>Файлы исходного кода\ConsoleInterface</Filter>
     </ClCompile>
-    <ClCompile Include="MyShower.cpp">
+    <ClCompile Include="Message.cpp">
+      <Filter>Файлы исходного кода\ConsoleInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="Field.cpp">
+      <Filter>Файлы исходного кода\ConsoleInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticField.cpp">
       <Filter>Файлы исходного кода\ConsoleInterface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Field.hpp">
-      <Filter>Заголовочные файлы\ConsoleInteface</Filter>
-    </ClInclude>
     <ClInclude Include="MyShower.hpp">
       <Filter>Заголовочные файлы\ConsoleInteface</Filter>
     </ClInclude>
@@ -125,35 +128,47 @@
     <ClInclude Include="tcpConnection.hpp">
       <Filter>Заголовочные файлы\winSock</Filter>
     </ClInclude>
-    <ClInclude Include="MyThreadDifintion.hpp">
+    <ClInclude Include="Message.hpp">
+      <Filter>Заголовочные файлы\ConsoleInteface</Filter>
+    </ClInclude>
+    <ClInclude Include="Field.hpp">
+      <Filter>Заголовочные файлы\ConsoleInteface</Filter>
+    </ClInclude>
+    <ClInclude Include="MyQueueDifintion.inl">
       <Filter>Заголовочные файлы\template difinitions\ModificatedClasses</Filter>
     </ClInclude>
-    <ClInclude Include="MyQueueDifintion.hpp">
+    <ClInclude Include="MyThreadDifintion.inl">
       <Filter>Заголовочные файлы\template difinitions\ModificatedClasses</Filter>
     </ClInclude>
-    <ClInclude Include="tcpConnectionDifinition.hpp">
-      <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
-    </ClInclude>
-    <ClInclude Include="SocketWorkingDifinition.hpp">
-      <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
-    </ClInclude>
-    <ClInclude Include="tcpServerDifinition.hpp">
-      <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
-    </ClInclude>
-    <ClInclude Include="RobotSendDifinition.hpp">
-      <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
-    </ClInclude>
-    <ClInclude Include="RobotRecieveDifinition.hpp">
-      <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
-    </ClInclude>
-    <ClInclude Include="RobotComunicationDifinition.hpp">
-      <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
-    </ClInclude>
-    <ClInclude Include="FiledDifinition.hpp">
+    <ClInclude Include="FieldDifinition.inl">
       <Filter>Заголовочные файлы\template difinitions\ConsoleInterface</Filter>
     </ClInclude>
-    <ClInclude Include="MyShowerDifinition.hpp">
+    <ClInclude Include="MessageDifinition.inl">
       <Filter>Заголовочные файлы\template difinitions\ConsoleInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="MyShowerDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\ConsoleInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotComunicationDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotRecieveDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotSendDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketWorkingDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
+    </ClInclude>
+    <ClInclude Include="tcpConnectionDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
+    </ClInclude>
+    <ClInclude Include="tcpServerDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticField.hpp">
+      <Filter>Заголовочные файлы\ConsoleInteface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -161,5 +176,10 @@
     <Text Include="sets.txt" />
     <Text Include="saver.txt" />
     <Text Include="fedya_config.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="StaticFieldDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\ConsoleInterface</Filter>
+    </None>
   </ItemGroup>
 </Project>

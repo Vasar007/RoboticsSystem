@@ -62,6 +62,6 @@ public:
 	RobotRecieve(SOCKET socRecv, MyQueue<T>* cloneQueue, MyQueue<T>* returnQueue, int readTime);
 };
 
-#include "RobotRecieveDifinition.hpp"
+#include "RobotRecieveDifinition.inl"
 
 #endif

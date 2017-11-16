@@ -78,6 +78,6 @@ struct MyThread
 	~MyThread();
 };
 
-#include "MyThreadDifintion.hpp"
+#include "MyThreadDifintion.inl"
 
 #endif // MyThread_def

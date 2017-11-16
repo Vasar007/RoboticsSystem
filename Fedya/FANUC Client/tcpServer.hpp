@@ -149,6 +149,6 @@ public:
 	~ServerTCP();
 };
 
-#include "tcpServerDifinition.hpp"
+#include "tcpServerDifinition.inl"
 
 #endif

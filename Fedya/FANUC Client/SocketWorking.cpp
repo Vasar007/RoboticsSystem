@@ -4,6 +4,8 @@
 #include <winsock2.h>
 #include<iostream>
 
+#include "MyShower.hpp"
+
 SocketWorking::SocketWorking()
 {
 	_isInitialised = false;
@@ -34,7 +36,8 @@ int SocketWorking::initialise()
 		if (WSAStartup(0x202, reinterpret_cast<WSADATA *>(buff)))
 			//вызываем включение библиотеки работы с сокетами, инициализация WinsockAPI
 		{
-			std::cout << "WSAStart error %d" << WSAGetLastError() << std::endl;
+			myInterface::MyShower::getInstance().showLog("WSAStart error: ", WSAGetLastError());
+			//std::cout << "WSAStart error %d" << WSAGetLastError() << std::endl;
 			return 1;
 		}
 		_isInitialised = true;

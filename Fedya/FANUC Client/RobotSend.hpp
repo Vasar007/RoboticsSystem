@@ -75,6 +75,6 @@ public:
 	int resendCloneQueue();
 };
 
-#include "RobotSendDifinition.hpp"
+#include "RobotSendDifinition.inl"
 
 #endif

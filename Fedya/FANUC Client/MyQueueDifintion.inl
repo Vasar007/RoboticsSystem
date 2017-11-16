@@ -5,17 +5,8 @@
 #include "MyShower.hpp"
 
 template <typename T>
-MyQueue<T>::MyQueue(std::string comment)
+MyQueue<T>::MyQueue(std::string comment):_sizeOfQueue("Size of " + comment,0),_timeDifference("Time delay in " + comment,0)
 {
-	_withInterface = comment != "without interface";
-	if (_withInterface)
-	{
-		_interfaceId1 = myInterface::MyShower::getInstance().addField(
-			myInterface::Field(std::string("size of ") + comment + ": ", &_sizeOfQueue));
-		_interfaceId2 = myInterface::MyShower::getInstance().addField(
-			myInterface::Field(std::string("time difference between inserting and erasing point in ") + comment + ": ",
-				&_timeDifference));
-	}
 }
 
 template <typename T>
@@ -25,7 +16,7 @@ void MyQueue<T>::push(T elem)
 	_mt.lock();
 	_q.push(std::make_pair(t, elem));
 	_mt.unlock();
-	++_sizeOfQueue;
+	_sizeOfQueue.setObject(_sizeOfQueue.getObject()+1);
 }
 
 template <typename T>
@@ -68,9 +59,9 @@ template <typename T>
 void MyQueue<T>::pop()
 {
 	_mt.lock();
-	_timeDifference = static_cast<int>(clock()) - static_cast<int>(_q.front().first);
+	_timeDifference.setObject(static_cast<int>(clock()) - static_cast<int>(_q.front().first));
 	_q.pop();
-	--_sizeOfQueue;
+	_sizeOfQueue.setObject(_sizeOfQueue.getObject()-1);
 	_mt.unlock();
 }
 
@@ -96,7 +87,7 @@ std::pair<bool, T> MyQueue<T>::pull()
 		ans.first = true;
 		ans.second = _q.front().second;
 		_q.pop();
-		--_sizeOfQueue;
+		_sizeOfQueue.setObject(_sizeOfQueue.getObject() - 1);
 	}
 	_mt.unlock();
 	return ans;
@@ -107,11 +98,6 @@ MyQueue<T>::~MyQueue()
 {
 	while (!_q.empty())
 		_q.pop();
-	if (_withInterface)
-	{
-		myInterface::MyShower::getInstance().deleteField(_interfaceId1);
-		myInterface::MyShower::getInstance().deleteField(_interfaceId2);
-	}
 }
 
 #endif

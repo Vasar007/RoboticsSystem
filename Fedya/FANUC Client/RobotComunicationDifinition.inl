@@ -13,16 +13,13 @@
 template <typename T>
 int RobotConnect<T>::healServerSecondConnection() const
 {
-	char buffer[128];
-	ZeroMemory(buffer, 128);
 
 	SOCKET sockrecv = SocketWorking::getInstance().connectToRobotServer(_serverAddrString.c_str(), _portr,
 		_disconnectTime2);
 
 	if (sockrecv == INVALID_SOCKET)
 	{
-		sprintf_s(buffer, "recive socket error %d\0", WSAGetLastError());
-		myInterface::MyShower::getInstance().show(buffer);
+		myInterface::MyShower::getInstance().showLog("recive socket error ", WSAGetLastError());
 		return 1;
 	}
 	SocketWorking::getInstance().deleteSocket(sockrecv);
@@ -32,14 +29,11 @@ int RobotConnect<T>::healServerSecondConnection() const
 template <typename T>
 int RobotConnect<T>::conRobot()
 {
-	char buffer[128];
-
 	//создание сокеа отправки
 	_sockSend = SocketWorking::getInstance().connectToRobotServer(_serverAddrString.c_str(), _ports, _disconnectTime2);
 	if (_sockSend == INVALID_SOCKET)
 	{
-		sprintf_s(buffer, "send socket error %d\0", WSAGetLastError());
-		myInterface::MyShower::getInstance().show(buffer);
+		myInterface::MyShower::getInstance().showLog("send socket error ", WSAGetLastError());
 		return 1;
 	}
 
@@ -47,8 +41,7 @@ int RobotConnect<T>::conRobot()
 	_sockRecv = SocketWorking::getInstance().connectToRobotServer(_serverAddrString.c_str(), _portr, _disconnectTime2);
 	if (_sockRecv == INVALID_SOCKET)
 	{
-		sprintf_s(buffer, "recive socket error %d\0", WSAGetLastError());
-		myInterface::MyShower::getInstance().show(buffer);
+		myInterface::MyShower::getInstance().showLog("recive socket error ", WSAGetLastError());
 		return 2;
 	}
 
@@ -74,6 +67,7 @@ void RobotConnect<T>::reverseStream(std::mutex* mt, bool* f, RobotConnect* ins)
 			if ((clock() - prevConnetectedTime > ins->_disconnectTime1 * was + sleepBonus) && wasFirstPoint)
 			{
 				ins->_connected = false;
+				ins->_connectionField.setObject("Unanswered");
 				if (ins->_cloneQueue.empty())
 				{
 					ins->_robotSend->sendPrevCoord();
@@ -88,6 +82,7 @@ void RobotConnect<T>::reverseStream(std::mutex* mt, bool* f, RobotConnect* ins)
 		else
 		{
 			ins->_connected = true;
+			ins->_connectionField.setObject("connected");
 			prevConnetectedTime = clock();
 			was = 1;
 			wasFirstPoint = true;
@@ -143,7 +138,8 @@ int RobotConnect<T>::startWorking()
 	const int iResult = conRobot();
 	if (iResult)
 	{
-		std::cout << "Conection error " << iResult << " " << WSAGetLastError() << std::endl;
+		//std::cout << "Conection error " << iResult << " " << WSAGetLastError() << std::endl;
+		myInterface::MyShower::getInstance().showLog("Conection error ", WSAGetLastError());
 		closesocket(_sockSend);
 		closesocket(_sockRecv);
 		return -4;
@@ -155,7 +151,8 @@ int RobotConnect<T>::startWorking()
 	sprintf_s(coord, "%d ", _syscoord);
 	if (send(_sockSend, coord, 1, 0) == SOCKET_ERROR)
 	{
-		std::cout << "Conection error " << WSAGetLastError() << std::endl;
+		//std::cout << "Conection error " << WSAGetLastError() << std::endl;
+		myInterface::MyShower::getInstance().showLog("Sending syscord error: ", WSAGetLastError());
 		closesocket(_sockSend);
 		return -5;
 	}//отправляем буфер
@@ -177,9 +174,8 @@ void RobotConnect<T>::tryConnect()
 	int steps = 0;
 	while (startWorking() < 0)
 	{
-		myInterface::MyShower::getInstance().show("reconecting");
+		_connectionField.setObject("connecting");
 		Sleep(_disconnectTime2);
-		myInterface::MyShower::getInstance().update();
 		++steps;
 		if (steps >= 3)
 		{
@@ -210,8 +206,6 @@ void RobotConnect<T>::restart()
 	finishWorking();
 
 	tryConnect();
-
-	myInterface::MyShower::getInstance().update();
 }
 
 template <typename T>
@@ -242,7 +236,7 @@ void RobotConnect<T>::mainLoop(std::mutex* mt, bool* f, RobotConnect* ins)
 
 template <typename T>
 RobotConnect<T>::RobotConnect(std::string configFileName, MyQueue<T>* sendingQueue, MyQueue<T>* recivingQueue) :
-	_sendingQueue(sendingQueue), _recivingQueue(recivingQueue)
+	_sendingQueue(sendingQueue), _recivingQueue(recivingQueue),_connectionField("FANUC M20iA ","disconneted")
 {
 	_portr = _disconnectTime1 = _disconnectTime2 = _ports = _robotSpeed = _segtime =
 		_syscoord = -1;
@@ -254,7 +248,7 @@ RobotConnect<T>::RobotConnect(std::string configFileName, MyQueue<T>* sendingQue
 	std::ifstream in(configFileName);
 	if (!in)
 	{
-		myInterface::MyShower::getInstance().show("cannot open file: " + configFileName);
+		myInterface::MyShower::getInstance().showLog("cannot open file: ", configFileName);
 		std::exception exp("cannot open file");
 		throw exp;
 	}

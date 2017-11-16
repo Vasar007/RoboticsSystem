@@ -71,6 +71,6 @@ public:
 	SOCKET connectToRobotServer(const char* serveraddr, int port, int disconnectTime2);
 };
 
-#include"SocketWorkingDifinition.hpp"
+#include"SocketWorkingDifinition.inl"
 
 #endif

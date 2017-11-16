@@ -6,6 +6,7 @@
 
 #include<queue>
 #include<mutex>
+#include"StaticField.hpp"
 
 /**
  * \brief Class which impliment a queue for multithreading and time measurement.
@@ -27,33 +28,21 @@ class MyQueue
 	/**
 	 * \brief Size of queue for interface.
 	 */
-	int _sizeOfQueue{ 0 };
+	myInterface::StaticField<int> _sizeOfQueue{"Size of queue: ",0};
 	
 	/**
 	 * \brief Time differnce of last erased element betwen adding and erasing elemnt in queue.
 	 */
-	int _timeDifference{ 0 };
+	myInterface::StaticField<int> _timeDifference{"Time delay in queue: ",0};
 	
-	/**
-	 * \brief Id of first interface field.
-	 */
-	int _interfaceId1;
-	
-	/**
-	 * \brief Id of second interface id.
-	 */
-	int _interfaceId2;
-	
-	/**
-	 * \brief Flag if this queue with or without interface.
-	 */
-	bool _withInterface;
 public:
 	/**
 	 * \brief Contructor of queue.
 	 * \param comment Discription of this queue which will show in interface if it isn't specify this queue would be without interface.
 	 */
-	explicit MyQueue(std::string comment = "without interface");
+	explicit MyQueue(std::string comment);
+
+	explicit MyQueue() = default;
 
 	/**
 	 * \brief Function for adding element.
@@ -108,6 +97,6 @@ public:
 	~MyQueue();
 };
 
-#include "MyQueueDifintion.hpp"
+#include "MyQueueDifintion.inl"
 
 #endif // !MY_QUEUE_DEF

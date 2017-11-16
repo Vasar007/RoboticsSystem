@@ -11,6 +11,7 @@
 #include "MyThread.hpp"
 #include "RobotSend.hpp"
 #include "RobotRecieve.hpp"
+#include "StaticField.hpp"
 
 /**
  * \brief Goddy class of comunication with robot.
@@ -114,6 +115,8 @@ class RobotConnect
 	 */
 	bool _connected;
 
+	myInterface::StaticField<std::string> _connectionField;
+
 	/**
 	 * \brief Method for making one connection and closing it.
 	 * \return 0 if no errors, else non-zero.
@@ -207,6 +210,6 @@ public:
 	~RobotConnect();
 };
 
-#include "RobotComunicationDifinition.hpp"
+#include "RobotComunicationDifinition.inl"
 
 #endif // ROBOT_CONNECT

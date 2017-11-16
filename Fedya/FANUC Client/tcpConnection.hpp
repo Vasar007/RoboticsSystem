@@ -58,6 +58,6 @@ public:
 	int recvCoord();
 };
 
-#include "tcpConnectionDifinition.hpp"
+#include "tcpConnectionDifinition.inl"
 
 #endif
