@@ -10,6 +10,7 @@ static addrinfo* serverAddr22;
 template <typename T>
 int ServerTCP<T>::initialise(int port)
 {
+	_statusField.setObject("intialising");
 	_main = SocketWorking::getInstance().getFreeSocket();
 	if (_main == INVALID_SOCKET)
 	{
@@ -132,7 +133,6 @@ void ServerTCP<T>::paralelAccept(std::mutex* mt, bool* f, ServerTCP* instance)
 		const int selectRes = select(0, &sSet, nullptr, nullptr, &timeout);
 		if (selectRes == SOCKET_ERROR)
 		{
-			int t = GetLastError();
 			return;
 		}
 		if (selectRes)
@@ -150,7 +150,8 @@ void ServerTCP<T>::paralelAccept(std::mutex* mt, bool* f, ServerTCP* instance)
 }
 
 template <typename T>
-ServerTCP<T>::ServerTCP(int port, int timeOut) : _timeOut(timeOut)
+ServerTCP<T>::ServerTCP(int port, int timeOut)
+:_timeOut(timeOut), _statusField("Clients status: ", "no connection")
 {
 	initialise(port);
 	_contcp = nullptr;
@@ -160,6 +161,7 @@ ServerTCP<T>::ServerTCP(int port, int timeOut) : _timeOut(timeOut)
 template <typename T>
 int ServerTCP<T>::tryAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 {
+	_statusField.setObject("trying accept");
 	if (!_socketConnectionsQueue.empty())
 	{
 		SOCKET connectedSocket = _socketConnectionsQueue.front();
@@ -175,6 +177,7 @@ int ServerTCP<T>::tryAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 template <typename T>
 int ServerTCP<T>::forceAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 {
+	_statusField.setObject("waitingconnection");
 	while (_socketConnectionsQueue.empty())
 	{
 		Sleep(100);

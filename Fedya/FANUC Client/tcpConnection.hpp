@@ -32,6 +32,8 @@ class ConnectionTCP
 	 */
 	std::string _sbuf;
 
+	myInterface::StaticField<int> _pocketsRecived;
+
 public:
 	/**
 	 * \brief Default constructor.

@@ -4,7 +4,7 @@
 
 template <typename T>
 ConnectionTCP<T>::ConnectionTCP(SOCKET soc, MyQueue<T>* sendQueue, MyQueue<T>* reciveQueue) :
-	_soc(soc), _sendQueue(sendQueue), _reciveQueue(reciveQueue)
+	_soc(soc), _sendQueue(sendQueue), _reciveQueue(reciveQueue),_pocketsRecived("Points from client recived: ",0)
 {
 }
 
@@ -56,6 +56,7 @@ int ConnectionTCP<T>::recvCoord()
 				sscanf_s(_sbuf.c_str(), "%d %d %d %d %d %d %d %d %d",
 					&rc._xr, &rc._yr, &rc._zr, &rc._uw, &rc._up, &rc._uz, &rc._segTime, &rc._typeOfMoving, &rc._control);
 				_reciveQueue->push(rc);
+				_pocketsRecived.setObject(_pocketsRecived.getObject() + 1);
 				_sbuf = _sbuf.substr(i);
 				tmp = 0;
 				i = 0;

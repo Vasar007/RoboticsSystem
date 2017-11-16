@@ -64,6 +64,8 @@ class ServerTCP
 	 */
 	bool _connected = false;
 
+	myInterface::StaticField<std::string> _statusField;
+
 	/**
 	 * \brief Method for intialsing listening SOCKET.
 	 * \param port Port for listening.
