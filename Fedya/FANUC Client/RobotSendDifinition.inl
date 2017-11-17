@@ -9,6 +9,7 @@ int RobotSend<T>::sendCoord(T rc)
 {
 	std::string str = rc.toString();
 	_cloneQueue->push(rc);
+	myInterface::MyShower::getInstance().addLog(str);
 	if (send(_sockSend, str.c_str(), static_cast<int>(str.size()), 0) == SOCKET_ERROR)
 	{
 		closesocket(_sockSend);

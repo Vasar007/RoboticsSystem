@@ -81,7 +81,8 @@ class RobotConnect
 	MyQueue<T>* _recivingQueue;
 
 	/**
-	 * \brief Queue of points which was send but there processing wasn't confirmed.
+	 * \brief Queue of points which was send
+	 *  but there processing wasn't confirmed.
 	 */
 	MyQueue<T> _cloneQueue;
 

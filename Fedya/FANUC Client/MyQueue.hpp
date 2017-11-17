@@ -38,7 +38,8 @@ class MyQueue
 public:
 	/**
 	 * \brief Contructor of queue.
-	 * \param comment Discription of this queue which will show in interface if it isn't specify this queue would be without interface.
+	 * \param comment Discription of this queue which will show in interface. 
+	 * If it isn't specify this queue would be with default.
 	 */
 	explicit MyQueue(std::string comment);
 

@@ -24,7 +24,9 @@ class RobotSend
 	MyQueue<T>* _cloneQueue;
 	
 	/**
-	 * \brief Distance in 6 dimsional space which means if diference betwin two points is greater tha it so we should send next point two times for bieng sure we was in this positin.
+	 * \brief Distance in 6 dimsional space which means 
+	 * if diference between two points is greater than it
+	 *  so we should send next point two times for bieng sure we was in this positin.
 	 */
 	int _acyrancy;
 
@@ -50,7 +52,9 @@ public:
 	 * \brief Constructor.
 	 * \param soc SOCKET from which we send points.
 	 * \param cloneQueue Pointer to queue with points which in process.
-	 * \param acyrancy Distance in 6 dimsional space which means if diference betwin two points is greater tha it so we should send next point two times for bieng sure we was in this positin.
+	 * \param acyrancy Distance in 6 dimsional space which means 
+	 * if diference between two points is greater than it
+	 *  so we should send next point two times for bieng sure we was in this positin.
 	 */
 	RobotSend(SOCKET soc, MyQueue<T>* cloneQueue, int acyrancy = 1000);
 
@@ -69,7 +73,8 @@ public:
 	int sendPrevCoord();
 
 	/**
-	 * \brief Function for sending points in cloneQueue(which was sended to robot but wasn't confermed there's complit)
+	 * \brief Function for sending points in cloneQueue
+	 * (which was sended to robot but wasn't confermed there's complit)
 	 * \return 0 if points was send.
 	 */
 	int resendCloneQueue();

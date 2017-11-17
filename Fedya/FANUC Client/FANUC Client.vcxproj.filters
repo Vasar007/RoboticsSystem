@@ -173,9 +173,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="logs.txt" />
-    <Text Include="sets.txt" />
     <Text Include="saver.txt" />
     <Text Include="fedya_config.txt" />
+    <Text Include="sets.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="StaticFieldDifinition.inl">

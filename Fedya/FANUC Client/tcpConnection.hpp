@@ -55,7 +55,9 @@ public:
 
 	/**
 	 * \brief Function for reciving point from client and adding to recvqueue.
-	 * \return 0 if point was recived, 1 if SOCKET haven't recive any pocket, -15 if was winSock error.
+	 * \return 0 if point was recived,
+	 *  1 if SOCKET haven't recive any pocket,
+	 *  -15 if was winSock error.
 	 */
 	int recvCoord();
 };
