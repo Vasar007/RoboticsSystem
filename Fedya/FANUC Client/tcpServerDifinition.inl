@@ -21,7 +21,7 @@ int ServerTCP<T>::initialise(int port)
 
 	sockaddr_in destAddr;
 	destAddr.sin_family = AF_INET;
-	destAddr.sin_port = htons(port);
+	destAddr.sin_port = htons(static_cast<u_short>(port));
 	destAddr.sin_addr.s_addr = INADDR_ANY;
 
 	if (bind(_main, reinterpret_cast<sockaddr *>(&destAddr), sizeof(destAddr)) < 0)
@@ -187,6 +187,7 @@ int ServerTCP<T>::forceAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 	_contcp = new ConnectionTCP<T>(connectedSocket, sendQueue, recieveQueue);
 	_conSocketWorkin.startThread(tcpWorkin, this);
 	_conSocketWorkout.startThread(tcpWorkout, this);
+	_statusField.setObject("connected");
 	return 0;
 }
 

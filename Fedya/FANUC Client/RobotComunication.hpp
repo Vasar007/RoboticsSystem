@@ -23,12 +23,12 @@ class RobotConnect
 	/**
 	 * \brief Port for sending.
 	 */
-	int _ports;
+	int _ports = -1;
 	
 	/**
 	 * \brief Port for reciving.
 	 */
-	int _portr; 
+	int _portr = -1; 
 	
 	/**
 	 * \brief IP adress of server.
@@ -37,28 +37,28 @@ class RobotConnect
 	/**
 	 * \brief Time delay between points processing.
 	 */
-	int _segtime;
+	int _segtime = -1;
 	
 	/**
 	 * \brief Robot speed for calculations.
 	 */
-	double _robotSpeed;
+	double _robotSpeed = -1.0;
 	
 	/**
 	 * \brief Type of cordinates in which we move.
 	 */
-	int _syscoord;
+	int _syscoord = -1;
 	// 0 - JOINT | 2 - WORLD
 	
 	/**
 	 * \brief Time delay between checking connectoin.
 	 */
-	int _disconnectTime1;
+	int _disconnectTime1 = -1;
 	
 	/**
 	 * \brief Time between last reciving and starting restart connection.
 	 */
-	int _disconnectTime2;
+	int _disconnectTime2 = -1;
 
 	/**
 	 * \brief SOCKET for sending points. 

@@ -56,10 +56,17 @@ namespace myInterface
 		 */
 		void show();
 
+		/**
+		 * \brief Method for taking length of field.
+		 * \return Size of field.
+		 */
+		size_t size() const;
+
+		/**
+		 * \brief Destructor.
+		 */
 		virtual ~Message() = default;
 	};
-
-	
 }
 
 #include "MessageDifinition.inl"

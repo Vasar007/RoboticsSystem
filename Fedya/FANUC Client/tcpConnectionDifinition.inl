@@ -16,7 +16,7 @@ void ConnectionTCP<T>::sendCoord()
 		std::string mes = _sendQueue->front().toString();
 		_sendQueue->pop();
 		mes += "\n";
-		send(_soc, mes.c_str(), mes.size(), 0);
+		send(_soc, mes.c_str(), static_cast<int>(mes.size()), 0);
 	}
 }
 

@@ -6,19 +6,19 @@
 #define WITHOUT_POINTS_SAVER
 //#define WITHOUT_INTERFACE
 
-#include "tcpServer.hpp"
 #include <string>
 #include <windows.h>
 #include <iostream>
 #include <conio.h>
 #include "MyShower.hpp"
+#include "tcpServer.hpp"
 #include "RobotComunication.hpp"
 #include "MyQueue.hpp"
 
 
 #include"RobotCoord.hpp"
 
-int main(int argc, char* argv[])
+int main()
 {
 	SocketWorking::getInstance().initialise();
 
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 
 	while (true) {
 		if (_kbhit()) {
-			const char c = _getch();
+			const int c = _getch();
 			if (c == '+') {
 				std::string comand;
 				std::getline(std::cin, comand);

@@ -19,7 +19,7 @@ int RobotConnect<T>::healServerSecondConnection() const
 
 	if (sockrecv == INVALID_SOCKET)
 	{
-		myInterface::MyShower::getInstance().showLog("recive socket error ", WSAGetLastError());
+		myInterface::MyShower::getInstance().addLog("recive socket error ", WSAGetLastError());
 		return 1;
 	}
 	SocketWorking::getInstance().deleteSocket(sockrecv);
@@ -33,7 +33,7 @@ int RobotConnect<T>::conRobot()
 	_sockSend = SocketWorking::getInstance().connectToRobotServer(_serverAddrString.c_str(), _ports, _disconnectTime2);
 	if (_sockSend == INVALID_SOCKET)
 	{
-		myInterface::MyShower::getInstance().showLog("send socket error ", WSAGetLastError());
+		myInterface::MyShower::getInstance().addLog("send socket error ", WSAGetLastError());
 		return 1;
 	}
 
@@ -41,7 +41,7 @@ int RobotConnect<T>::conRobot()
 	_sockRecv = SocketWorking::getInstance().connectToRobotServer(_serverAddrString.c_str(), _portr, _disconnectTime2);
 	if (_sockRecv == INVALID_SOCKET)
 	{
-		myInterface::MyShower::getInstance().showLog("recive socket error ", WSAGetLastError());
+		myInterface::MyShower::getInstance().addLog("recive socket error ", WSAGetLastError());
 		return 2;
 	}
 
@@ -74,7 +74,7 @@ void RobotConnect<T>::reverseStream(std::mutex* mt, bool* f, RobotConnect* ins)
 				}
 				else
 				{
-					sleepBonus = ins->_robotRecieve->_prevCoord.difference(ins->_cloneQueue.front()) / ins->_robotSpeed;
+					sleepBonus = static_cast<int>(ins->_robotRecieve->_prevCoord.difference(ins->_cloneQueue.front()) / ins->_robotSpeed);
 				}
 				was++;
 			}
@@ -139,7 +139,7 @@ int RobotConnect<T>::startWorking()
 	if (iResult)
 	{
 		//std::cout << "Conection error " << iResult << " " << WSAGetLastError() << std::endl;
-		myInterface::MyShower::getInstance().showLog("Conection error ", WSAGetLastError());
+		myInterface::MyShower::getInstance().addLog("Conection error ", WSAGetLastError());
 		closesocket(_sockSend);
 		closesocket(_sockRecv);
 		return -4;
@@ -152,7 +152,7 @@ int RobotConnect<T>::startWorking()
 	if (send(_sockSend, coord, 1, 0) == SOCKET_ERROR)
 	{
 		//std::cout << "Conection error " << WSAGetLastError() << std::endl;
-		myInterface::MyShower::getInstance().showLog("Sending syscord error: ", WSAGetLastError());
+		myInterface::MyShower::getInstance().addLog("Sending syscord error: ", WSAGetLastError());
 		closesocket(_sockSend);
 		return -5;
 	}//отправляем буфер
@@ -213,7 +213,7 @@ void RobotConnect<T>::mainLoop(std::mutex* mt, bool* f, RobotConnect* ins)
 {
 	ins->tryConnect();
 
-	while (0 == 0)
+	while (true)
 	{
 		mt->lock();
 		if (!*f)
@@ -236,10 +236,8 @@ void RobotConnect<T>::mainLoop(std::mutex* mt, bool* f, RobotConnect* ins)
 
 template <typename T>
 RobotConnect<T>::RobotConnect(std::string configFileName, MyQueue<T>* sendingQueue, MyQueue<T>* recivingQueue) :
-	_sendingQueue(sendingQueue), _recivingQueue(recivingQueue),_connectionField("FANUC M20iA ","disconneted")
+	_sendingQueue(sendingQueue), _recivingQueue(recivingQueue),_cloneQueue("clone queue"),_connectionField("FANUC M20iA ","disconneted")
 {
-	_portr = _disconnectTime1 = _disconnectTime2 = _ports = _robotSpeed = _segtime =
-		_syscoord = -1;
 	_sockRecv = _sockSend = INVALID_SOCKET;
 	_connected = _forcedRestart = false;
 	_robotSend = nullptr;
@@ -248,7 +246,7 @@ RobotConnect<T>::RobotConnect(std::string configFileName, MyQueue<T>* sendingQue
 	std::ifstream in(configFileName);
 	if (!in)
 	{
-		myInterface::MyShower::getInstance().showLog("cannot open file: ", configFileName);
+		myInterface::MyShower::getInstance().addLog("cannot open file: ", configFileName);
 		std::exception exp("cannot open file");
 		throw exp;
 	}

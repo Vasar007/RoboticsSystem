@@ -5,7 +5,7 @@
 #include "MyShower.hpp"
 
 template <typename T>
-MyQueue<T>::MyQueue(std::string comment):_sizeOfQueue("Size of " + comment,0),_timeDifference("Time delay in " + comment,0)
+MyQueue<T>::MyQueue(std::string comment):_sizeOfQueue("Size of \"" + comment + "\": ",0),_timeDifference("Time delay in \"" + comment + "\": ",0)
 {
 }
 

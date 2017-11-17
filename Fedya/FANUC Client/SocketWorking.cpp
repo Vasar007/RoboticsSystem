@@ -36,7 +36,7 @@ int SocketWorking::initialise()
 		if (WSAStartup(0x202, reinterpret_cast<WSADATA *>(buff)))
 			//вызываем включение библиотеки работы с сокетами, инициализация WinsockAPI
 		{
-			myInterface::MyShower::getInstance().showLog("WSAStart error: ", WSAGetLastError());
+			myInterface::MyShower::getInstance().addLog("WSAStart error: ", WSAGetLastError());
 			//std::cout << "WSAStart error %d" << WSAGetLastError() << std::endl;
 			return 1;
 		}
@@ -89,8 +89,8 @@ SOCKET SocketWorking::connectToRobotServer(const char* serveraddr, int port, int
 
 	sockaddr_in destAddr;
 	destAddr.sin_family = AF_INET;
-	destAddr.sin_port = htons(port);
-	destAddr.sin_addr.s_addr = inet_addr(serveraddr);
+	destAddr.sin_port = htons(static_cast<u_short>(port));
+	inet_pton(AF_INET, serveraddr, &destAddr.sin_addr);
 
 	// адрес сервера получен – пытаемся установить соединение 
 	if (connect(ans, reinterpret_cast<sockaddr *>(&destAddr), sizeof destAddr) == SOCKET_ERROR)
