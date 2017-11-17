@@ -37,7 +37,7 @@ ServerImitator& ServerImitator::operator=(ServerImitator&& other) noexcept
 	return *this;
 }
 
-void ServerImitator::process()
+void ServerImitator::process(bool& flag)
 {
 	int addrLen = sizeof(SOCKADDR_IN);
 
@@ -46,6 +46,69 @@ void ServerImitator::process()
 	SOCKADDR_IN address;
 
 	std::cout << "\n\n\nWaiting for connections...\n\n";
+
+	while (flag)
+	{
+		memset(_message, 0, _MAXRECV);
+		SOCKET socketReceive = accept(_socketReceive, reinterpret_cast<SOCKADDR*>(&address),
+										static_cast<int*>(&addrLen));
+		if (socketReceive == SOCKET_ERROR)
+		{
+			perror("Accept failed.");
+			system("pause");
+			exit(ErrorType::FAILED_ACCEPT_NEW_CLIENT);
+		}
+
+		SOCKET socketSend = accept(_socketSend, reinterpret_cast<SOCKADDR*>(&address),
+									static_cast<int*>(&addrLen));
+		if (socketSend == SOCKET_ERROR)
+		{
+			perror("Accept failed.");
+			system("pause");
+			exit(ErrorType::FAILED_ACCEPT_NEW_CLIENT);
+		}
+
+		_clientSocketReceive	= socketReceive;
+		_clientSocketSend		= socketSend;
+
+
+		// Get IP address back and print it.
+		inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
+
+		// Inform user of socket number — used in send and receive commands.
+		std::cout << "New connection, socket fd is " << socketReceive << ", ip is: " <<
+			_message << ", port: " << ntohs(address.sin_port) << '\n';
+
+		if (flag)
+		{
+			flag = false;
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+		break;
+	}
+}
+
+void ServerImitator::waitLoop()
+{
+	int addrLen = sizeof(SOCKADDR_IN);
+
+	std::string sbuf;
+
+	SOCKADDR_IN address;
+
+	std::cout << "\n\n\nWaiting for reply...\n\n";
+
+	bool flag = true;
+
+	std::thread reciveThread(&ServerImitator::process, this, std::ref(flag));
+	reciveThread.detach();
+
+	while (flag)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(250));
+	}
 
 	while (true)
 	{
@@ -116,67 +179,9 @@ void ServerImitator::process()
 				sendData(_clientSocketSend, toSending);
 				sbuf.clear();
 			}
-
-			//std::thread sendThread(&ServerImitator::sendReply, this, toSending);
-			//sendThread.detach();
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-	}
-}
-
-void ServerImitator::waitLoop()
-{
-	int addrLen = sizeof(SOCKADDR_IN);
-
-	SOCKADDR_IN address;
-
-	std::cout << "\n\n\nWaiting for reply...\n\n";
-
-	bool flag = true;
-
-	while (true)
-	{
-		memset(_message, 0, _MAXRECV);
-		SOCKET socketReceive = accept(_socketReceive, reinterpret_cast<SOCKADDR*>(&address),
-										static_cast<int*>(&addrLen));
-		if (socketReceive == SOCKET_ERROR)
-		{
-			perror("Accept failed.");
-			system("pause");
-			exit(ErrorType::FAILED_ACCEPT_NEW_CLIENT);
-		}
-
-		SOCKET socketSend = accept(_socketSend, reinterpret_cast<SOCKADDR*>(&address),
-			static_cast<int*>(&addrLen));
-		if (socketSend == SOCKET_ERROR)
-		{
-			perror("Accept failed.");
-			system("pause");
-			exit(ErrorType::FAILED_ACCEPT_NEW_CLIENT);
-		}
-		
-		_clientSocketReceive = socketReceive;
-		_clientSocketSend = socketSend;
-
-
-		// Get IP address back and print it.
-		inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
-
-		// Inform user of socket number — used in send and receive commands.
-		std::cout << "New connection, socket fd is " << socketReceive << ", ip is: " <<
-			_message << ", port: " << ntohs(address.sin_port) << '\n';
-
-		if (flag)
-		{
-			std::thread reciveThread(&ServerImitator::process, this);
-			reciveThread.detach();
-			flag = false;
-		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
-		break;
 	}
 }
 

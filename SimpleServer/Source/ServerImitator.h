@@ -44,14 +44,14 @@ class ServerImitator : public WinsockInterface
 		
 
 		/**
-		 * \brief Main working loop. Network logic to interacte with clients.
+		 * \brief Main infinite working loop. Network logic to interacte with clients.
 		 */
 		void			waitLoop() override;
 
 		/**
-		 * \brief Infinite loop which has a handler for connections.
+		 * \brief Additional loop which has a handler for connections.
 		 */
-		void			process();
+		void			process(bool& flag);
 
 
 	public:
