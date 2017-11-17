@@ -49,19 +49,35 @@ void myInterface::MyShower::paralelShower(std::mutex* mt, bool* flag, MyShower* 
 			_CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
 			GetConsoleScreenBufferInfo(instance->_hConsole, &consoleInfo);
 
-			for (auto& it : instance->_list)
+			for (const auto& it : instance->_list)
 			{
 				it.second->showQuick(instance->_hConsole, curLine);
-				curLine += static_cast<int>(it.second->size())/consoleInfo.dwSize.X + 1;
+				curLine += static_cast<int>(it.second->size()) / consoleInfo.dwSize.X + 1;
 			}
 
-			coord.Y = static_cast<short>(curLine + 2 + logsShown);
-			SetConsoleCursorPosition(instance->_hConsole, coord);
-
-
-			for (size_t i = logsShown; i < instance->_logs.size(); i++)
+			if (instance->_logs.size() >= 10u)
 			{
-				instance->_logs[i].show();
+				coord.Y = static_cast<short>(curLine + 2);
+				SetConsoleCursorPosition(instance->_hConsole, coord);
+
+				logsShown = 0;
+
+				for (auto& it : instance->_logs)
+				{
+					it.show();
+					++logsShown;
+				}
+			}
+			else
+			{
+				coord.Y = static_cast<short>(curLine + 2 + logsShown);
+				SetConsoleCursorPosition(instance->_hConsole, coord);
+
+				for (size_t i = logsShown; i < instance->_logs.size(); ++i)
+				{
+					instance->_logs[i].show();
+					++logsShown;
+				}
 			}
 		}
 
@@ -71,7 +87,7 @@ void myInterface::MyShower::paralelShower(std::mutex* mt, bool* flag, MyShower* 
 	}
 }
 
-myInterface::MyShower::MyShower(): _needFullUpdate(true)
+myInterface::MyShower::MyShower() : _needFullUpdate(true)
 {
 	_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	_paralelShower.startThread(paralelShower, this);
@@ -90,6 +106,10 @@ int myInterface::MyShower::addField(Message* line)
 void myInterface::MyShower::addLog(std::string str)
 {
 	_logs.emplace_back(Field<std::string>("+ " + str, ""));
+	if (_logs.size() > 10u)
+	{
+		_logs.erase(_logs.begin());
+	}
 }
 
 void myInterface::MyShower::clearLog()

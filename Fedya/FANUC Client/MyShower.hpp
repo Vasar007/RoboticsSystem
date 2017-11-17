@@ -31,7 +31,7 @@ namespace myInterface
 		std::map<int, Message*> _list;
 		
 		/**
-		 * \brief Handle of console(only for windows).
+		 * \brief Handle of console (only for windows).
 		 */
 		HANDLE _hConsole;
 
@@ -46,7 +46,7 @@ namespace myInterface
 		std::mutex _mt;
 
 		/**
-		 * \brief Number of next un used field.
+		 * \brief Number of next unused field.
 		 */
 		int _nextFreeField = 0;
 
