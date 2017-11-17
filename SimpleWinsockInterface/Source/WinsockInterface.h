@@ -58,37 +58,37 @@ class WinsockInterface
 		/**
 		 * \brief Structure contains information about the Windows Sockets implementation.
 		 */
-		WSADATA			 _wsaData;
+		WSADATA			_wsaData;
 
 		/**
 		 * \brief Socket used to send coordinates.
 		 */
-		SOCKET			 _socketSend;
+		SOCKET			_socketSend;
 
 		/**
 		 * \brief Socket used to receive coordinates.
 		 */
-		SOCKET			 _socketReceive;
+		SOCKET			_socketReceive;
 	
 		/**
 		 * \brief Structure used to keep socket address to send.
 		 */
-		SOCKADDR_IN		 _socketSendAddress;
+		SOCKADDR_IN		_socketSendAddress;
 
 		/**
 		 * \brief Structure used to keep socket address to receive.
 		 */
-		SOCKADDR_IN		 _socketReceiveAddress;
+		SOCKADDR_IN		_socketReceiveAddress;
 
 		/**
 		 * \brief All information about socket and type of connection.
 		 */
-		std::unique_ptr<ADDRINFO>_addressInfo;
+		std::unique_ptr<ADDRINFO> _addressInfo;
 
 		/**
 		 * \brief Flag used to show status of network interaction.
 		 */
-		bool			 _isRunning;
+		bool			_isRunning;
 
 		/**
 		 * \brief Flag used to check whether winsocket had been initialized.
@@ -98,17 +98,17 @@ class WinsockInterface
 		/**
 		 * \brief Receive buffer that is used to keep answers from clients.
 		 */
-		char*			 _buffer;
+		char*			_buffer;
 
 		/**
 		 * \brief Buffer that is used to keep clients addresses.
 		 */
-		char*			 _message;
+		char*			_message;
 
 		/**
 		 * \brief Size of receive buffer, this is string length.
 		 */
-		const int		 _MAXRECV = 1024;
+		const int		_MAXRECV = 1024;
 	
 		/**
 		 * \brief Table of WinSock errors, which you can get from function WSAGetLastError().
