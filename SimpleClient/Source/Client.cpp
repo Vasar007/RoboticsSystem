@@ -1,7 +1,6 @@
 #include <iostream>
 #include <thread>
 #include <string>
-#include <thread>
 
 #include "Client.h"
 
