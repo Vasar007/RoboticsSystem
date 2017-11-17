@@ -17,8 +17,24 @@
 
 /**
  * \brief	Standard class which provides an interface to interact with WinSock.
- * \details You should create derrived class from this, implement two main functions and then
- *			call all functional stuff that you needed.
+ * \details You should create derrived class from this, implement three main functions 
+ *			(run, waitLoop, launch) and then
+ *			call all functional stuff that you needed. You should work as presented below:
+ * \code
+ * int main()
+ * {
+ *	const int SERVER_PORT	= 9997;
+ *	const std::string SERVER_IP = "192.168.0.100";
+ *  
+ *	Client client(SERVER_PORT, SERVER_IP);
+ *  
+ *	client.init();
+ *	client.launch();
+ *	client.run();
+ *	
+ *	return 0;
+ * }
+ * \endcode
  */
 class WinsockInterface
 {
