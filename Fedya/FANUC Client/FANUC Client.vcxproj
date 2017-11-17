@@ -99,13 +99,15 @@
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -127,42 +129,72 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Field.cpp" />
+    <ClCompile Include="Message.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MyQueue.cpp" />
+    <ClCompile Include="MyShower.cpp" />
+    <ClCompile Include="MyThread.cpp" />
+    <ClCompile Include="RobotComunication.cpp" />
+    <ClCompile Include="RobotRecieve.cpp" />
+    <ClCompile Include="RobotSend.cpp" />
+    <ClCompile Include="SocketWorking.cpp" />
+    <ClCompile Include="StaticField.cpp" />
+    <ClCompile Include="tcpConnection.cpp" />
+    <ClCompile Include="tcpServer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Field.hpp" />
+    <ClInclude Include="FieldDifinition.inl" />
+    <ClInclude Include="MessageDifinition.inl" />
+    <ClInclude Include="MyQueueDifintion.inl" />
+    <ClInclude Include="MyShowerDifinition.inl" />
+    <ClInclude Include="MyThreadDifintion.inl" />
+    <ClInclude Include="RobotComunicationDifinition.inl" />
     <ClInclude Include="RobotCoord.hpp" />
     <ClInclude Include="RobotComunication.hpp" />
-    <ClInclude Include="Field.hpp" />
+    <ClInclude Include="Message.hpp" />
     <ClInclude Include="MyQueue.hpp" />
     <ClInclude Include="MyShower.hpp" />
     <ClInclude Include="MyThread.hpp" />
     <ClInclude Include="RobotRecieve.hpp" />
+    <ClInclude Include="RobotRecieveDifinition.inl" />
     <ClInclude Include="RobotSend.hpp" />
+    <ClInclude Include="RobotSendDifinition.inl" />
     <ClInclude Include="SocketWorking.hpp" />
+    <ClInclude Include="SocketWorkingDifinition.inl" />
+    <ClInclude Include="StaticField.hpp" />
     <ClInclude Include="tcpConnection.hpp" />
+    <ClInclude Include="tcpConnectionDifinition.inl" />
     <ClInclude Include="tcpServer.hpp" />
+    <ClInclude Include="tcpServerDifinition.inl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="fedya_config.txt" />
     <Text Include="logs.txt" />
     <Text Include="saver.txt" />
     <Text Include="sets.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="StaticFieldDifinition.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

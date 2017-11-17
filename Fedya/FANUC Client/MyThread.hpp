@@ -1,75 +1,83 @@
-#pragma once
-
-
 #ifndef MY_THREAD_DEF
-
 #define MY_THREAD_DEF
+#pragma once
 
 #include<thread>
 #include<mutex>
 
-//обертка над потоками
+
+/**
+ * \brief Class for working threads.
+ */
 struct MyThread 
 {
+	/**
+	 * \brief Current thread.
+	 */
 	std::thread _work;
+	/**
+	 * \brief Mutex for locking curretn thread.
+	 */
 	std::mutex _mt;
-	bool _flag = true;
+	/**
+	 * \brief Flag for finishing or continuing current thread.
+	 */
+	bool _flag{ false };
 
+	/**
+	 * \brief Default constructor.
+	 */
 	MyThread() = default;
 
+	/**
+	 * \brief Constructor with starting new thread.
+	 * \tparam Fn Static function.
+	 * \tparam Args Params of static function.
+	 * \param fn Link to static function.
+	 * \param arg Params whick tale this staitc function.
+	 */
 	template <typename Fn, typename... Args>
-	explicit MyThread(Fn&& fn, Args&&... arg)
-	{
-		_flag = true;
-		std::thread th(fn, &_mt, &_flag, arg...);
-		_work.swap(th);
-	}
+	explicit MyThread(Fn&& fn, Args&&... arg);
 
-	//обмен потоков
-	void swap(std::thread& th)
-	{
-		_work.swap(th);
-	}
+	/**
+	 * \brief Method for swapping threads.
+	 * \param th Thread for swapping.
+	 */
+	void swap(std::thread& th);
 
-	//обмен потоков
-	void swap(MyThread& th) noexcept
-	{
-		swap(th._work);
-	}
+	/**
+	 * \brief Function for swapping threads.
+	 * \param th MyThread for swapping.
+	 */
+	void swap(MyThread& th) noexcept;
 
-	//проверка на возможность синхронизации
-	bool joinable() const
-	{
-		return _work.joinable();
-	}
+	/**
+	 * \brief Function for checking if this thread may be joind.
+	 * \return True if this thread may be joind, else false.
+	 */
+	bool joinable() const;
 
-	//запуск нового потока
+	/**
+	 * \brief Function for starting new thread.
+	 * \tparam Fn Static function.
+	 * \tparam Args Params of static function.
+	 * \param fn Link to static function.
+	 * \param arg Params whick tale this staitc function.
+	 */
 	template <typename Fn, typename... Args>
-	void startThread(Fn&& fn, Args&&... arg)
-	{
-		join();
-		_flag = true;
-		std::thread th(fn, &_mt, &_flag, arg...);
-		_work.swap(th);
-	}
+	void startThread(Fn&& fn, Args&&... arg);
 
-	//завершение нового потока
-	void join()
-	{
-		if (joinable()) 
-		{
-			_mt.lock();
-			_flag = false;
-			_mt.unlock();
-			_work.join();
-		}
-	}
+	/**
+	 * \brief Function for stopping current thread.
+	 */
+	void join();
 
-	~MyThread()
-	{
-		join();
-	}
+	/**
+	 * \brief Default destructor.
+	 */
+	~MyThread();
 };
 
+#include "MyThreadDifintion.inl"
 
-#endif // !MyThread_def
+#endif // MyThread_def

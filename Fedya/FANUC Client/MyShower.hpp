@@ -3,114 +3,144 @@
 #ifndef MY_SHOWER
 
 #define MY_SHOWER
-#include "Field.hpp"
+#include "StaticField.hpp"
+#include "MyThread.hpp"
 #include <map>
 #include <mutex>
+#include <vector>
 
+/**
+* \brief Namespace of thread protected conosole inteface.
+*/
 namespace myInterface 
 {
 	//синглтон интерфейса
+	/**
+	 * \brief Singlton of debug inteface.
+	 */
 	class MyShower
 	{
-		std::map<int, Field> _list;
-		int _pos;
-		HANDLE _hConsole;
-		std::mutex _mt;
-		int _stringNumber;
+		/**
+		 * \brief Vector of logs for showing.
+		 */
+		std::vector<Message> _logs;
 
-		MyShower()
-		{
-			_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-			_pos = 0;
-			_stringNumber = 0;
-		}
+		/**
+		 * \brief Map for sorring fields.
+		 */
+		std::map<int, Message*> _list;
 		
-		MyShower(const MyShower&)
-		{
-			_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-			_pos = 0;
-			_stringNumber = 0;
-		}
+		/**
+		 * \brief Handle of console (only for windows).
+		 */
+		HANDLE _hConsole;
+
+		/**
+		 * \brief Flag if interface need to be fully reoutputted.
+		 */
+		bool _needFullUpdate;
 		
-		MyShower& operator = (MyShower &)
-		{
-			_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-			_pos = 0;
-			_stringNumber = 0;
-			return getInstance();
-		}
+		/**
+		 * \brief Mutex for locking thread.
+		 */
+		std::mutex _mt;
+
+		/**
+		 * \brief Number of next unused field.
+		 */
+		int _nextFreeField = 0;
+
+		/**
+		 * \brief Thread for paralel showing interface.
+		 */
+		MyThread _paralelShower;
+
+		/**
+		 * \brief Static function for paralel updating interface.
+		 * \param mt Mutex for locking thread.
+		 * \param flag Flag for ending this thread.
+		 * \param instance Pointer to instance of this class.
+		 */
+		static void paralelShower(std::mutex* mt, bool* flag, MyShower* instance);
+
+		/**
+		 * \brief Default constructor.
+		 */
+		MyShower();
+
+		/**
+		 * \brief Deleted constructor.
+		 */
+		MyShower(const MyShower&) = delete;
+		
+		/**
+		 * \brief Deleted constructor.
+		 */
+		MyShower(const MyShower&&) = delete;
+
+		/**
+		 * \brief Deleted constructor.
+		 * \return
+		 */
+		MyShower& operator = (MyShower &) = delete;
+
+		/**
+		 * \brief Delted constructor.
+		 * \return 
+		 */
+		MyShower& operator = (MyShower &&) = delete;
 
 	public:
 
-		//метод добавления строки в интерфейс
-		int addField(const Field& field)
-		{
-			_mt.lock();
-			_list[++_pos] = field;
-			_mt.unlock();
-			update();
-			return _pos;
-		}
-		
-		//метод перерисовывания всего интерфейса 
-		void update()
-		{
-			_mt.lock();
-			system("cls");
-			_stringNumber = 0;
-			for (auto it = _list.begin();it != _list.end();++it, ++_stringNumber)
-			{
-				it->second.show();
-			}
-			_mt.unlock();
-		}
+		/**
+		 * \brief Method for adding new field.
+		 * \param line Link to new field.
+		 * \return Number of this link in storrage.
+		 */
+		int addField(Message* line);
 
-		//метод бытрого обовления параметров 
-		void updateQiuck()
-		{
-			COORD coord;
-			int i = 0;
-			_mt.lock();
-			for (auto it = _list.begin();it != _list.end();++it, ++i)
-			{
-				it->second.showQuick(_hConsole, i);
-			}
-			coord.X = 0;
-			coord.Y = _stringNumber;
-			SetConsoleCursorPosition(_hConsole, coord);
-			_mt.unlock();
-		}
+		/**
+		 * \brief Method for adding new log.
+		 * \param str Discription of this log.
+		 */
+		void addLog(std::string str);
 
-		//метод вывода дополнительной информации
+		/**
+		 * \brief Method for adding new log.
+		 * \tparam T Type of information for showing.
+		 * \param str Discription of this log.
+		 * \param obj Information for showing.
+		 */
 		template<typename T>
-		void show(T obj)
-		{
-			std::cout << obj << "\n";
-			++_stringNumber;
-		}
+		void addLog(std::string str, T obj);
 
-		//метод возвращающий реализацию класса
-		static MyShower& getInstance()
-		{
-			static MyShower instance;
-			return instance;
-		}
+		/**
+		 * \brief Method for deleting all logs.
+		 */
+		void clearLog();
 
-		//метод удаления поля по индексу
-		void deleteField(int fieldId)
-		{
-			_mt.lock();
-			_list.erase(fieldId);
-			_mt.unlock();
-			update();
-		}
+		/**
+		 * \brief Static Method for getting instance of this class.
+		 * \return Instance of this class.
+		 */
+		static MyShower& getInstance();
 
-		~MyShower()
-		{
-			_list.clear();
-		}
+		/**
+		 * \brief Method for deleting field by it index.
+		 * \param fieldId Id of field.
+		 */
+		void deleteField(int fieldId);
+
+		~MyShower();
 	};
 }
 
-	//*/
+/*ToDo
+ * Case of adding and removing too many fields.
+ * Reverse logs.
+ * Adding controlling for supervisor.
+ */
+
+#include "MyShowerDifinition.inl"
+
 #endif

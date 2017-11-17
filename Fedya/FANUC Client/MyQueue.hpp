@@ -6,123 +6,98 @@
 
 #include<queue>
 #include<mutex>
+#include"StaticField.hpp"
 
-//обртка над очередью
+/**
+ * \brief Class which impliment a queue for multithreading and time measurement.
+ * \tparam T Object in queue.
+ */
 template<typename T>
 class MyQueue
 {
-	std::queue<std::pair<int,T>> _q;
+	/**
+	 * \brief Basic queue with elements.
+	 */
+	std::queue<std::pair<clock_t,T>> _q;
+	
+	/**
+	 * \brief Mutex for locking threads.
+	 */
 	std::mutex _mt;
-	int _sizeOfQueue, _timeDifference,_interfaceId1,_interfaceId2;
-	bool _withInterface;
+
+	/**
+	 * \brief Size of queue for interface.
+	 */
+	myInterface::StaticField<int> _sizeOfQueue{"Size of queue: ",0};
+	
+	/**
+	 * \brief Time differnce of last erased element betwen adding and erasing elemnt in queue.
+	 */
+	myInterface::StaticField<int> _timeDifference{"Time delay in queue: ",0};
+	
 public:
-	explicit MyQueue(std::string comment = "MyQueue")
-	{
-		_sizeOfQueue = 0;
-		_timeDifference = 0;
-		_withInterface = comment != "without interface";
-		if (_withInterface) 
-		{
-			_interfaceId1 = myInterface::MyShower::getInstance().addField(
-				myInterface::Field(std::string("size of ") + comment + ": ", &_sizeOfQueue));
-			_interfaceId2 = myInterface::MyShower::getInstance().addField(
-				myInterface::Field(std::string("time difference between inserting and erasing point in ") + comment + ": ", &_timeDifference));
-		}
-	}
+	/**
+	 * \brief Contructor of queue.
+	 * \param comment Discription of this queue which will show in interface. 
+	 * If it isn't specify this queue would be with default.
+	 */
+	explicit MyQueue(std::string comment);
 
-	//метод добавления элемента в очередь
-	void push(T elem)
-	{
-		int t = clock();
-		_mt.lock();
-		_q.push(std::make_pair(t,elem));
-		_mt.unlock();
-		++_sizeOfQueue;
-	}
+	explicit MyQueue() = default;
 
-	//метод прверки на пустоту
-	bool empty()
-	{
-		_mt.lock();
-		const bool ans = _q.empty();
-		_mt.unlock();
-		return ans;
-	}
+	/**
+	 * \brief Function for adding element.
+	 * \param elem Element for adding.
+	 */
+	void push(T elem);
 
-	//метод получения размера
-	int size()
-	{
-		_mt.lock();
-		const int ans = _q.size();
-		_mt.unlock();
-		return ans;
-	}
+	/**
+	 * \brief Fuction for checking if this queue is empty.
+	 * \return True if epmty, else false.
+	 */
+	bool empty();
 
-	//метод получения временной отметки первой точки
-	int frontTime()
-	{
-		_mt.lock();
-		const int ans = _q.front().first;
-		_mt.unlock();
-		return ans;
-	}
+	/**
+	 * \brief Function for checking size of queue.
+	 * \return Retrun a size of queue.
+	 */
+	int size();
 
-	//метод получения первого элемента
-	T front()
-	{
-		_mt.lock();
-		const T elem = _q.front().second;
-		_mt.unlock();
-		return elem;
-	}
+	/**
+	 * \brief Function for getting time when front element was added.
+	 * \return Return time of adding front element.
+	 */
+	clock_t frontTime();
 
-	//метод удаления первого элемента
-	void pop()
-	{
-		_mt.lock();
-		_timeDifference = clock() - _q.front().first;
-		_q.pop();
-		--_sizeOfQueue;
-		_mt.unlock();
-	}
+	/**
+	 * \brief Function for getting front element.
+	 * \return Front element.
+	 */
+	T front();
 
-	//метод обмена очередями
-	void swap(MyQueue& q) noexcept
-	{
-		_mt.lock();
-		q._mt.lock();
-		_q.swap(q._q);
-		q._mt.unlock();
-		_mt.unlock();
-	}
+	/**
+	 * \brief Erase front element.
+	 */
+	void pop();
 
-	//сетод пытающий удалить первый элемент с последующим его удалением
-	std::pair<bool, T> pull()
-	{
-		std::pair<bool, T> ans;
-		_mt.lock();
-		if (_q.empty())
-			ans.first = false;
-		else 
-		{
-			ans.first = true;
-			ans.second = _q.front().second;
-			_q.pop();
-			--_sizeOfQueue;
-		}
-		_mt.unlock();
-		return ans;
-	}
-	~MyQueue()
-	{
-		while (!_q.empty())
-			_q.pop();
-		if (_withInterface) 
-		{
-			myInterface::MyShower::getInstance().deleteField(_interfaceId1);
-			myInterface::MyShower::getInstance().deleteField(_interfaceId2);
-		}
-	}
+	/**
+	 * \brief function for swapping queues
+	 * \param q MyQueue for swapping
+	 */
+	void swap(MyQueue& q) noexcept;
+
+	/**
+	 * \brief Function which trys to erase ans return front element.
+	 * \return True and object if there was front element or false and defult object if there wasn't front object.
+	 */
+	std::pair<bool, T> pull();
+
+	/**
+	 * \brief Default destructor.
+	 */
+	~MyQueue();
 };
+
+#include "MyQueueDifintion.inl"
 
 #endif // !MY_QUEUE_DEF

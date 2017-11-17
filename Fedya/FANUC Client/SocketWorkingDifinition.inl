@@ -1,0 +1,5 @@
+#ifndef SOCKET_WORKING_DIFINITION
+#define SOCKET_WORKING_DIFINITION
+#pragma once
+
+#endif

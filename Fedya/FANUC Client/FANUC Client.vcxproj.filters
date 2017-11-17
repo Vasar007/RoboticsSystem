@@ -28,16 +28,76 @@
     <Filter Include="Заголовочные файлы\ConsoleInteface">
       <UniqueIdentifier>{33db4b7e-70f1-4081-9d88-433746b5bb6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\ModificatedClasses">
+      <UniqueIdentifier>{9ab094a7-60cc-4b56-a581-9e822384bc60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\template difinitions">
+      <UniqueIdentifier>{439ebc74-e491-443d-8a34-b927221c1f45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\template difinitions\ModificatedClasses">
+      <UniqueIdentifier>{ffe7d613-5078-480f-bd88-6f14c25f0073}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\winSock">
+      <UniqueIdentifier>{087da938-61da-48b4-851a-d72a0e0a0da3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\template difinitions\winSock">
+      <UniqueIdentifier>{f4335fa8-709e-4018-8602-85e77f420825}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\RobotConnection">
+      <UniqueIdentifier>{95d1b3b2-e382-41ce-8410-831d7dc69aff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\template difinitions\RobotConnection">
+      <UniqueIdentifier>{891e73d0-5621-46e8-9116-9020b9dd591c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\template difinitions\ConsoleInterface">
+      <UniqueIdentifier>{02f3ccb7-4094-4251-9129-05ae5c360bab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\ConsoleInterface">
+      <UniqueIdentifier>{2a30c8b9-7a09-418e-a5a1-d9a310481c54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="MyThread.cpp">
+      <Filter>Файлы исходного кода\ModificatedClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="MyQueue.cpp">
+      <Filter>Файлы исходного кода\ModificatedClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="tcpConnection.cpp">
+      <Filter>Файлы исходного кода\winSock</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketWorking.cpp">
+      <Filter>Файлы исходного кода\winSock</Filter>
+    </ClCompile>
+    <ClCompile Include="tcpServer.cpp">
+      <Filter>Файлы исходного кода\winSock</Filter>
+    </ClCompile>
+    <ClCompile Include="RobotSend.cpp">
+      <Filter>Файлы исходного кода\RobotConnection</Filter>
+    </ClCompile>
+    <ClCompile Include="RobotRecieve.cpp">
+      <Filter>Файлы исходного кода\RobotConnection</Filter>
+    </ClCompile>
+    <ClCompile Include="RobotComunication.cpp">
+      <Filter>Файлы исходного кода\RobotConnection</Filter>
+    </ClCompile>
+    <ClCompile Include="MyShower.cpp">
+      <Filter>Файлы исходного кода\ConsoleInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="Message.cpp">
+      <Filter>Файлы исходного кода\ConsoleInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="Field.cpp">
+      <Filter>Файлы исходного кода\ConsoleInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticField.cpp">
+      <Filter>Файлы исходного кода\ConsoleInterface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Field.hpp">
-      <Filter>Заголовочные файлы\ConsoleInteface</Filter>
-    </ClInclude>
     <ClInclude Include="MyShower.hpp">
       <Filter>Заголовочные файлы\ConsoleInteface</Filter>
     </ClInclude>
@@ -68,11 +128,58 @@
     <ClInclude Include="tcpConnection.hpp">
       <Filter>Заголовочные файлы\winSock</Filter>
     </ClInclude>
+    <ClInclude Include="Message.hpp">
+      <Filter>Заголовочные файлы\ConsoleInteface</Filter>
+    </ClInclude>
+    <ClInclude Include="Field.hpp">
+      <Filter>Заголовочные файлы\ConsoleInteface</Filter>
+    </ClInclude>
+    <ClInclude Include="MyQueueDifintion.inl">
+      <Filter>Заголовочные файлы\template difinitions\ModificatedClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="MyThreadDifintion.inl">
+      <Filter>Заголовочные файлы\template difinitions\ModificatedClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\ConsoleInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\ConsoleInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="MyShowerDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\ConsoleInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotComunicationDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotRecieveDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotSendDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\RobotConnection</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketWorkingDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
+    </ClInclude>
+    <ClInclude Include="tcpConnectionDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
+    </ClInclude>
+    <ClInclude Include="tcpServerDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\winSock</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticField.hpp">
+      <Filter>Заголовочные файлы\ConsoleInteface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="logs.txt" />
-    <Text Include="sets.txt" />
     <Text Include="saver.txt" />
     <Text Include="fedya_config.txt" />
+    <Text Include="sets.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="StaticFieldDifinition.inl">
+      <Filter>Заголовочные файлы\template difinitions\ConsoleInterface</Filter>
+    </None>
   </ItemGroup>
 </Project>

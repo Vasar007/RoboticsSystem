@@ -63,8 +63,8 @@ void Client::receive()
 
 		if (valRead == SOCKET_ERROR)
 		{
-			int error_code = WSAGetLastError();
-			if (error_code == WSAECONNRESET)
+			int errorCode = WSAGetLastError();
+			if (errorCode == WSAECONNRESET)
 			{
 				// Get IP address back and print it.
 				inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
@@ -78,7 +78,7 @@ void Client::receive()
 			}
 			else
 			{
-				std::cout << "recv failed with error code: " << error_code << std::endl;
+				std::cout << "recv failed with error code: " << errorCode << std::endl;
 			}
 		}
 		else if (valRead == 0)
