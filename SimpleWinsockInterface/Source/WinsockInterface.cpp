@@ -101,7 +101,7 @@ void WinsockInterface::bindSocket(const SOCKET& socketToBind, SOCKADDR_IN& socke
 
 void WinsockInterface::listenOn(const SOCKET& socketToList, const int backlog) const
 {
-	// Check if input data is correct (backlog can has only positive value).
+	// Check if input data is correct (backlog should only positive value).
 	assert(backlog > 0);
 
 	// Include "listening" mode for receiving incoming connections.
@@ -159,6 +159,8 @@ void WinsockInterface::sendData(const SOCKET& socketToSend, const std::string& d
 	if (send(socketToSend, dataChar, strlen(dataChar), 0) == SOCKET_ERROR)
 	{
 		std::cout << "SEND FAILED." << std::endl;
+		return;
 	}
+
 	std::cout << "Sent data: " << data << " successfully.\n\n";
 }
