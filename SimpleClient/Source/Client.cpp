@@ -53,6 +53,8 @@ void Client::receive()
 	{
 		memset(_message, 0, _MAXRECV);
 
+		memset(_buffer, 0, _MAXRECV);
+
 		// Get details of the client.
 		getpeername(_socketSend, reinterpret_cast<SOCKADDR*>(&address),
 					static_cast<int*>(&addrlen));

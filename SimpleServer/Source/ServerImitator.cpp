@@ -37,27 +37,7 @@ ServerImitator& ServerImitator::operator=(ServerImitator&& other) noexcept
 	return *this;
 }
 
-void ServerImitator::sendReply(std::string& data) const
-{
-	int addrLen = sizeof(SOCKADDR_IN);
-
-	SOCKADDR_IN address;
-
-	std::cout << "\n\n\nThread started...\n\n";
-	
-	// Get details of the client.
-	getpeername(_clientSocketSend, reinterpret_cast<SOCKADDR*>(&address),
-				static_cast<int*>(&addrLen));
-	
-	///std::string toSending = "985000 0 940000 180000 0 0 10 ";
-	
-	if (!data.empty())
-	{
-		sendData(_clientSocketSend, data);
-	}
-}
-
-void ServerImitator::receive()
+void ServerImitator::process()
 {
 	int addrLen = sizeof(SOCKADDR_IN);
 
@@ -70,6 +50,8 @@ void ServerImitator::receive()
 	while (true)
 	{
 		memset(_message, 0, _MAXRECV);
+
+		memset(_buffer, 0, _MAXRECV);
 
 		// Get details of the client.
 		getpeername(_clientSocketReceive, reinterpret_cast<SOCKADDR*>(&address),
@@ -132,6 +114,7 @@ void ServerImitator::receive()
 			if (!toSending.empty())
 			{
 				sendData(_clientSocketSend, toSending);
+				sbuf.clear();
 			}
 
 			//std::thread sendThread(&ServerImitator::sendReply, this, toSending);
@@ -145,8 +128,6 @@ void ServerImitator::receive()
 void ServerImitator::waitLoop()
 {
 	int addrLen = sizeof(SOCKADDR_IN);
-
-	std::string sbuf;
 
 	SOCKADDR_IN address;
 
@@ -188,7 +169,7 @@ void ServerImitator::waitLoop()
 
 		if (flag)
 		{
-			std::thread reciveThread(&ServerImitator::receive, this);
+			std::thread reciveThread(&ServerImitator::process, this);
 			reciveThread.detach();
 			flag = false;
 		}

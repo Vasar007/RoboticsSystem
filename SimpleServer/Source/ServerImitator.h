@@ -32,19 +32,26 @@ class ServerImitator : public WinsockInterface
 		 */
 		int				_backlog;
 
+		/**
+		 * \brief Connected client socket used to send data.
+		 */
 		SOCKET			_clientSocketSend;
 
+		/**
+		 * \brief Connected client socket used to receive data.
+		 */
 		SOCKET			_clientSocketReceive;
 		
 
 		/**
-		 * \brief Main infinite working loop. Network logic to interacte with clients.
+		 * \brief Main working loop. Network logic to interacte with clients.
 		 */
 		void			waitLoop() override;
 
-		void			receive();
-
-		void			sendReply(std::string& data) const;
+		/**
+		 * \brief Infinite loop which has a handler for connections.
+		 */
+		void			process();
 
 
 	public:
