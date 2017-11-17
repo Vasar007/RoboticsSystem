@@ -25,28 +25,26 @@ class ServerImitator : public WinsockInterface
 		/**
 		 * \brief Variable used to keep reciving port.
 		 */
-		int				_recivingPort;
+		int				_receivingPort;
 						
 		/**
 		 * \brief The maximum length of the queue of pending connections.
 		 */
 		int				_backlog;
 
-		/**
-		 * \brief Set of socket descriptors.
-		 */
-		FD_SET			 _readfds;
+		SOCKET			_clientSocketSend;
 
-		/**
-		 * \brief Array which contains all client sockets.
-		 */
-		std::vector<int> _clientSockets;
-
+		SOCKET			_clientSocketReceive;
+		
 
 		/**
 		 * \brief Main infinite working loop. Network logic to interacte with clients.
 		 */
 		void			waitLoop() override;
+
+		void			receive();
+
+		void			sendReply(std::string& data) const;
 
 
 	public:
