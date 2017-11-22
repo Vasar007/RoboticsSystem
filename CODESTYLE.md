@@ -279,3 +279,13 @@ void foo()
   
 }
 ```
+
+## Blank spaces
+- Should be blank line at the end of file.
+```C++
+int main()
+{
+	retun 0;
+}
+// Blank line
+```
