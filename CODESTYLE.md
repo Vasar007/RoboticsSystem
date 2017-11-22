@@ -87,9 +87,13 @@ void codeGoesHere()
 - .hpp/.h file corresponding to this .cpp file (if applicable)
 - Forward declarations
 - Notice two spaces between includes and code
+- All header files should have #define guards to prevent multiple inclusion. The format of the symbol name should be <PROJECT>_<FILE>_H.
 
 - Example:
 ```C++
+#ifndef FOO_BAR_H
+#define FOO_BAR_H
+
 #include <vector>
 #include <memory>
 #include <thread>
@@ -117,6 +121,9 @@ class Camera;
 class World
 {
 //etc..
+};
+
+#endif  // FOO_BAR_H
 ```
 
 ## Constants
