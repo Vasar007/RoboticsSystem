@@ -257,3 +257,18 @@ void foo(// Many args..
 
 ## Curly brackets
 - Prefer to place the brackets everywhere
+```C++
+void foo()
+{
+  int temp = doSomething();
+  if (condition1)
+  {
+    // Do smth.
+  }
+  else
+  {
+    return;
+  }
+  
+}
+```
