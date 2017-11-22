@@ -3,6 +3,8 @@
 
 #include "RobotData.h"
 
+namespace vasily
+{
 
 RobotData::RobotData()
 : mValues()
@@ -40,4 +42,6 @@ std::istream& operator>>(std::istream& cin, RobotData& robotData)
 	}
 
 	return cin;
+}
+
 }

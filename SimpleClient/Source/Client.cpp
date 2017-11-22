@@ -1,26 +1,18 @@
 #include <iostream>
 #include <thread>
-#include <string>
 
 #include "Client.h"
 
 
-Client::Client(const int serverPort, const std::string& serverIP)
+namespace vasily
+{
+
+Client::Client(const int serverPort, const std::string_view serverIP)
 	: WinsockInterface()
 	, _robotData()
-	,_serverIP(serverIP)
-	,_serverPort(serverPort)
+	, _serverIP(serverIP)
+	, _serverPort(serverPort)
 {
-}
-
-void Client::setTimeout(const SOCKET& socketForSetting, const long seconds,
-						const long microseconds) const
-{
-	TIMEVAL timeout;
-	timeout.tv_sec	= seconds;
-	timeout.tv_usec	= microseconds;
-	setsockopt(socketForSetting, SOL_SOCKET, SO_RCVTIMEO,
-				reinterpret_cast<char*>(&timeout), sizeof timeout);
 }
 
 Client::Client(Client&& other) noexcept
@@ -47,7 +39,7 @@ void Client::receive()
 
 	SOCKADDR_IN address;
 
-	std::cout << "\n\n\nThread started...\n\n";
+	utils::println("\n\n\nThread started...\n");
 
 	while (true)
 	{
@@ -59,36 +51,34 @@ void Client::receive()
 		getpeername(_socketSend, reinterpret_cast<SOCKADDR*>(&address),
 					static_cast<int*>(&addrlen));
 
-		int valRead = recv(_socketSend, _buffer, _MAXRECV, 0);
+		int valRead			= recv(_socketSend, _buffer, _MAXRECV, 0);
+		u_short serverPort	= ntohs(address.sin_port);
 
+		// Get IP address back and print it.
+		inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
+		
 		if (valRead == SOCKET_ERROR)
 		{
 			int errorCode = WSAGetLastError();
+
 			if (errorCode == WSAECONNRESET)
 			{
-				// Get IP address back and print it.
-				inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
-
 				// Somebody disconnected, get his details and print.
-				std::cout << "Server disconnected unexpectedly, ip " << _message << " , port " <<
-					ntohs(address.sin_port) << '\n';
-
-				_isRunning = false;
-				tryReconnect(ntohs(address.sin_port));
+				utils::println("Server disconnected unexpectedly, IP", _message, ", PORT",
+								serverPort);
 			}
 			else
 			{
-				std::cout << "recv failed with error code: " << errorCode << std::endl;
+				utils::println("recv failed with error code:", errorCode);
 			}
+
+			_isRunning = false;
+			tryReconnect(serverPort);
 		}
 		else if (valRead == 0)
 		{
-			// Get IP address back and print it.
-			inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
-
 			// Somebody disconnected, get his details and print.
-			std::cout << "Server disconnected, ip " << _message << " , port " <<
-				ntohs(address.sin_port) << '\n';
+			utils::println("Server disconnected, IP", _message, ", PORT", serverPort);
 		}
 		// Echo back the message that came in.
 		else if (valRead > 0)
@@ -97,14 +87,8 @@ void Client::receive()
 			// handling functions.
 			_buffer[valRead] = '\0';
 
-			// Get IP address back and print it.
-			inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
-			std::cout << _message << ":" << ntohs(address.sin_port) << " - " << _buffer << '\n';
-
-			std::cout << _buffer << '\n';
+			utils::println(_message, ':', serverPort, '-', _buffer);
 		}
-
-		//std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 	}
 }
 
@@ -133,7 +117,7 @@ void Client::waitLoop()
 	std::thread reciveThread(&Client::receive, this);
 	reciveThread.detach();
 
-	std::cout << "\n\n\nWaiting for reply...\n\n";
+	utils::println("\n\n\nWaiting for reply...\n");
 
 	while (true)
 	{
@@ -163,7 +147,7 @@ std::string Client::getServerIP() const
 	return _serverIP;
 }
 
-void Client::setServerIP(const std::string& newServerIP)
+void Client::setServerIP(std::string_view newServerIP)
 {
 	_serverIP = newServerIP;
 }
@@ -173,9 +157,13 @@ void Client::tryReconnect(const int port)
 	while (!_isRunning)
 	{
 		closesocket(_socketSend);
+		closesocket(_socketReceive);
 
 		initSocket(_socketSend);
-		_isRunning = tryConnect(port, _serverIP, _socketSend, _socketSendAddress);
+		initSocket(_socketReceive);
+		//_isRunning = tryConnect(port, _serverIP, _socketSend, _socketSendAddress);
+		_isRunning = tryConnect(9999, _serverIP, _socketSend, _socketSendAddress);
+		_isRunning = tryConnect(9998, _serverIP, _socketReceive, _socketReceiveAddress);
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	}
@@ -189,6 +177,10 @@ void Client::run()
 
 void Client::launch()
 {
-	tryConnect(_serverPort, _serverIP, _socketSend, _socketSendAddress);
-	setTimeout(_socketSend, 1000, 0);
+	//tryConnect(_serverPort, _serverIP, _socketSend, _socketSendAddress);
+	tryConnect(9999, _serverIP, _socketSend, _socketSendAddress);
+	tryConnect(9998, _serverIP, _socketReceive, _socketReceiveAddress);
+	//setTimeout(_socketSend, 1000, 0);
+}
+
 }

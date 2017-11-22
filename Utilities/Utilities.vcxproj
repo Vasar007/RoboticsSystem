@@ -115,12 +115,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Print.h" />
     <ClInclude Include="Source\Utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\Print.inl" />
     <None Include="Source\Utility.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Print.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

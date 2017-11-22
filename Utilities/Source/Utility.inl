@@ -4,7 +4,7 @@
 
 
 template <class Container>
-void split(const std::string& str, Container& cont, const std::string& delims) noexcept
+void split(const std::string& str, Container& cont, const std::string_view delims) noexcept
 {
 	std::size_t previous	= 0u;
 	std::size_t current		= str.find_first_of(delims);

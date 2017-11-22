@@ -14,7 +14,6 @@
 */
 namespace myInterface 
 {
-	//синглтон интерфейса
 	/**
 	 * \brief Singlton of debug inteface.
 	 */

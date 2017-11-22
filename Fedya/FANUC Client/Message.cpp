@@ -11,7 +11,8 @@ myInterface::Message::Message(std::string discription, std::string message = "")
 
 void myInterface::Message::showQuick(HANDLE hConsole, int line)
 {
-	if (_needUpdate) {
+	if (_needUpdate)
+	{
 
 		COORD coord;
 		coord.X = static_cast<short>(_discription.size());

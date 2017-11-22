@@ -3,7 +3,6 @@
 #pragma once
 
 #include <map>
-#include <vector>
 #include <memory>
 #include <winsock2.h>
 #include <Ws2tcpip.h>
@@ -15,6 +14,9 @@
 #pragma comment (lib, "AdvApi32.lib")
 
 
+namespace vasily
+{
+	
 /**
  * \brief	Standard class which provides an interface to interact with WinSock.
  * \details You should create derrived class from this, implement three main functions 
@@ -38,260 +40,214 @@
  */
 class WinsockInterface
 {
-	public:
-		/**
-		 * \brief List of non-socket errors type that can occured.
-		 */
-		enum ErrorType
-		{
-			FAILED_INITIALIZE_WSDATA	= -1,
-			FAILED_CREATE_SOCKET		= -2,
-			FAILED_BIND					= -3,
-			FAILED_ACCEPT				= -4,
-			FAILED_LISTEN				= -5,
-			FAILED_SELECT_CALL			= -6,
-			FAILED_ACCEPT_NEW_CLIENT	= -7
-		};
+public:
+	/**
+	 * \brief List of non-socket errors type that can occured.
+	 */
+	enum class ErrorType
+	{
+		FAILED_INITIALIZE_WSDATA	= -1,
+		FAILED_CREATE_SOCKET		= -2,
+		FAILED_BIND					= -3,
+		FAILED_ACCEPT				= -4,
+		FAILED_LISTEN				= -5,
+		FAILED_SELECT_CALL			= -6,
+		FAILED_ACCEPT_NEW_CLIENT	= -7
+	};
+
+
+protected:
+	/**
+	 * \brief Structure contains information about the Windows Sockets implementation.
+	 */
+	WSADATA					_wsaData;
+
+	/**
+	 * \brief Socket used to send coordinates.
+	 */
+	SOCKET					_socketSend;
+
+	/**
+	 * \brief Socket used to receive coordinates.
+	 */
+	SOCKET					_socketReceive;
+
+	/**
+	 * \brief Structure used to keep socket address to send.
+	 */
+	SOCKADDR_IN				_socketSendAddress;
+
+	/**
+	 * \brief Structure used to keep socket address to receive.
+	 */
+	SOCKADDR_IN				_socketReceiveAddress;
+
+	/**
+	 * \brief All information about socket and type of connection.
+	 */
+	std::unique_ptr<ADDRINFO> _addressInfo;
+
+	/**
+	 * \brief Flag used to show status of network interaction.
+	 */
+	bool					_isRunning;
+
+	/**
+	 * \brief Flag used to check whether winsocket had been initialized.
+	 */
+	bool					_isInitialized;
+
+	/**
+	 * \brief Receive buffer that is used to keep answers from clients.
+	 */
+	char*					_buffer;
+
+	/**
+	 * \brief Buffer that is used to keep clients addresses.
+	 */
+	char*					_message;
+
+	/**
+	 * \brief Size of receive buffer, this is string length.
+	 */
+	static constexpr int	_MAXRECV = 1024;
+
+	/**
+	 * \brief Table of WinSock errors, which you can get from function WSAGetLastError().
+	 */
+	static const std::map<int, std::string> _TABLE_OF_ERRORS;
+
+
+	/**
+	 * \brief				Function initiates use of the Winsock DLL by a process.
+	 * \param[out] wsaData	A reference to the WSADATA data structure that is to receive details
+	 *						of the WinSock implementation.
+	 */
+	void		 initWinsock(WSADATA& wsaData) const;
+
+	/**
+	 * \brief					Function bindes a socket that is bound to a specific transport 
+	 *							service provider.
+	 * \param[out] socketToInit	Descriptor referencing socket.
+	 * \param[in] aiProtocol	The protocol to be used. The possible options for the protocol
+	 *							parameter are specific to the address family and socket type
+	 *							specified. 
+	 */
+	void		 initSocket(SOCKET& socketToInit, const int aiProtocol = 6) const;
+				 
+	/**
+	 * \brief						Function associates a local address with a socket.
+	 * \param[in] socketToBind		A descriptor identifying an unbound socket.
+	 * \param[out] socketAddress	A pointer to a sockaddr structure of the local address to 
+	 *								assign to the bound socket.
+	 * \param port					Port for the socket that is being bound.
+	 */
+	void		 bindSocket(const SOCKET& socketToBind, SOCKADDR_IN& socketAddress, 
+							const int port) const;
+
+	/**
+	 * \brief					Function places a socket in a state in which it is listening for
+	 *							an incoming connection.
+	 * \param[in] socketToList	A descriptor identifying a bound, unconnected socket.
+	 * \param[in] backlog		The maximum length of the queue of pending connections.
+	 */
+	void		 listenOn(const SOCKET& socketToList, const int backlog = 10) const;
+
+	/**
+	 * \brief						Function establishes a connection to a specified socket.
+	 * \param[in] port				Port for connection.
+	 * \param[in] ip				IP address for connection.
+	 * \param[in] socketToConnect	A descriptor identifying an unconnected socket.
+	 * \param[out] socketAddress	A pointer to the sockaddr structure to which the connection
+	 *								should be established.
+	 * \return						If no error occurs, connect returns zero. Otherwise, it 
+	 *								returns SOCKET_ERROR, and a specific error code can be 
+	 *								retrieved by calling WSAGetLastError.
+	 */
+	bool		 tryConnect(const int port, const std::string& ip, 
+							const SOCKET& socketToConnect, SOCKADDR_IN& socketAddress) const;
 	
-	
-	protected:
-		/**
-		 * \brief Structure contains information about the Windows Sockets implementation.
-		 */
-		WSADATA			_wsaData;
+	/**
+	 * \brief				Function sends data on a connected socket.
+	 * \param[out] socketToSend	A descriptor identifying a connected socket.
+	 * \param[out] data			A buffer containing the data to be transmitted.
+	 */
+	void		 sendData(const SOCKET& socketToSend, const std::string& data) const;
 
-		/**
-		 * \brief Socket used to send coordinates.
-		 */
-		SOCKET			_socketSend;
+	/**
+	 * \brief						Function sets timeout for socket.
+	 * \param[in] socketForSetting	A descriptor identifying a socket.
+	 * \param[in] seconds			Time interval, in seconds.
+	 * \param[in] microseconds		Time interval, in microseconds.
+	 */
+	void		setTimeout(const SOCKET& socketForSetting,
+							const long seconds, const long microseconds) const;
 
-		/**
-		 * \brief Socket used to receive coordinates.
-		 */
-		SOCKET			_socketReceive;
-	
-		/**
-		 * \brief Structure used to keep socket address to send.
-		 */
-		SOCKADDR_IN		_socketSendAddress;
+	/**
+	 * \brief Main infinite working loop. All network logic should be placed here.
+	 */
+	virtual void waitLoop() = 0;
 
-		/**
-		 * \brief Structure used to keep socket address to receive.
-		 */
-		SOCKADDR_IN		_socketReceiveAddress;
 
-		/**
-		 * \brief All information about socket and type of connection.
-		 */
-		std::unique_ptr<ADDRINFO> _addressInfo;
+public:
+	/**
+	  * \brief Default constructor that initializes protected fields (except sockets).
+	  */
+						WinsockInterface();
 
-		/**
-		 * \brief Flag used to show status of network interaction.
-		 */
-		bool			_isRunning;
+	/**
+	 * \brief Default destructor (delete buffers and close all sockets and WinSock data).
+	 */
+	virtual				~WinsockInterface() noexcept;
 
-		/**
-		 * \brief Flag used to check whether winsocket had been initialized.
-		 */
-		bool			_isInitialized;
-	
-		/**
-		 * \brief Receive buffer that is used to keep answers from clients.
-		 */
-		char*			_buffer;
+	/**
+	 * \brief			Deleted copy constructor.
+	 * \param[in] other Other object.
+	 */
+						WinsockInterface(const WinsockInterface& other)		= delete;
 
-		/**
-		 * \brief Buffer that is used to keep clients addresses.
-		 */
-		char*			_message;
+	/**
+	 * \brief			Deleted copy assignment operator.
+	 * \param[in] other Other object.
+	 * \return			Returns nothing because it's deleted.
+	 */
+	WinsockInterface&	operator=(const WinsockInterface& other)			= delete;
 
-		/**
-		 * \brief Size of receive buffer, this is string length.
-		 */
-		const int		_MAXRECV = 1024;
-	
-		/**
-		 * \brief Table of WinSock errors, which you can get from function WSAGetLastError().
-		 */
-		const std::map<int, std::string> _TABLE_OF_ERRORS =
-		{
-			{ 6,		"Specified event object handle is invalid." },
-			{ 8,		"Insufficient memory available." },
-			{ 87,		"One or more parameters are invalid." },
-			{ 995,		"Overlapped operation aborted." },
-			{ 996,		"Overlapped I/O event object not in signaled state." },
-			{ 997,		"Overlapped operations will complete later." },
-			{ 10004,	"Interrupted function call." },
-			{ 10009,	"File handle is not valid." },
-			{ 10013,	"Permission denied." },
-			{ 10014,	"Bad address" },
-			{ 10022,	"Invalid argument." },
-			{ 10024,	"Too many open files." },
-			{ 10035,	"Resource temporarily unavailable." },
-			{ 10036,	"Operation now in progress." },
-			{ 10037,	"Operation already in progress." },
-			{ 10038,	"Socket operation on nonsocket." },
-			{ 10039,	"Destination address required." },
-			{ 10040,	"Message too long." },
-			{ 10041,	"Protocol wrong type for socket." },
-			{ 10042,	"Bad protocol option." },
-			{ 10043,	"Protocol not supported." },
-			{ 10044,	"Socket type not supported." },
-			{ 10045,	"Operation not supported." },
-			{ 10046,	"Protocol family not supported." },
-			{ 10047,	"Address family not supported by protocol family." },
-			{ 10048,	"Address already in use." },
-			{ 10049,	"Cannot assign requested address." },
-			{ 10050,	"Network is down." },
-			{ 10051,	"Network is unreachable." },
-			{ 10052,	"Network dropped connection on reset." },
-			{ 10053,	"Software caused connection abort." },
-			{ 10054,	"Connection reset by peer." },
-			{ 10055,	"No buffer space available." },
-			{ 10056,	"Socket is already connected." },
-			{ 10057,	"Socket is not connected." },
-			{ 10058,	"Cannot send after socket shutdown." },
-			{ 10059,	"Too many references." },
-			{ 10060,	"Connection timed out." },
-			{ 10061,	"Connection refused." },
-			{ 10062,	"Cannot translate name." },
-			{ 10063,	"Name too long." },
-			{ 10064,	"Host is down." },
-			{ 10065,	"No route to host." },
-			{ 10066,	"Directory not empty." },
-			{ 10067,	"Too many processes." },
-			{ 10068,	"User quota exceeded." },
-			{ 10069,	"Disk quota exceeded." },
-			{ 10070,	"Stale file handle reference." },
-			{ 10071,	"Item is remote." },
-			{ 10091,	"Network subsystem is unavailable." },
-			{ 10092,	"Winsock.dll version out of range." },
-			{ 10093,	"Successful WSAStartup not yet performed." },
-			{ 10101,	"Graceful shutdown in progress." },
-			{ 10102,	"No more results." },
-			{ 99999,	"Some another error occured..." }
-		};
+	/**
+	 * \brief				Deleted move constructor.
+	 * \param[out] other	Other object.
+	 */
+						WinsockInterface(WinsockInterface&& other) noexcept = delete;
 
-	
-		/**
-		 * \brief			Function initiates use of the Winsock DLL by a process.
-		 * \param wsaData	A reference to the WSADATA data structure that is to receive details of
-		 *					the WinSock implementation.
-		 */
-		void		 initWinsock(WSADATA& wsaData) const;
+	/**
+	 * \brief				Deleted move assignment operator.
+	 * \param[out] other	Other object.
+	 * \return				Returns nothing because it's deleted.
+	 */
+	WinsockInterface&	operator=(WinsockInterface&& other) noexcept		= delete;
 
-		/**
-		 * \brief				Function bindes a socket that is bound to a specific transport 
-		 *						service provider.
-		 * \param socketToInit	Descriptor referencing socket.
-		 * \param aiProtocol	The protocol to be used. The possible options for the protocol
-		 *						parameter are specific to the address family and socket type
-		 *						specified. 
-		 */
-		void		 initSocket(SOCKET& socketToInit, const int aiProtocol = 6) const;
-					 
-		/**
-		 * \brief				Function associates a local address with a socket.
-		 * \param socketToBind	A descriptor identifying an unbound socket.
-		 * \param socketAddress A pointer to a sockaddr structure of the local address to assign to
-		 *						the bound socket.
-		 * \param port			Port for the socket that is being bound.
-		 */
-		void		 bindSocket(const SOCKET& socketToBind, SOCKADDR_IN& socketAddress, 
-								const int port) const;
-	
-		/**
-		 * \brief				Function places a socket in a state in which it is listening for
-		 *						an incoming connection.
-		 * \param socketToList	A descriptor identifying a bound, unconnected socket.
-		 * \param backlog		The maximum length of the queue of pending connections.
-		 */
-		void		 listenOn(const SOCKET& socketToList, const int backlog = 10) const;
+	/**
+	 * \brief	Displaying cuurent network interactions.
+	 * \return	True if interface running, false otherwise.
+	 */
+	bool				isRun() const;
 
-		/**
-		 * \brief					Function establishes a connection to a specified socket.
-		 * \param port				Port for connection.
-		 * \param ip				IP address for connection.
-		 * \param socketToConnect	A descriptor identifying an unconnected socket.
-		 * \param socketAddress		A pointer to the sockaddr structure to which the connection
-		 *							should be established.
-		 * \return					If no error occurs, connect returns zero. Otherwise, it returns
-		 *							SOCKET_ERROR, and a specific error code can be retrieved by
-		 *							calling WSAGetLastError.
-		 */
-		bool		 tryConnect(const int port, const std::string& ip, 
-								const SOCKET& socketToConnect, SOCKADDR_IN& socketAddress) const;
-		
-		/**
-		 * \brief				Function sends data on a connected socket.
-		 * \param socketToSend	A descriptor identifying a connected socket.
-		 * \param data			A buffer containing the data to be transmitted.
-		 */
-		void		 sendData(const SOCKET& socketToSend, const std::string& data) const;
+	/**
+	 * \brief Fuction initializes WSDATA and sockets.
+	 */
+	void				init();
 
-		/**
-		 * \brief Main infinite working loop. All network logic should be placed here.
-		 */
-		virtual void waitLoop() = 0;
-	
-	
-	public:
-		/**
-		  * \brief Default constructor that initializes protected fields (except sockets).
-		  */
-							WinsockInterface();
+	/**
+	 * \brief Main method which starts infinite working loop.
+	 */
+	virtual void		run() = 0;
 
-		/**
-		 * \brief Default destructor (delete buffers and close all sockets and WinSock data).
-		 */
-		virtual				~WinsockInterface() noexcept;
-
-		/**
-		 * \brief		Deleted copy constructor.
-		 * \param other Other object.
-		 */
-							WinsockInterface(const WinsockInterface& other)		= delete;
-
-		/**
-		 * \brief		Deleted copy assignment operator.
-		 * \param other Other object.
-		 * \return		Returns nothing because it's deleted.
-		 */
-		WinsockInterface&	operator=(const WinsockInterface& other)			= delete;
-
-		/**
-		 * \brief		Deleted move constructor.
-		 * \param other Other object.
-		 */
-							WinsockInterface(WinsockInterface&& other) noexcept = delete;
-
-		/**
-		 * \brief		Deleted move assignment operator.
-		 * \param other Other object.
-		 * \return		Returns nothing because it's deleted.
-		 */
-		WinsockInterface&	operator=(WinsockInterface&& other) noexcept		= delete;
-	
-		/**
-		 * \brief	Displaying cuurent network interactions.
-		 * \return	True if interface running, false otherwise.
-		 */
-		bool				isRun() const;
-
-		/**
-		 * \brief Fuction initializes WSDATA and sockets.
-		 */
-		void				init();
-
-		/**
-		 * \brief Main method which starts infinite working loop.
-		 */
-		virtual void		run() = 0;
-
-		/**
-		 * \brief Fuction processes sockets.
-		 */
-		virtual void		launch() = 0;
+	/**
+	 * \brief Fuction processes sockets.
+	 */
+	virtual void		launch() = 0;
 };
+
+}
 
 #endif // WINSOCK_INTERFACE_H

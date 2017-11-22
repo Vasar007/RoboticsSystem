@@ -3,7 +3,11 @@
 #pragma once
 
 #include <array>
+#include <string_view>
 
+
+namespace vasily
+{
 
 /**
  * \brief POD(Plain-Old-Data) which contains values and parameteres to exchanging.
@@ -48,5 +52,7 @@ struct RobotData
 	 */
 	friend std::istream& operator>>(std::istream& cin, RobotData& robotData);
 };
+
+}
 
 #endif // ROBOT_DATA_H
