@@ -208,17 +208,17 @@ private:
     
 public:
     /**
-     * \brief		            Default explicit constructor.
-     * \param[out] window		Active window for rendering all stuff.
+     * \brief		        Default explicit constructor.
+     * \param[out] window	Active window for rendering all stuff.
      * \param[in] textures      Textures holder for extracting necessary textures.
-     * \param[in] fonts		    Fonts holder for extracting necessary textures.
-     * \param[in] sounds		Sounds holder for extracting necessary textures.
-     * \param[in] playerInfo	Class that contains player's data.
+     * \param[in] fonts		Fonts holder for extracting necessary textures.
+     * \param[in] sounds	Sounds holder for extracting necessary textures.
+     * \param[in] playerInfo    Class that contains player's data.
      * \param[out] audioManager	Audio manager for manipulating app's music.
      */
     explicit				World(sf::RenderWindow& window, TextureHolder& textures,
-							      FontHolder& fonts, SoundBufferHolder& sounds, 
-							      PlayerInfo playerInfo, AudioManager& audioManager);
+							  FontHolder& fonts, SoundBufferHolder& sounds, 
+							  PlayerInfo playerInfo, AudioManager& audioManager);
 ...
 }
 
