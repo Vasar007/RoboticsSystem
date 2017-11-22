@@ -217,8 +217,8 @@ public:
      * \param[out] audioManager	Audio manager for manipulating app's music.
      */
     explicit				World(sf::RenderWindow& window, TextureHolder& textures,
-							  FontHolder& fonts, SoundBufferHolder& sounds, 
-							  PlayerInfo playerInfo, AudioManager& audioManager);
+						FontHolder& fonts, SoundBufferHolder& sounds, 
+						PlayerInfo playerInfo, AudioManager& audioManager);
 ...
 }
 
