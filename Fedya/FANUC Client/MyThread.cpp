@@ -5,7 +5,7 @@ MyThread::MyThread(Fn&& fn, Args&&... arg)
 {
 	//starting new thread
 	startThread(fn, arg);
-}
+}//не работает
 
 inline void MyThread::swap(std::thread& th)
 {

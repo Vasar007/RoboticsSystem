@@ -3,9 +3,13 @@
 #include <conio.h>
 #include <string>
 #include <algorithm>
+#include <vector>
 
 #include "ServerImitator.h"
 
+
+namespace vasily
+{
 
 ServerImitator::ServerImitator(const int sendingPort, const int recivingPort, const int backlog)
 	: WinsockInterface()
@@ -37,7 +41,7 @@ ServerImitator& ServerImitator::operator=(ServerImitator&& other) noexcept
 	return *this;
 }
 
-void ServerImitator::process(bool& flag)
+void ServerImitator::process(std::atomic_bool& flag)
 {
 	int addrLen = sizeof(SOCKADDR_IN);
 
@@ -45,7 +49,10 @@ void ServerImitator::process(bool& flag)
 
 	SOCKADDR_IN address;
 
-	std::cout << "\n\n\nWaiting for connections...\n\n";
+	utils::println("\n\n\nWaiting for connections...\n");
+
+	//setTimeout(_socketSend, 1000, 0);
+	//setTimeout(_socketReceive, 1000, 0);
 
 	while (flag)
 	{
@@ -55,8 +62,8 @@ void ServerImitator::process(bool& flag)
 		if (socketReceive == SOCKET_ERROR)
 		{
 			perror("Accept failed.");
-			system("pause");
-			exit(ErrorType::FAILED_ACCEPT_NEW_CLIENT);
+			std::cin.get();
+			exit(static_cast<int>(ErrorType::FAILED_ACCEPT_NEW_CLIENT));
 		}
 
 		SOCKET socketSend = accept(_socketSend, reinterpret_cast<SOCKADDR*>(&address),
@@ -64,8 +71,8 @@ void ServerImitator::process(bool& flag)
 		if (socketSend == SOCKET_ERROR)
 		{
 			perror("Accept failed.");
-			system("pause");
-			exit(ErrorType::FAILED_ACCEPT_NEW_CLIENT);
+			std::cin.get();
+			exit(static_cast<int>(ErrorType::FAILED_ACCEPT_NEW_CLIENT));
 		}
 
 		_clientSocketReceive	= socketReceive;
@@ -76,8 +83,8 @@ void ServerImitator::process(bool& flag)
 		inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
 
 		// Inform user of socket number — used in send and receive commands.
-		std::cout << "New connection, socket fd is " << socketReceive << ", ip is: " <<
-			_message << ", port: " << ntohs(address.sin_port) << '\n';
+		utils::println("New connection, socket FD is", socketReceive, ", ip is:", _message,
+						", PORT:", ntohs(address.sin_port));
 
 		if (flag)
 		{
@@ -85,8 +92,6 @@ void ServerImitator::process(bool& flag)
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
-		break;
 	}
 }
 
@@ -98,17 +103,11 @@ void ServerImitator::waitLoop()
 
 	SOCKADDR_IN address;
 
-	std::cout << "\n\n\nWaiting for reply...\n\n";
+	utils::println("\n\n\nWaiting for reply...\n");
 
-	bool flag = true;
+	std::atomic_bool flag = true;
 
-	std::thread reciveThread(&ServerImitator::process, this, std::ref(flag));
-	reciveThread.detach();
-
-	while (flag)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(250));
-	}
+	waitingForConnections(flag);
 
 	while (true)
 	{
@@ -125,37 +124,44 @@ void ServerImitator::waitLoop()
 		// (whilst printf %s assumes there is one).
 		int valRead = recv(_clientSocketReceive, _buffer, _MAXRECV, 0);
 
+		u_short clientPort = ntohs(address.sin_port);
+		
+		// Get IP address back and print it.
+		inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
+
 		if (valRead == SOCKET_ERROR)
 		{
 			int error_code = WSAGetLastError();
+
 			if (error_code == WSAECONNRESET)
 			{
-				// Get IP address back and print it.
-				inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
 				// Somebody disconnected, get his details and print.
-				std::cout << "Client disconnected unexpectedly, ip " << _message <<
-					" , port " << ntohs(address.sin_port) << '\n';
+				utils::println("Client disconnected unexpectedly, IP", _message, ", PORT",
+								clientPort);
 
-				// Close the socket and mark as 0 in list for reuse.
+				// Close the socket and mark as 0 for reuse.
 				closesocket(_clientSocketReceive);
 				_clientSocketReceive = 0;
+				closesocket(_clientSocketSend);
+				_clientSocketSend = 0;
 			}
 			else
 			{
-				std::cout << "recv failed with error code: " << error_code << '\n';
+				utils::println("recv failed with error code:", error_code);
 			}
+
+			waitingForConnections(flag);
 		}
 		else if (valRead == 0)
 		{
-			// Get IP address back and print it.
-			inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
 			// Somebody disconnected , get his details and print.
-			std::cout << "Client disconnected , ip " << _message << " , port " <<
-				ntohs(address.sin_port) << '\n';
+			utils::println("Client disconnected , IP", _message, ", PORT", clientPort);
 
-			// Close the socket and mark as 0 in list for reuse.
+			// Close the socket and mark as 0 for reuse.
 			closesocket(_clientSocketReceive);
 			_clientSocketReceive = 0;
+			closesocket(_clientSocketSend);
+			_clientSocketSend = 0;
 		}
 		// Echo back the message that came in.
 		else if (valRead > 0)
@@ -163,16 +169,12 @@ void ServerImitator::waitLoop()
 			// Add null character, if you want to use with printf/puts or other string
 			// handling functions.
 			_buffer[valRead] = '\0';
-			// Get IP address back and print it.
-			inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
-			std::cout << _message << ':' << ntohs(address.sin_port) << " - " <<
-				_buffer << '\n';
+
+			utils::println(_message, ':', clientPort, '-', _buffer);
 
 			sbuf += _buffer;
 
 			std::string toSending = parseData(sbuf);
-
-			///toSending = "985000 0 940000 180000 0 0 10 ";
 
 			if (!toSending.empty())
 			{
@@ -215,7 +217,7 @@ std::string ServerImitator::parseData(const std::string& data) const
 		return { "" };
 	}
 
-	int count = 0;
+	std::size_t count = 0u;
 
 	for (const auto& strDatum : strStorage)
 	{
@@ -225,7 +227,7 @@ std::string ServerImitator::parseData(const std::string& data) const
 			break;
 		}
 
-		if (count % 9 != 8 && count % 9 != 7)
+		if (count % 9u != 8u && count % 9u != 7u) // && count % 9u != 6u
 		{
 			result += strDatum + " ";
 		}
@@ -233,5 +235,15 @@ std::string ServerImitator::parseData(const std::string& data) const
 		++count;
 	}
 
-	return result.substr(1);
+	return result;
+}
+
+void ServerImitator::waitingForConnections(std::atomic_bool& flag)
+{
+	flag = true;
+
+	std::thread processThread(&ServerImitator::process, this, std::ref(flag));
+	processThread.join();
+}
+
 }
