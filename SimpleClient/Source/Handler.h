@@ -25,6 +25,9 @@ struct ParsedResult
 	 */
 	std::size_t	mNumberOfIterations	= 1u;
 
+	/**
+	 * \brief Additional flag to check correctness of coordinates.
+	 */
 	bool		mIsCorrect			= true;
 
 	/**
