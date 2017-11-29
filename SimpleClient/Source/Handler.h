@@ -10,12 +10,32 @@
 namespace vasily
 {
 
+/**
+ * \brief Structure used to contains additional input data from client.
+ */
 struct ParsedResult
 {
-	int			mCoefficient		{ 1 };
-	std::size_t	mNumberOfIterations	{ 1u };
-	RobotData	mFirstPoint			{};
-	RobotData	mSecondPoint		{};
+	/**
+	 * \brief Number used to change coordinates.
+	 */
+	int			mCoefficient		= 1;
+
+	/**
+	 * \brief Number of iterations for circlic movement.
+	 */
+	std::size_t	mNumberOfIterations	= 1u;
+
+	bool		mIsCorrect			= true;
+
+	/**
+	 * \brief First point of interval.
+	 */
+	RobotData	mFirstPoint			= {};
+
+	/**
+	 * \brief Second point of interval.
+	 */
+	RobotData	mSecondPoint		= {};
 };
 
 /**
@@ -35,6 +55,7 @@ public:
 		FULL_CONTROL,
 		CIRCLIC,
 		PARTIAL,
+		HOME,
 
 		FORWARD,
 		BACK,
@@ -113,8 +134,14 @@ private:
 	 */
 	int										_coefficient;
 
+	/**
+	 * \brief Number of iterations for circlic movement.
+	 */
 	std::size_t								_numberOfIterations;
 
+	/**
+	 * \brief Parsed data structure which build from input data after command literal.
+	 */
 	ParsedResult							_parsedResult;
 
 	/**
@@ -130,6 +157,10 @@ private:
 	 */
 	State parseCommand(const std::string_view command);
 
+	/**
+	 * \brief	Function parses input string after command literal.
+	 * \return	Parsed structure which contains all stuf for interact with robot.
+	 */
 	ParsedResult parseDataAfterCommand();
 
 	/**
@@ -210,8 +241,16 @@ public:
 	*/
 	void setCoordinateSystem(const CoorninateSystem coorninateSystem);
 
+	/**
+	 * \brief	Function returns number of iterations.
+	 * \return	Current number of iterations.
+	 */
 	int getNumberOfIterations() const;
 
+	/**
+	 * \brief	Function returns parsed result after command.
+	 * \return	Current parsed result after command.
+	 */
 	ParsedResult getParsedResult() const;
 };
 

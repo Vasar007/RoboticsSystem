@@ -42,7 +42,8 @@ void				split(const std::string& str, Container& cont,
 /**
  * \brief			Since std::to_string doesn't work on MinGW we have to implement our own
  *					to support all platforms.
- * \tparam T		Primitive datatype (doesn't work with user's objects).
+ * \details			Function doesn't work with user's objects.
+ * \tparam T		Primitive datatype.
  * \param[in] value Value which will be converted to string.
  * \return			String created from an object.
  */
@@ -50,12 +51,26 @@ template <typename T>
 std::string			toString(const T& value) noexcept;
 
 
-template<typename T>
-T fromString(const std::string &str, bool &ok);
+/**
+ * \brief			Function tries convert string to any data.
+ * \details			Type of data which used to convert must have default constructor.
+ * \tparam T		Type of data in which we try convert string.
+ * \param[in] str	String to convert.
+ * \param[out] ok	Flag used to define operation success.
+ * \return			Converted filled data or empty data.
+ */
+template <typename T>
+T					fromString(const std::string &str, bool &ok);
 
 
-template<>
-std::string fromString(const std::string &str, bool &ok);
+/**
+ * \brief			Primitive own template deduction for function with trivial case.
+ * \param[in] str	String to convert.
+ * \param[out] ok	Flag used to define operation success.
+ * \return			Exact same string which forwards into function.
+ */
+template <>
+std::string			fromString(const std::string &str, bool &ok);
 
 
 /**

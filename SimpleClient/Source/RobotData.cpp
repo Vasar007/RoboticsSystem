@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "RobotData.h"
+#include "Utility.h"
 
 namespace vasily
 {
@@ -21,33 +22,19 @@ RobotData::RobotData(const int x, const int y, const int z, const int w, const i
 
 std::string RobotData::toString() const
 {
-	//std::stringstream stringStream;
-	//
-	//for (const auto& coordinate : mCoordinates)
-	//{
-	//	stringStream << coordinate << ' ';
-	//}
-	//
-	//for (const auto& parameter : mParameters)
-	//{
-	//	stringStream << parameter << ' ';
-	//}
-	//
-	//return stringStream.str();
-
-	std::string result = "";
-
+	std::stringstream stringStream;
+	
 	for (const auto& coordinate : mCoordinates)
 	{
-		result += std::to_string(coordinate) + " ";
+		stringStream << coordinate << ' ';
 	}
-
+	
 	for (const auto& parameter : mParameters)
 	{
-		result += std::to_string(parameter) + " ";
+		stringStream << parameter << ' ';
 	}
-
-	return result;
+	
+	return stringStream.str();
 }
 
 double RobotData::length() const

@@ -20,6 +20,9 @@ namespace vasily
 class Client : public WinsockInterface
 {
 private:
+	/**
+	 * \brief Array of states to work in circlic mode.
+	 */
 	enum class CirclicState
 	{
 		SEND_FIRST,
@@ -51,8 +54,8 @@ private:
 	int			_serverPortSending;
 
 	/**
-	  * \brief Variable used to keep server port to recieve.
-	*/
+	 * \brief Variable used to keep server port to recieve.
+	 */
 	int			_serverPortReceiving;
 
 	/**
@@ -70,31 +73,55 @@ private:
 	 */
 	std::chrono::duration<double>						_duration;
 
-	RobotData _waitAnswer;
-
-	std::atomic_bool _isNeedToWait;
-
-	CirclicState _circlicState;
+	/**
+	 * \brief Data used to send and with we compare answer from robot if it needs.
+	 */
+	RobotData			_waitAnswer;
+							
+	/**
+	 * \brief Flag used to define if client needs to wait answer from robot.
+	 */
+	std::atomic_bool	_isNeedToWait;
+							
+	/**
+	 * \brief Current state of work in circle.
+	 */
+	CirclicState		_circlicState;
 
 	/**
 	 * \brief Default value for server IP.
 	 */
-	static const std::string_view _DEFAULT_SERVER_IP;
+	static const std::string_view					_DEFAULT_SERVER_IP;
 
 	/**
-	* \brief Default value for sending port.
+	 * \brief Default value for sending port.
 	 */
-	static constexpr int _DEFAULT_SENDING_PORT		= 59002;
+	static constexpr int							_DEFAULT_SENDING_PORT	= 59002;
 													
 	/**                                             
 	 * \brief Default value for receiving port.     
 	 */                                             
-	static constexpr int _DEFAULT_RECEIVING_PORT	= 59003;
+	static constexpr int							_DEFAULT_RECEIVING_PORT	= 59003;
 
 	/**
 	 * \brief Default (beginning) robot position.
 	 */
-	static const RobotData _DEFAULT_POSITION;
+	static const RobotData							_DEFAULT_POSITION;
+
+	/**
+	 * \brief Constant number of coordinates to check to avoid "magic number".
+	 */
+	static constexpr std::size_t _MAIN_COORDINATES							= 3u;
+
+	/**
+	 * \brief Array contains minimum value for first 3 coordinates (x, y, z).
+	 */
+	static const std::array<int, _MAIN_COORDINATES> _MIN_COORDS;
+
+	/**
+	 * \brief Array contains maximum value for first 3 coordinates (x, y, z).
+	 */
+	static const std::array<int, _MAIN_COORDINATES> _MAX_COORDS;
 
 
 	/**
@@ -119,20 +146,41 @@ private:
 	 */
 	void		checkConnection(const std::atomic_int64_t& time);
 
+	/**
+	 * \brief							Function works with robot in circlic mode.
+	 * \details							Now function works only with 2 points!
+	 * \param[in] firstPoint			First point to send and in which robot should return.
+	 * \param[in] secondPoint			Second point for circlic movement.
+	 * \param[in] numberOfIterations	Number of iterations in circlic movement.
+	 */
 	void		circlicProcessing(const RobotData firstPoint, const RobotData secondPoint, 
 									const std::size_t numberOfIterations = 1u);
 
+	/**
+	 * \brief					Function works with robot in partial mode.
+	 * \details					Now function works only with 2 points!
+	 * \param[in] firstPoint	Start point.
+	 * \param[in] secondPoint	End point.
+	 * \param[in] numberOfSteps Number of steps for which robot should move from start to end point.
+	 */
 	void		partialProcessing(const RobotData firstPoint, const RobotData secondPoint,
 									const std::size_t numberOfSteps = 1u);
 
-	void		stepProcessing(RobotData firstPoint, RobotData secondPoint,
-									const std::atomic_int& step, const std::atomic_int& stepCount);
+	/**
+	 * \brief				Function checks if given point is not out of working coordinates.
+	 * \param[in] robotData	Point to check.
+	 * \return				True if point is correct, false otherwise.
+	 */
+	bool		checkCoordinates(const RobotData& robotData) const;
 
-	RobotData	shrinkToFit(const RobotData& firstPoint, const RobotData& secondPoint);
+	/**
+	 * \brief				Function checks coordinates and if it's right sends to robot.
+	 * \param[in] robotData Point to check.
+	 */
+	void		sendCoordinates(const RobotData& robotData);
 
 
 public:
-
 	/**
 	 * \brief					Constructor that initializes sockets and connects to server.
 	 * \param[in] serverPort	Server port for connection.
@@ -210,9 +258,31 @@ public:
 	 */
 	void		launch() override;
 
+	/**
+	 * \brief							Function launches thread for circlic processing and
+	 *									forwards parameters.
+	 * \details							Now function works only with 2 points!
+	 * \param[in] firstPoint			First point to send and in which robot should return.
+	 * \param[in] secondPoint			Second point for circlic movement.
+	 * \param[in] numberOfIterations	Number of iterations in circlic movement.
+	 * \code
+	 * Enter command: c 1 2 3 4 5 6 10 2 0|10 20 30 40 50 10 2 0|5
+	 * \endcode
+	 */
 	void		circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
 								const std::size_t numberOfIterations);
 
+	/**
+	 * \brief					Function launches thread for partial processing and 
+	 *							forwards parameters.
+	 * \details					Now function works only with 2 points!
+	 * \param[in] firstPoint	Start point.
+	 * \param[in] secondPoint	End point.
+	 * \param[in] numberOfSteps	Number of steps for which robot should move from start to end point.
+	 * \code
+	 * Enter command: p 1 2 3 4 5 6 10 2 0|10 20 30 40 50 10 2 0|3
+	 * \endcode
+	*/
 	void		partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
 								const std::size_t numberOfSteps);
 
@@ -220,24 +290,6 @@ public:
 	template <class T>
 	friend void utils::swap(T& first, T& second) noexcept;
 };
-
-/*
- * Max:
- * x = 1320
- * y = -400
- * z = 960
- * w = ---
- * p = ---
- * r = ---
- * 
- * Min:
- * x = 830
- * y = 317
- * z = 539
- * w = ---
- * p = ---
- * r = ---
- */
 
 }
 

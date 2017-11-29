@@ -41,6 +41,9 @@ private:
 	 */
 	SOCKET				_clientSocketReceive;
 
+	/**
+	 * \brief Additional flag used to define coordinate type from client data.
+	 */
 	std::atomic_bool	_hasGotCoordSystem;
 	
 

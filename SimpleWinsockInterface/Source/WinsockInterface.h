@@ -6,8 +6,6 @@
 #include <winsock2.h>
 #include <Ws2tcpip.h>
 
-#include "Utilities.h"
-
 #pragma comment (lib, "ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")

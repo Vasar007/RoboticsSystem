@@ -8,15 +8,7 @@
 #include "Transmitter.h"
 
 
-constexpr int SERVER_PORT			= 9997;
-constexpr int SERVER_PORT_SENDING	= 9999;
-constexpr int SERVER_PORT_RECEIVING = 9998;
-const std::string SERVER_IP			= "192.168.0.4";
-
-///vasily::Client client(SERVER_PORT_SENDING, SERVER_PORT_RECEIVING, SERVER_IP);
-vasily::Client client;
-
-void init()
+void init(vasily::Client& client)
 {
 	utils::println("Console client for connecting to Fanuc M-20iA v 0.1\n");
 
@@ -27,11 +19,19 @@ void init()
 
 int main()
 {
-	std::thread clientThread(init);
+	constexpr int SERVER_PORT			= 9997;
+	constexpr int SERVER_PORT_SENDING	= 9999;
+	constexpr int SERVER_PORT_RECEIVING = 9998;
+	const std::string SERVER_IP			= "192.168.0.101";
+
+	vasily::Client client(SERVER_PORT_SENDING, SERVER_PORT_RECEIVING, SERVER_IP);
+	///vasily::Client client;
+
+	std::thread clientThread(init, std::ref(client));
 	clientThread.detach();
 
-	constexpr int WIDTH		= 1280;
-	constexpr int HEIGHT	= 720;
+	constexpr std::size_t WIDTH		= 1280u;
+	constexpr std::size_t HEIGHT	= 720u;
 
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Fanuc Diagram Interface");
 	window.setFramerateLimit(60u);

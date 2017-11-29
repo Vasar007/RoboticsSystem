@@ -3,6 +3,7 @@
 #include <thread>
 #include <string>
 
+#include "Utilities.h"
 #include "WinsockInterface.h"
 
 

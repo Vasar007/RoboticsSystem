@@ -3,6 +3,7 @@
 
 #include "Utilities.h"
 #include "Handler.h"
+#include "../../SimpleServer/Source/ServerImitator.h"
 
 
 namespace vasily
@@ -23,7 +24,8 @@ Handler::Handler()
 		{ "r", State::ROLL_PLUS },		{ "f", State::ROLL_MINUS },
 		{ "t", State::PITHCH_PLUS },	{ "g", State::PITHCH_MINUS },
 		{ "y", State::YAW_PLUS },		{ "h", State::YAW_MINUS },
-		{ "c", State::CIRCLIC },		{ "p", State::PARTIAL } })
+		{ "c", State::CIRCLIC },		{ "p", State::PARTIAL },
+		{ "z", State::HOME } })
 {
 }
 
@@ -83,7 +85,7 @@ Handler::State Handler::parseCommand(const std::string_view command)
 	std::transform(_data.begin(), _data.end(), _data.begin(),
 		[](char c) { return static_cast<char>(::tolower(c)); });
 
-	const std::string letter = _data.substr(0, 1);
+	const std::string letter = _data.substr(0u, 1u);
 
 	const bool flag = checkChangingMode(letter);
 	if (checkChangingCoordinateSysytem(letter))
@@ -111,9 +113,17 @@ ParsedResult Handler::parseDataAfterCommand()
 	switch (_state)
 	{
 		case State::DEFAULT:
+			if (_data == "=")
+			{
+				return result;
+			}
 			break;
 
 		case State::COORDINATE_TYPE:
+			if (_data.size() == 1u && utils::isCorrectNumber(_data))
+			{
+				return result;
+			}
 			break;
 
 		case State::FULL_CONTROL:
@@ -147,6 +157,13 @@ ParsedResult Handler::parseDataAfterCommand()
 			}
 			break;
 
+		case State::HOME:
+			if (_data.size() == 1u)
+			{
+				return result;
+			}
+			break;
+
 		case State::FORWARD:
 			[[fallthrough]];
 		case State::BACK:
@@ -170,7 +187,7 @@ ParsedResult Handler::parseDataAfterCommand()
 		case State::YAW_PLUS:
 			[[fallthrough]];
 		case State::YAW_MINUS:
-			if (_data.size() > 1)
+			if (_data.size() > 1u)
 			{
 				if (const int coefficient = utils::stringToInt(_data.substr(1)); coefficient > 0)
 				{
@@ -181,6 +198,10 @@ ParsedResult Handler::parseDataAfterCommand()
 
 				_state = State::DEFAULT;
 			}
+			else
+			{
+				return result;
+			}
 			break;
 
 		default:
@@ -189,6 +210,7 @@ ParsedResult Handler::parseDataAfterCommand()
 	}
 
 	utils::println("ERROR 02: Incorrect input data after literal!");
+	result.mIsCorrect = false;
 	return result;
 }
 
@@ -202,7 +224,7 @@ void Handler::parseRawData(const std::string& data, RobotData& robotData)
 	{
 		copiedData = data.substr(1u);
 	}
-	if (checkChangingCoordinateSysytem(letter) && data.size() == 1u)
+	if (data.size() == 1u && checkChangingCoordinateSysytem(letter))
 	{
 		_state = State::COORDINATE_TYPE;
 		return;
@@ -220,6 +242,11 @@ void Handler::appendCommand(const std::string_view command, RobotData& robotData
 
 	_parsedResult = parseDataAfterCommand();
 
+	if (!_parsedResult.mIsCorrect)
+	{
+		_state = State::DEFAULT;
+	}
+
 	switch (_state)
 	{
 		case State::DEFAULT:
@@ -232,6 +259,9 @@ void Handler::appendCommand(const std::string_view command, RobotData& robotData
 			break;
 
 		case State::PARTIAL:
+			break;
+
+		case State::HOME:
 			break;
 
 		case State::FORWARD:

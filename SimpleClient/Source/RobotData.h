@@ -2,7 +2,6 @@
 #define ROBOT_DATA_H
 
 #include <array>
-#include <string_view>
 
 
 namespace vasily
@@ -62,26 +61,89 @@ struct RobotData
 	 */
 	std::string toString() const;
 
+	/**
+	 * \brief	Calculate length of vector which comtains 6 coordinates.
+	 * \return	Square root of sum of coordinates squares.
+	 */
 	double length() const;
 
+	/**
+	 * \brief			Function checks two structures on full equality.
+	 * \param[in] other Other object to compare.
+	 * \return			True if structures are equal, false otherwise.
+	 */
 	bool isEqual(const RobotData& other) const;
 
+	/**
+	 * \brief			Function checks coordinate arrays of two structures on equality.
+	 * \param[in] lhs	Left-hand side object.
+	 * \param[in] rhs	Right-hand side object.
+	 * \return			True if 6 coordinates are equal, false otherwise.
+	 */
 	friend bool operator ==(const RobotData& lhs, const RobotData& rhs);
 				
+	/**
+	 * \brief			Function checks coordinate arrays of two structures on equality.
+	 * \param[in] lhs	Left-hand side object.
+	 * \param[in] rhs	Right-hand side object.
+	 * \return			True if 6 coordinates are not equal, false otherwise.
+	 */
 	friend bool operator !=(const RobotData& lhs, const RobotData& rhs);
 				
+	/**
+	 * \brief			Function compares coordinate arrays of two structures.
+	 * \param[in] lhs	Left-hand side object.
+	 * \param[in] rhs	Right-hand side object.
+	 * \return			True if lhs object is less than rhs object, false otherwise.
+	 */
 	friend bool operator <(const RobotData& lhs, const RobotData& rhs);
 				
+	/**
+	 * \brief			Function compares coordinate arrays of two structures.
+	 * \param[in] lhs	Left-hand side object.
+	 * \param[in] rhs	Right-hand side object.
+	 * \return			True if lhs object is greater than rhs object, false otherwise.
+	 */
 	friend bool operator >(const RobotData& lhs, const RobotData& rhs);
 
+	/**
+	 * \brief			Function subtract coordinate rhs object from lhs object.
+	 * \param[in] lhs	Left-hand side object.
+	 * \param[in] rhs	Right-hand side object.
+	 * \return			Result of sustraction.
+	 */
 	friend RobotData operator -(const RobotData& lhs, const RobotData& rhs);
 
+	/**
+	 * \brief			Function sum coordinate of lhs and rhs objects.
+	 * \param[in] lhs	Left-hand side object.
+	 * \param[in] rhs	Right-hand side object.
+	 * \return			Result of sum.
+	 */
 	friend RobotData operator +(const RobotData& lhs, const RobotData& rhs);
 
+	/**
+	 * \brief			Function sum coordinate of lhs and rhs objects.
+	 * \param[in] lhs	Left-hand side object.
+	 * \param[in] rhs	Right-hand side object.
+	 * \return			Result of sum puts in lhs object.
+	 */
 	friend RobotData& operator +=(RobotData& lhs, const RobotData& rhs);
 
+	/**
+	 * \brief			Function divides coordinate of lhs and rhs objects.
+	 * \param[in] lhs	Left-hand side object.
+	 * \param[in] rhs	Right-hand side object.
+	 * \return			Result of division.
+	 */
 	friend RobotData operator /(const RobotData& lhs, const int& rhs);
 
+	/**
+	 * \brief			Function divides coordinate of lhs and rhs objects.
+	 * \param[in] lhs	Left-hand side object.
+	 * \param[in] rhs	Right-hand side object.
+	 * \return			Result of division puts in lhs object.
+	 */
 	friend RobotData& operator /=(RobotData& lhs, const int& rhs);
 
 	/**
