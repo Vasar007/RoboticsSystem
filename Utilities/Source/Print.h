@@ -1,14 +1,10 @@
 #ifndef PRINT_H
 #define PRINT_H
-#pragma once
 
 #include <iostream>
-#include <string>
 #include <string_view>
 #include <type_traits>
 #include <typeinfo>
-#include <memory>
-#include <cstdlib>
 
 #ifndef _MSC_VER
 	#include <cxxabi.h>
@@ -22,7 +18,7 @@ namespace utils
  * \brief			Function prints string or space by default to outstream.
  * \param[in] str	String to print.
  */
-void print(std::string_view str = " ");
+void print(const std::string_view str = " ") noexcept;
 
 
 /**
@@ -31,7 +27,7 @@ void print(std::string_view str = " ");
  * \param[in] t Data to print.
  */
 template <typename T>
-void print(const T& t);
+void print(const T& t) noexcept;
 
 
 /**
@@ -42,14 +38,14 @@ void print(const T& t);
  * \param[in] args	Data to print.
  */
 template<typename T, typename... Args>
-void print(const T& t, const Args&... args);
+void print(const T& t, const Args&... args) noexcept;
 
 
 /**
  * \brief			Function prints string or endline by default to outstream.
  * \param[in] str	String to print.
  */
-void println(std::string_view str = "");
+void println(const std::string_view str = "") noexcept;
 
 
 /**
@@ -58,7 +54,7 @@ void println(std::string_view str = "");
  * \param[in] t Data to print.
  */
 template <typename T>
-void println(const T& t);
+void println(const T& t) noexcept;
 
 
 /**
@@ -69,7 +65,7 @@ void println(const T& t);
  * \param[in] args	Data to print.
  */
 template <typename T, typename... Args>
-void println(const T& t, const Args&... args);
+void println(const T& t, const Args&... args) noexcept;
 
 
 /**
@@ -78,7 +74,7 @@ void println(const T& t, const Args&... args);
  * \return		String which contains type name of variable.
  */
 template <class T>
-constexpr std::string_view typeName();
+constexpr std::string_view typeName() noexcept;
 
 #include "Print.inl"
 }

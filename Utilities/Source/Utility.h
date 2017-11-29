@@ -1,14 +1,11 @@
 ﻿#ifndef UTILITY_H
 #define UTILITY_H
-#pragma once
 
 #include <string>
 #include <sstream>
 #include <memory>
 #include <utility>
 #include <string_view>
-
-#include "Print.h"
 
 
 // Forward declaration.
@@ -27,7 +24,7 @@ namespace utils
  * \return		True — current data types are same, false — otherwise.
  */
 template <class T, class U>
-constexpr bool		isSame() { return std::is_same<T, U>::value; }
+constexpr bool		isSame() noexcept { return std::is_same<T, U>::value; }
 
 
 /**
@@ -51,6 +48,14 @@ void				split(const std::string& str, Container& cont,
  */
 template <typename T>
 std::string			toString(const T& value) noexcept;
+
+
+template<typename T>
+T fromString(const std::string &str, bool &ok);
+
+
+template<>
+std::string fromString(const std::string &str, bool &ok);
 
 
 /**
@@ -80,9 +85,27 @@ void				swap(T& first, T& second) noexcept;
  * \param[in] flag	Additional flag to perfom some actions.
  * \return			True if string is number, false otherwise.
  */
-bool				isCorrectNumber(const std::string& str, int flag = 0) noexcept;
+bool				isCorrectNumber(const std::string& str, const int flag = 0) noexcept;
+
+
+/**
+ * \brief					Random number generation.
+ * \param[in] exclusiveMax	Exclusive maximum of the interval.
+ * \return					Random generated integer in interval.
+ */
+int					randomInt(const int exclusiveMax) noexcept;
+
+
+/**
+ * \brief			Function parses string to integer.
+ * \param[in] str	String for parsing to integer.
+ * \return			Parsed integer from string.
+ */
+int					stringToInt(const std::string& str) noexcept;
+
 
 #include "Utility.inl"
+
 }
 
 #endif // UTILITY_H

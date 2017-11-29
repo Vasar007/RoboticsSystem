@@ -4,13 +4,13 @@
 namespace utils
 {
 
-void print(std::string_view str)
+void print(const std::string_view str) noexcept
 {
 	std::cout << str << '\n';
 }
 
 
-void println(std::string_view str)
+void println(const std::string_view str) noexcept
 {
 	std::cout << str << '\n';
 }

@@ -1,19 +1,21 @@
 #ifndef WINSOCK_INTERFACE_H
 #define WINSOCK_INTERFACE_H
-#pragma once
 
-#include <map>
+#include <unordered_map>
 #include <memory>
 #include <winsock2.h>
 #include <Ws2tcpip.h>
 
-#include "Utility.h"
+#include "Utilities.h"
 
 #pragma comment (lib, "ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
 
 
+/**
+ * \brief My working namespace (Vasily Vasilyev).
+ */
 namespace vasily
 {
 	
@@ -60,62 +62,63 @@ protected:
 	/**
 	 * \brief Structure contains information about the Windows Sockets implementation.
 	 */
-	WSADATA					_wsaData;
+	WSADATA							_wsaData;
 
 	/**
 	 * \brief Socket used to send coordinates.
 	 */
-	SOCKET					_socketSend;
+	SOCKET							_socketSend;
 
 	/**
 	 * \brief Socket used to receive coordinates.
 	 */
-	SOCKET					_socketReceive;
+	SOCKET							_socketReceive;
 
 	/**
 	 * \brief Structure used to keep socket address to send.
 	 */
-	SOCKADDR_IN				_socketSendAddress;
+	SOCKADDR_IN						_socketSendAddress;
 
 	/**
 	 * \brief Structure used to keep socket address to receive.
 	 */
-	SOCKADDR_IN				_socketReceiveAddress;
+	SOCKADDR_IN						_socketReceiveAddress;
 
 	/**
 	 * \brief All information about socket and type of connection.
 	 */
-	std::unique_ptr<ADDRINFO> _addressInfo;
+	std::unique_ptr<ADDRINFO>		_addressInfo;
 
 	/**
 	 * \brief Flag used to show status of network interaction.
 	 */
-	bool					_isRunning;
+	bool							_isRunning;
 
 	/**
 	 * \brief Flag used to check whether winsocket had been initialized.
 	 */
-	bool					_isInitialized;
+	bool							_isInitialized;
 
 	/**
 	 * \brief Receive buffer that is used to keep answers from clients.
 	 */
-	char*					_buffer;
+	char*							_buffer;
 
 	/**
 	 * \brief Buffer that is used to keep clients addresses.
 	 */
-	char*					_message;
+	char*							_message;
 
 	/**
 	 * \brief Size of receive buffer, this is string length.
 	 */
-	static constexpr int	_MAXRECV = 1024;
+	static constexpr std::size_t	_MAXRECV = 1024u;
+
 
 	/**
 	 * \brief Table of WinSock errors, which you can get from function WSAGetLastError().
 	 */
-	static const std::map<int, std::string> _TABLE_OF_ERRORS;
+	static const std::unordered_map<int, std::string> _TABLE_OF_ERRORS;
 
 
 	/**

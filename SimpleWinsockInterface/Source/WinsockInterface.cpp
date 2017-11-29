@@ -9,7 +9,7 @@
 namespace vasily
 {
 	
-const std::map<int, std::string> WinsockInterface::_TABLE_OF_ERRORS = 
+const std::unordered_map<int, std::string> WinsockInterface::_TABLE_OF_ERRORS = 
 {
 	{ 6,		"Specified event object handle is invalid." },
 	{ 8,		"Insufficient memory available." },
@@ -184,7 +184,7 @@ bool WinsockInterface::tryConnect(const int port, const std::string& ip,
 									const SOCKET& socketToConnect, SOCKADDR_IN& socketAddress) const
 {
 	const char* serverIP	= ip.c_str();
-	u_short usPort			= static_cast<u_short>(port);
+	const u_short usPort	= static_cast<u_short>(port);
 
 	// Set socket settings.
 	socketAddress.sin_family	= AF_INET;
@@ -205,7 +205,7 @@ bool WinsockInterface::tryConnect(const int port, const std::string& ip,
 	return true;
 }
 
-inline bool WinsockInterface::isRun() const
+bool WinsockInterface::isRun() const
 {
 	return _isRunning;
 }

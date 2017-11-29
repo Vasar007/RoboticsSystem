@@ -2,8 +2,6 @@
 #include <thread>
 #include <conio.h>
 #include <string>
-#include <algorithm>
-#include <vector>
 
 #include "ServerImitator.h"
 
@@ -18,6 +16,7 @@ ServerImitator::ServerImitator(const int sendingPort, const int recivingPort, co
 	, _backlog(backlog)
 	, _clientSocketSend(0)
 	, _clientSocketReceive(0)
+	, _hasGotCoordSystem(false)
 {
 }
 
@@ -28,6 +27,7 @@ ServerImitator::ServerImitator(ServerImitator&& other) noexcept
 	, _backlog(other._backlog)
 	, _clientSocketSend(0)
 	, _clientSocketReceive(0)
+	, _hasGotCoordSystem(other._hasGotCoordSystem ? true : false)
 {
 	utils::swap(*this, other);
 }
@@ -50,9 +50,6 @@ void ServerImitator::process(std::atomic_bool& flag)
 	SOCKADDR_IN address;
 
 	utils::println("\n\n\nWaiting for connections...\n");
-
-	//setTimeout(_socketSend, 1000, 0);
-	//setTimeout(_socketReceive, 1000, 0);
 
 	while (flag)
 	{
@@ -78,6 +75,7 @@ void ServerImitator::process(std::atomic_bool& flag)
 		_clientSocketReceive	= socketReceive;
 		_clientSocketSend		= socketSend;
 
+		_hasGotCoordSystem = false;
 
 		// Get IP address back and print it.
 		inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
@@ -91,7 +89,8 @@ void ServerImitator::process(std::atomic_bool& flag)
 			flag = false;
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		constexpr std::atomic_int64_t waitingTime = 10LL;
+		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 	}
 }
 
@@ -99,7 +98,7 @@ void ServerImitator::waitLoop()
 {
 	int addrLen = sizeof(SOCKADDR_IN);
 
-	std::string sbuf;
+	std::string dataBuffer;
 
 	SOCKADDR_IN address;
 
@@ -122,33 +121,31 @@ void ServerImitator::waitLoop()
 		// Check if it was for closing , and also read the incoming message
 		// recv does not place a null terminator at the end of the string 
 		// (whilst printf %s assumes there is one).
-		int valRead = recv(_clientSocketReceive, _buffer, _MAXRECV, 0);
-
-		u_short clientPort = ntohs(address.sin_port);
+		const int valRead	= recv(_clientSocketReceive, _buffer, _MAXRECV, 0);
+		u_short clientPort	= ntohs(address.sin_port);
 		
 		// Get IP address back and print it.
 		inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
 
 		if (valRead == SOCKET_ERROR)
 		{
-			int error_code = WSAGetLastError();
+			int errorCode = WSAGetLastError();
 
-			if (error_code == WSAECONNRESET)
+			if (errorCode == WSAECONNRESET)
 			{
 				// Somebody disconnected, get his details and print.
 				utils::println("Client disconnected unexpectedly, IP", _message, ", PORT",
 								clientPort);
-
-				// Close the socket and mark as 0 for reuse.
-				closesocket(_clientSocketReceive);
-				_clientSocketReceive = 0;
-				closesocket(_clientSocketSend);
-				_clientSocketSend = 0;
 			}
 			else
 			{
-				utils::println("recv failed with error code:", error_code);
+				utils::println("recv failed with error code:", errorCode);
 			}
+			// Close the socket and mark as 0 for reuse.
+			closesocket(_clientSocketReceive);
+			_clientSocketReceive = 0;
+			closesocket(_clientSocketSend);
+			_clientSocketSend = 0;
 
 			waitingForConnections(flag);
 		}
@@ -162,6 +159,8 @@ void ServerImitator::waitLoop()
 			_clientSocketReceive = 0;
 			closesocket(_clientSocketSend);
 			_clientSocketSend = 0;
+
+			waitingForConnections(flag);
 		}
 		// Echo back the message that came in.
 		else if (valRead > 0)
@@ -170,20 +169,32 @@ void ServerImitator::waitLoop()
 			// handling functions.
 			_buffer[valRead] = '\0';
 
+			if (!_hasGotCoordSystem)
+			{
+				char coordSystem[2];
+				strncpy_s(coordSystem, _buffer, 1);
+				coordSystem[1]	= '\0';
+				_buffer[0]		= ' ';
+
+				utils::println(coordSystem);
+				_hasGotCoordSystem = true;
+			}
+
 			utils::println(_message, ':', clientPort, '-', _buffer);
 
-			sbuf += _buffer;
+			dataBuffer += _buffer;
 
-			std::string toSending = parseData(sbuf);
+			std::string toSending = utils::parseData(dataBuffer);
 
 			if (!toSending.empty())
 			{
 				sendData(_clientSocketSend, toSending);
-				sbuf.clear();
+				dataBuffer.clear();
 			}
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		constexpr std::atomic_int64_t waitingTime = 10LL;
+		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 	}
 }
 
@@ -200,42 +211,6 @@ void ServerImitator::launch()
 
 	listenOn(_socketSend, _backlog);
 	listenOn(_socketReceive, _backlog);
-}
-
-std::string ServerImitator::parseData(const std::string& data) const
-{
-	std::string result;
-	std::vector<std::string> strStorage;
-	utils::split(data, strStorage);
-
-	strStorage.erase(std::remove(strStorage.begin(), strStorage.end(), ""), strStorage.end());
-
-	const std::size_t NUMBER_OF_COORDINATES_IN_ONE_STRUCTURE = 9u;
-
-	if (strStorage.size() % NUMBER_OF_COORDINATES_IN_ONE_STRUCTURE != 0u)
-	{
-		return { "" };
-	}
-
-	std::size_t count = 0u;
-
-	for (const auto& strDatum : strStorage)
-	{
-		if (!utils::isCorrectNumber(strDatum))
-		{
-			result.clear();
-			break;
-		}
-
-		if (count % 9u != 8u && count % 9u != 7u) // && count % 9u != 6u
-		{
-			result += strDatum + " ";
-		}
-
-		++count;
-	}
-
-	return result;
 }
 
 void ServerImitator::waitingForConnections(std::atomic_bool& flag)

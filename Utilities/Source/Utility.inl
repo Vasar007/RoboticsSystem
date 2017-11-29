@@ -1,6 +1,5 @@
 #ifndef UTILITY_INL
 #define UTILITY_INL
-#pragma once
 
 
 template <class Container>
@@ -27,6 +26,25 @@ std::string toString(const T& value) noexcept
 	stream << value;
 
 	return stream.str();
+}
+
+template<typename T> 
+T fromString(const std::string &str, bool &ok)
+{
+	std::stringstream ss(str);
+	T t;
+
+	ss >> t;
+	ok = !ss.fail();
+
+	return t;
+}
+
+template<>
+inline std::string fromString(const std::string &str, bool &ok)
+{
+	ok = true;
+	return str;
 }
 
 template<class T>
