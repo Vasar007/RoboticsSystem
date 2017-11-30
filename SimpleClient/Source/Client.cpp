@@ -158,6 +158,7 @@ void Client::receive()
 					}
 				}
 
+				// NEED TO DO AFTER DANILA REFACTORING.
 				///if (robotData == _waitAnswer)
 				{
 					_isNeedToWait = false;
@@ -192,14 +193,8 @@ void Client::receive()
 
 void Client::checkConnection(const std::atomic_int64_t& time)
 {
-	///const RobotData firstPoint  = {   800'000,	0, 940'000, -180'000 , 0, 0, 10, 2, 0 };
-	///const RobotData secondPoint = { 1'000'000,	0, 940'000, -180'000 , 0, 0, 10, 2, 0 };
-
-	///constexpr std::atomic_int64_t waitingTime = 1000LL;
-	///std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
-
-	///partialMovement(firstPoint, secondPoint, 200);
-	///circlicMovement(firstPoint, secondPoint, 10);
+	constexpr std::atomic_int64_t waitingTime = 1000LL;
+	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 
 	while (true)
 	{
@@ -228,9 +223,9 @@ void Client::waitLoop()
 	constexpr std::atomic_int64_t waitingTime = 100LL;
 	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 
-	///constexpr std::atomic_int64_t time = 2000LL;
-	///std::thread checkThread(&Client::checkConnection, this, std::cref(time));
-	///checkThread.detach();
+	constexpr std::atomic_int64_t time = 2000LL;
+	std::thread checkThread(&Client::checkConnection, this, std::cref(time));
+	checkThread.detach();
 
 	utils::println("\n\n\nWaiting for reply...\n");
 
@@ -340,6 +335,7 @@ std::chrono::duration<double> Client::getDuration() const
 	return _duration;
 }
 
+// NEED TO CHANGE THIS FUNCTION AFTER DANILA REFACTORING.
 void Client::tryReconnect(const int) /// port
 {
 	while (!_isRunning)
@@ -369,6 +365,7 @@ void Client::run()
 
 void Client::launch()
 {
+	// NEED TO SWAP THIS CODE AFTER DANILA REFACTORING.
 	///tryConnect(_serverPort, _serverIP, _socketSend, _socketSendAddress);
 	///setTimeout(_socketSend, 1000, 0);
 	tryConnect(_serverPortSending, _serverIP, _socketSend, _socketSendAddress);

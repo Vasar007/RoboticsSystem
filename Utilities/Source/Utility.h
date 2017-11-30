@@ -24,7 +24,7 @@ namespace utils
  * \return		True — current data types are same, false — otherwise.
  */
 template <class T, class U>
-constexpr bool		isSame() noexcept { return std::is_same<T, U>::value; }
+constexpr bool		isSame() noexcept;
 
 
 /**

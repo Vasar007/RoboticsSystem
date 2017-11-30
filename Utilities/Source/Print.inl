@@ -1,6 +1,6 @@
 #ifndef PRINT_INL
 #define PRINT_INL
-#pragma once
+
 
 template <typename T>
 void print(const T& t) noexcept
@@ -31,6 +31,7 @@ void println(const T& t, const Args&... args) noexcept
 template <class T>
 constexpr std::string_view typeName() noexcept
 {
+// Macros used to work on every platform.
 #ifdef __clang__
 	std::string_view p = __PRETTY_FUNCTION__;
 	return std::string_view(p.data() + 34, p.size() - 34 - 1);

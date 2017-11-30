@@ -37,7 +37,7 @@ void print(const T& t) noexcept;
  * \param[in] t		Data to print.
  * \param[in] args	Data to print.
  */
-template<typename T, typename... Args>
+template <typename T, typename... Args>
 void print(const T& t, const Args&... args) noexcept;
 
 

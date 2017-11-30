@@ -2,6 +2,12 @@
 #define UTILITY_INL
 
 
+template <class T, class U>
+constexpr bool isSame() noexcept
+{
+	return std::is_same<T, U>::value;
+}
+
 template <class Container>
 void split(const std::string& str, Container& cont, const std::string_view delims) noexcept
 {
@@ -28,7 +34,7 @@ std::string toString(const T& value) noexcept
 	return stream.str();
 }
 
-template<typename T> 
+template <typename T> 
 T fromString(const std::string &str, bool &ok)
 {
 	std::stringstream ss(str);
@@ -40,20 +46,20 @@ T fromString(const std::string &str, bool &ok)
 	return t;
 }
 
-template<>
+template <>
 inline std::string fromString(const std::string &str, bool &ok)
 {
 	ok = true;
 	return str;
 }
 
-template<class T>
+template <class T>
 std::unique_ptr<T> copyUnique(const std::unique_ptr<T>& source) noexcept
 {
 	return source ? std::make_unique<T>(*source) : nullptr;
 }
 
-template<class T>
+template <class T>
 void swap(T& first, T& second) noexcept
 {
 	// Enable ADL (not necessary in our case, but good practice).
