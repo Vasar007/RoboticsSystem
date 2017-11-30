@@ -35,7 +35,7 @@ Client::Client(const int serverPort, const std::string_view serverIP)
 }
 
 Client::Client(const int serverPortSending, const int serverReceiving,
-				const std::string_view serverIP)
+			   const std::string_view serverIP)
 	: WinsockInterface()
 	, _robotData()
 	, _serverIP(serverIP)
