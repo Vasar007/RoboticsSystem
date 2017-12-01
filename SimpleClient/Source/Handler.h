@@ -98,17 +98,35 @@ public:
 	};
 
 	/**
-	 * \brief Coordinates names, just to avoid "magic numbers".
+	 * \brief Coordinate name, just to avoid "magic numbers".
 	 */
-	enum Coordinate
-	{
-		X = 0,
-		Y = 1,
-		Z = 2,
-		W = 3,
-		P = 4,
-		R = 5
-	};
+	static constexpr std::size_t X = 0u;
+
+	/**
+	 * \brief Coordinate name, just to avoid "magic numbers".
+	 */
+	static constexpr std::size_t Y = 1u;
+	
+	/**
+	 * \brief Coordinate name, just to avoid "magic numbers".
+	 */
+	static constexpr std::size_t Z = 2u;
+	
+	/**
+	 * \brief Coordinate name, just to avoid "magic numbers".
+	 */
+	static constexpr std::size_t W = 3u;
+	
+	/**
+	 * \brief Coordinate name, just to avoid "magic numbers".
+	 */
+	static constexpr std::size_t P = 4u;
+	
+	/**
+	 * \brief Coordinate name, just to avoid "magic numbers".
+	 */
+	static constexpr std::size_t R = 5u;
+
 
 
 private:
