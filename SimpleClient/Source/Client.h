@@ -153,7 +153,7 @@ private:
 	 * \param[in] secondPoint			Second point for circlic movement.
 	 * \param[in] numberOfIterations	Number of iterations in circlic movement.
 	 */
-	void		circlicProcessing(const RobotData firstPoint, const RobotData secondPoint, 
+	void		circlicProcessing(const RobotData& firstPoint, const RobotData& secondPoint, 
 									const std::size_t numberOfIterations = 1u);
 
 	/**
@@ -163,7 +163,7 @@ private:
 	 * \param[in] secondPoint	End point.
 	 * \param[in] numberOfSteps Number of steps for which robot should move from start to end point.
 	 */
-	void		partialProcessing(const RobotData firstPoint, const RobotData secondPoint,
+	void		partialProcessing(const RobotData& firstPoint, const RobotData& secondPoint,
 									const std::size_t numberOfSteps = 1u);
 
 	/**

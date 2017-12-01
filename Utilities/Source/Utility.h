@@ -60,7 +60,7 @@ std::string			toString(const T& value) noexcept;
  * \return			Converted filled data or empty data.
  */
 template <typename T>
-T					fromString(const std::string &str, bool &ok);
+T					fromString(const std::string& str, bool& ok);
 
 
 /**
@@ -70,7 +70,7 @@ T					fromString(const std::string &str, bool &ok);
  * \return			Exact same string which forwards into function.
  */
 template <>
-std::string			fromString(const std::string &str, bool &ok);
+std::string			fromString(const std::string& str, bool& ok);
 
 
 /**
@@ -79,7 +79,7 @@ std::string			fromString(const std::string &str, bool &ok);
  * \param[in] source	The primary source for copying.
  * \return				Copied unique pointer.
  */
-template <class T>
+template <typename T>
 std::unique_ptr<T>	copyUnique(const std::unique_ptr<T>& source) noexcept;
 
 

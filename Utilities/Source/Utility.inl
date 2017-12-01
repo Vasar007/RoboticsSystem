@@ -35,7 +35,7 @@ std::string toString(const T& value) noexcept
 }
 
 template <typename T> 
-T fromString(const std::string &str, bool &ok)
+T fromString(const std::string& str, bool& ok)
 {
 	std::stringstream ss(str);
 	T t;
@@ -47,13 +47,13 @@ T fromString(const std::string &str, bool &ok)
 }
 
 template <>
-inline std::string fromString(const std::string &str, bool &ok)
+inline std::string fromString(const std::string& str, bool& ok)
 {
 	ok = true;
 	return str;
 }
 
-template <class T>
+template <typename T>
 std::unique_ptr<T> copyUnique(const std::unique_ptr<T>& source) noexcept
 {
 	return source ? std::make_unique<T>(*source) : nullptr;

@@ -372,7 +372,7 @@ void Client::launch()
 	tryConnect(_serverPortReceiving, _serverIP, _socketReceive, _socketReceiveAddress);
 }
 
-void Client::circlicProcessing(const RobotData firstPoint, const RobotData secondPoint, 
+void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& secondPoint, 
 								const std::size_t numberOfIterations)
 {
 	_circlicState = CirclicState::SEND_FIRST;
@@ -429,7 +429,7 @@ void Client::circlicProcessing(const RobotData firstPoint, const RobotData secon
 	}
 }
 
-void Client::partialProcessing(const RobotData firstPoint, const RobotData secondPoint,
+void Client::partialProcessing(const RobotData& firstPoint, const RobotData& secondPoint,
 								const std::size_t numberOfSteps)
 {
 	const RobotData directionalVector	= (secondPoint - firstPoint) / numberOfSteps;
@@ -484,16 +484,16 @@ void Client::sendCoordinates(const RobotData& robotData)
 void Client::circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
 								const std::size_t numberOfIterations)
 {
-	std::thread circlicThread(&Client::circlicProcessing, this, firstPoint, secondPoint,
-								numberOfIterations);
+	std::thread circlicThread(&Client::circlicProcessing, this, std::cref(firstPoint), 
+								std::cref(secondPoint), numberOfIterations);
 	circlicThread.detach();
 }
 
 void Client::partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
 								const std::size_t numberOfSteps)
 {
-	std::thread partialThread(&Client::partialProcessing, this, firstPoint, secondPoint,
-								numberOfSteps);
+	std::thread partialThread(&Client::partialProcessing, this, std::cref(firstPoint), 
+								std::cref(secondPoint), numberOfSteps);
 	partialThread.detach();
 }
 
