@@ -115,7 +115,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Parsing.h" />
     <ClInclude Include="Source\Print.h" />
+    <ClInclude Include="Source\Utilities.h" />
     <ClInclude Include="Source\Utility.h" />
   </ItemGroup>
   <ItemGroup>
@@ -123,6 +125,7 @@
     <None Include="Source\Utility.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Parsing.cpp" />
     <ClCompile Include="Source\Print.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
   </ItemGroup>

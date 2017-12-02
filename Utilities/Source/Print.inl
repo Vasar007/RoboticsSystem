@@ -1,36 +1,37 @@
 #ifndef PRINT_INL
 #define PRINT_INL
-#pragma once
+
 
 template <typename T>
-void print(const T& t)
+void print(const T& t) noexcept
 {
 	std::cout << t << ' ';
 }
 
 template <typename T, typename... Args>
-void print(const T& t, const Args&... args)
+void print(const T& t, const Args&... args) noexcept
 {
 	std::cout << t << ' ';
 	print(args...);
 }
 
 template <typename T>
-void println(const T& t)
+void println(const T& t) noexcept
 {
 	std::cout << t << '\n';
 }
 
 template <typename T, typename... Args>
-void println(const T& t, const Args&... args)
+void println(const T& t, const Args&... args) noexcept
 {
 	std::cout << t << ' ';
 	println(args...);
 }
 
 template <class T>
-constexpr std::string_view typeName()
+constexpr std::string_view typeName() noexcept
 {
+// Macros used to work on every platform.
 #ifdef __clang__
 	std::string_view p = __PRETTY_FUNCTION__;
 	return std::string_view(p.data() + 34, p.size() - 34 - 1);

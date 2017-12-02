@@ -1,11 +1,10 @@
 #ifndef SERVER_H
 #define SERVER_H
-#pragma once
 
 #include <atomic>
 
 #include "WinsockInterface.h"
-#include "Utility.h"
+#include "Utilities.h"
 
 
 namespace vasily
@@ -18,34 +17,34 @@ class ServerImitator : public WinsockInterface
 {
 private:
 	/**
-	 * \brief Maximum number of connectied clients.
-	 */
-	const int		 _MAX_CLIENTS = 32;
-
-	/**
 	 * \brief Variable used to keep sending port.
 	 */
-	int				_sendingPort;
+	int					_sendingPort;
 					
 	/**
 	 * \brief Variable used to keep reciving port.
 	 */
-	int				_receivingPort;
+	int					_receivingPort;
 					
 	/**
 	 * \brief The maximum length of the queue of pending connections.
 	 */
-	int				_backlog;
+	int					_backlog;
 
 	/**
 	 * \brief Connected client socket used to send data.
 	 */
-	SOCKET			_clientSocketSend;
+	SOCKET				_clientSocketSend;
 
 	/**
 	 * \brief Connected client socket used to receive data.
 	 */
-	SOCKET			_clientSocketReceive;
+	SOCKET				_clientSocketReceive;
+
+	/**
+	 * \brief Additional flag used to define coordinate type from client data.
+	 */
+	std::atomic_bool	_hasGotCoordSystem;
 	
 
 	/**
@@ -106,13 +105,6 @@ public:
 	 * \return				Returns an object with all moved data.
 	 */
 	ServerImitator&	operator=(ServerImitator&& other) noexcept;
-
-	/**
-	 * \brief			Function parses input data (from clients).
-	 * \param[in] data	Data for parsing.
-	 * \return			Deserialized data if parsed successful, empty string otherwise.
-	 */
-	std::string		parseData(const std::string& data) const;
 
 	/**
 	 * \brief Main method which starts infinite working loop.
