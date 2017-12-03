@@ -90,12 +90,14 @@ void codeGoesHere()
 - Forward declarations
 - Spaces framing namespace (at the begin and at the end) are optional
 - Notice two spaces between includes with forward declaration and code
+- All header files should have #define guards to prevent multiple inclusion. The format of the symbol name should be <PROJECT>_<FILE>_H.
 
 - Example:
 ```C++
 // Header file.
-#ifndef WORLD_H
-#define WORLD_H
+#ifndef FOO_BAR_H
+#define FOO_BAR_H
+
 #include <vector>
 #include <thread>
 #include <mutex>
@@ -124,7 +126,8 @@ class World
 // etc..
 };
 
-#indif // WORLD_H
+#endif // FOO_BAR_H
+
 ```
 ```C++
 // Source file.
@@ -277,12 +280,27 @@ void foo(// Many args..
 ## Curly brackets
 - Must use to place the brackets everywhere:
 ```C++
-void foo(int bar)
+void foo()
 {
-    if (bar == 0)
-    {
-        return;
-    }
-    // etc...
+  int temp = doSomething();
+  if (condition1)
+  {
+    // Do smth.
+  }
+  else
+  {
+    return;
+  }
+  
 }
+```
+
+## Blank spaces
+- **[OPTIONAL]** Should be blank line at the end of file.
+```C++
+int main()
+{
+	retun 0;
+}
+// Blank line
 ```
