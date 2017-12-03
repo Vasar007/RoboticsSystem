@@ -60,9 +60,9 @@ Foo::Foo(int x, int y)
 ## Namespaces
 
 - NO `using namespace std;` Your pull request ***will*** be denied if that is included
-- Namespaces should be camelCase
+- Namespaces must be camelCase
 - Notice a space between declaration namespace and code
-- [OPTIONAL] You can use tabulation for content in nested namespaces
+- **[OPTIONAL]** You can use tabulation for content in nested namespaces
 - Nested namespaces:
 
 ```C++
@@ -86,7 +86,7 @@ void codeGoesHere()
 - Standard Library Headers
 - External libraries
 - Other your includes
-- .hpp/.h file corresponding to this .cpp file (if applicable)
+- `.hpp/.h` file corresponding to this `.cpp` file (if applicable)
 - Forward declarations
 - Spaces framing namespace (at the begin and at the end) are optional
 - Notice two spaces between includes with forward declaration and code
@@ -140,12 +140,12 @@ class World
 
 ## Constants
 - Do not use C-Style "defines" for constants.
-- Use constexpr instead. It is compile-time determined just like #define is.
-- Functions can be marked as "constexpr" as well.
+- Use `constexpr` instead. It is compile-time determined just like #define is.
+- Functions can be marked as `constexpr` as well.
 
 ## Functions
 - Function names should be descriptive of what they do and should be a verb ("doing word")
-- Functions which return "bool" should be a question e.g. 
+- Functions which return `bool` should be a question e.g. 
 
 ```C++
 bool isXGreaterThan5(int x)
@@ -197,20 +197,20 @@ int* x = new int(5); // No!
 auto y = std::make_unique<int>(5) // Yes!
 ```
 
-- If you have to use "new" and but not "delete", then you are probably doing something wrong
+- If you have to use `new` and but not `delete`, then you are probably doing something wrong
 - Only case raw pointers are fine is if they are a pointer to a variable (So a non-owning pointer)
 
 ## Enums
-- Use enum class, not regular enums!
+- Use `enum class`, not regular `enums`!
 
 ## Comments
-- Prefer one-line comment "//" then multiline "/**/"
+- Prefer one-line comment `//` then multiline `/**/`
 - Write comments only in English
-- Each comment should end with the period (".")
-- Notice an indentation between "//" and beginning of the comment
+- Each comment should end with the period (`.`)
+- Notice an indentation between `//` and beginning of the comment
 - No words on open and close line multiline comment (doesn't work with code blocks comments)!
 - It's prefered to write the comments in places hard to understand
-- Please use docs comments (doxygen style) for functions, class-methods and class-members
+- Must use docs comments (doxygen style) for functions, class-methods and class-members
 ```C++
 class World
 {
@@ -256,7 +256,7 @@ select(next);
 ```
 
 ## Word wrapping
-- [OPTIONAL] Maximum lenght of line = 100 characters
+- **[OPTIONAL]** Maximum lenght of line = 100 characters
 - It's necessary to word wrapping like:
 ```C++
 void foo(// Many args..
@@ -275,7 +275,7 @@ void foo(// Many args..
 ```
 
 ## Curly brackets
-- Prefer to place the brackets everywhere:
+- Must use to place the brackets everywhere:
 ```C++
 void foo(int bar)
 {
