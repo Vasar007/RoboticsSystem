@@ -62,7 +62,7 @@ Foo::Foo(int x, int y)
 - NO `using namespace std;` Your pull request ***will*** be denied if that is included
 - Namespaces must be camelCase
 - Notice a space between declaration namespace and code
-- **[OPTIONAL]** You can use tabulation for content in nested namespaces
+- **[OPTIONAL]** You can use tabulation for content only in nested namespaces
 - Nested namespaces:
 
 ```C++
@@ -218,7 +218,7 @@ private:
     /**
      * \brief The variable to count before we can destroy dead body.
      */
-    int         _Counter;
+    int         _counter;
     
     /**
      * \brief The variable that contains level name.
@@ -235,9 +235,9 @@ public:
      * \param[in] playerInfo    Class that contains player's data.
      * \param[out] audioManager Audio manager for manipulating app's music.
      */
-    explicit				World(sf::RenderWindow& window, TextureHolder& textures,
-                                  FontHolder& fonts, SoundBufferHolder& sounds, 
-                                  PlayerInfo playerInfo, AudioManager& audioManager);
+    explicit    World(sf::RenderWindow& window, TextureHolder& textures,
+                      FontHolder& fonts, SoundBufferHolder& sounds, 
+                      PlayerInfo playerInfo, AudioManager& audioManager);
 ...
 }
 
