@@ -45,14 +45,14 @@ public:
 - Private members at top, protected in middle, public at bottom
 - Private functions at top, protected in middle, public at bottom
 - Notice one spaces between each section
-- For primitive class members may be no prefix "m" (e.g. coordinates) 
 
 - Initilzation lists:
 
 ```C++
 Foo::Foo(int x, int y)
-    : x(x)
-    , y(y) 
+    : 
+      x(x),
+      y(y) 
 {
 }
 ```
@@ -62,6 +62,7 @@ Foo::Foo(int x, int y)
 - NO `using namespace std;` Your pull request ***will*** be denied if that is included
 - Namespaces should be camelCase
 - Notice a space between declaration namespace and code
+- [OPTIONAL] You can use tabulation for content in nested namespaces
 - Nested namespaces:
 
 ```C++
@@ -82,16 +83,20 @@ void codeGoesHere()
 ```
 
 ## Includes and Forward Declares order:
-- Standard Library Headers for 
-- Other includes
+- Standard Library Headers
+- External libraries
+- Other your includes
 - .hpp/.h file corresponding to this .cpp file (if applicable)
 - Forward declarations
-- Notice two spaces between includes and code
+- Spaces framing namespace (at the begin and at the end) are optional
+- Notice two spaces between includes with forward declaration and code
 
 - Example:
 ```C++
+// Header file.
+#ifndef WORLD_H
+#define WORLD_H
 #include <vector>
-#include <memory>
 #include <thread>
 #include <mutex>
 
@@ -116,7 +121,21 @@ class Camera;
 
 class World
 {
-//etc..
+// etc..
+};
+
+#indif // WORLD_H
+```
+```C++
+// Source file.
+#include <memory>
+#include <iostream>
+
+#include <SFML/Graphics/Textures.hpp>
+
+#include "World.hpp"
+
+/// etc...
 ```
 
 ## Constants
@@ -136,7 +155,7 @@ bool isXGreaterThan5(int x)
 ```
 
 - Primitives can be passed by value, or reference
-- Objects pass as either const reference (or reference), and NEVER BY VALUE
+- Objects pass as either const reference (or reference) as often as possible
 - Indent style:
 
 ```C++
@@ -178,7 +197,7 @@ int* x = new int(5); // No!
 auto y = std::make_unique<int>(5) // Yes!
 ```
 
-- If you have to use "new", then you are probably doing something wrong
+- If you have to use "new" and but not "delete", then you are probably doing something wrong
 - Only case raw pointers are fine is if they are a pointer to a variable (So a non-owning pointer)
 
 ## Enums
@@ -191,7 +210,7 @@ auto y = std::make_unique<int>(5) // Yes!
 - Notice an indentation between "//" and beginning of the comment
 - No words on open and close line multiline comment (doesn't work with code blocks comments)!
 - It's prefered to write the comments in places hard to understand
-- Please use docs comments for functions, class-methods and class-members
+- Please use docs comments (doxygen style) for functions, class-methods and class-members
 ```C++
 class World
 {
@@ -208,17 +227,17 @@ private:
     
 public:
     /**
-     * \brief		            Default explicit constructor.
-     * \param[out] window		Active window for rendering all stuff.
+     * \brief                   Default explicit constructor.
+     * \param[out] window       Active window for rendering all stuff.
      * \param[in] textures      Textures holder for extracting necessary textures.
-     * \param[in] fonts		    Fonts holder for extracting necessary textures.
-     * \param[in] sounds		Sounds holder for extracting necessary textures.
-     * \param[in] playerInfo	Class that contains player's data.
-     * \param[out] audioManager	Audio manager for manipulating app's music.
+     * \param[in] fonts         Fonts holder for extracting necessary textures.
+     * \param[in] sounds        Sounds holder for extracting necessary textures.
+     * \param[in] playerInfo    Class that contains player's data.
+     * \param[out] audioManager Audio manager for manipulating app's music.
      */
     explicit				World(sf::RenderWindow& window, TextureHolder& textures,
-							      FontHolder& fonts, SoundBufferHolder& sounds, 
-							      PlayerInfo playerInfo, AudioManager& audioManager);
+                                  FontHolder& fonts, SoundBufferHolder& sounds, 
+                                  PlayerInfo playerInfo, AudioManager& audioManager);
 ...
 }
 
@@ -237,23 +256,33 @@ select(next);
 ```
 
 ## Word wrapping
-- Maximum lenght of line = 100 characters (OPTIONAL)
-- It's prefered to word wrapping like:
+- [OPTIONAL] Maximum lenght of line = 100 characters
+- It's necessary to word wrapping like:
 ```C++
 void foo(// Many args..
          // continuation of args)
 {
   int temp = doSomething(arg1, arg2, ... ,
                          ... argN);
-  if (condition1 && cindition2 &&
-    conditionN)
+  if (condition1 && cindition2
+     && conditionN)
   {
   }
   
-  int m = arg1 + agr2 + ... +
-          + ... + argN;
+  int m = arg1 + agr2 + ...
+        + ... + argN;
 }
 ```
 
 ## Curly brackets
-- Prefer to place the brackets everywhere
+- Prefer to place the brackets everywhere:
+```C++
+void foo(int bar)
+{
+    if (bar == 0)
+    {
+        return;
+    }
+    // etc...
+}
+```
