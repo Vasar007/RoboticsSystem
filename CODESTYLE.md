@@ -61,7 +61,7 @@ Foo::Foo(int x, int y)
 
 - NO `using namespace std;` Your pull request ***will*** be denied if that is included
 - Namespaces must be camelCase
-- Notice a space between declaration namespace and code
+- Spaces framing namespace (at the begin and at the end) are optional
 - **[OPTIONAL]** You can use tabulation for content only in nested namespaces
 - Nested namespaces:
 
@@ -88,7 +88,6 @@ void codeGoesHere()
 - Other your includes
 - `.hpp/.h` file corresponding to this `.cpp` file (if applicable)
 - Forward declarations
-- Spaces framing namespace (at the begin and at the end) are optional
 - Notice two spaces between includes with forward declaration and code
 - All header files should have #define guards to prevent multiple inclusion. The format of the symbol name should be <PROJECT>_<FILE>_H.
 
