@@ -2,7 +2,6 @@
 #define CLIENT_H
 
 #include <thread>
-#include <atomic>
 #include <chrono>
 
 #include "WinsockInterface.h"
@@ -19,7 +18,18 @@ namespace vasily
  */
 class Client : public WinsockInterface
 {
-private:
+public:
+	/**
+	 * \brief Array of coordinates type.
+	 */
+	enum class CoordinateType
+	{
+		JOINT = 1,
+		WORLD = 2
+	};
+
+
+protected:
 	/**
 	 * \brief Array of states to work in circlic mode.
 	 */
@@ -32,7 +42,7 @@ private:
 	};
 
 
-private:
+protected:
 	/**
 	 * \brief Structure which contains data that is used for interaction with robot.
 	 */
@@ -91,7 +101,7 @@ private:
 	/**
 	 * \brief Default value for server IP.
 	 */
-	static const std::string_view					_DEFAULT_SERVER_IP;
+	static constexpr char							_DEFAULT_SERVER_IP[]	= "192.168.0.21";
 
 	/**
 	 * \brief Default value for sending port.
@@ -125,20 +135,14 @@ private:
 
 
 	/**
-	 * \brief			Function tries to establishe a connection to a specified socket again.
-	 * \param[in] port	Port for reconnection.
+	 * \brief Function tries to establishe a connection to a specified socket again.
 	 */
-	void		tryReconnect(const int port);
+	void		tryReconnect();
 
 	/**
 	 * \brief Main infinite working loop. Network logic to interacte with server.
 	 */
 	void		waitLoop() override;
-
-	/**
-	 * \brief Additional fuction that receives data from server.
-	 */
-	void		receive();
 
 	/**
 	 * \brief			Check connection to robot every time.
@@ -154,7 +158,7 @@ private:
 	 * \param[in] numberOfIterations	Number of iterations in circlic movement.
 	 */
 	void		circlicProcessing(const RobotData& firstPoint, const RobotData& secondPoint, 
-									const std::size_t numberOfIterations = 1u);
+								  const std::size_t numberOfIterations = 1u);
 
 	/**
 	 * \brief					Function works with robot in partial mode.
@@ -164,7 +168,7 @@ private:
 	 * \param[in] numberOfSteps Number of steps for which robot should move from start to end point.
 	 */
 	void		partialProcessing(const RobotData& firstPoint, const RobotData& secondPoint,
-									const std::size_t numberOfSteps = 1u);
+								  const std::size_t numberOfSteps = 1u);
 
 	/**
 	 * \brief				Function checks if given point is not out of working coordinates.
@@ -172,12 +176,6 @@ private:
 	 * \return				True if point is correct, false otherwise.
 	 */
 	bool		checkCoordinates(const RobotData& robotData) const;
-
-	/**
-	 * \brief				Function checks coordinates and if it's right sends to robot.
-	 * \param[in] robotData Point to check.
-	 */
-	void		sendCoordinates(const RobotData& robotData);
 
 
 public:
@@ -195,8 +193,8 @@ public:
 	 * \param[in] serverIP			Server IP address for connection.
 	 */
 	explicit	Client(const int serverPortSending = _DEFAULT_SENDING_PORT, 
-						const int serverReceiving = _DEFAULT_RECEIVING_PORT,
-						const std::string_view serverIP = "192.168.0.21");
+					   const int serverReceiving = _DEFAULT_RECEIVING_PORT,
+					   const std::string_view serverIP = _DEFAULT_SERVER_IP);
 
 	/**	
 	 * \brief Default destructor.
@@ -266,7 +264,7 @@ public:
 	 * \param[in] secondPoint			Second point for circlic movement.
 	 * \param[in] numberOfIterations	Number of iterations in circlic movement.
 	 * \code
-	 * Enter command: c 1 2 3 4 5 6 10 2 0|10 20 30 40 50 10 2 0|5
+	 * Enter command: c 1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|5
 	 * \endcode
 	 */
 	void		circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
@@ -280,15 +278,40 @@ public:
 	 * \param[in] secondPoint	End point.
 	 * \param[in] numberOfSteps	Number of steps for which robot should move from start to end point.
 	 * \code
-	 * Enter command: p 1 2 3 4 5 6 10 2 0|10 20 30 40 50 10 2 0|3
+	 * Enter command: p 1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|3
 	 * \endcode
 	*/
 	void		partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
 								const std::size_t numberOfSteps);
 
+	/**
+	 * \brief Additional fuction that receives data from server.
+	 */
+	void		receive();
+
+	/**
+	 * \brief				Function checks coordinates and if it's right sends to robot.
+	 * \param[in] robotData Point to check.
+	 */
+	void		sendCoordinates(const RobotData& robotData);
+
+	/**
+	 * \brief						Function sends coordinate system to robot.
+	 * \param[in] coordinateType	Coordinate system to send.
+	 */
+	void		sendCoordinateType(const CoordinateType coordinateType) const;
+
 	// Friendly swapping fuction.
 	template <class T>
 	friend void utils::swap(T& first, T& second) noexcept;
+
+	/**
+	 * \brief					Friendly function to work with privite fields and methods.
+	 * \details					Create additional thread to receive data from sercer.
+	 * \param[out] client		Client to receive data.
+	 * \param[in] numberOfTimes Number of times to allow connections.
+	 */
+	friend void receiveClient(Client& client, const std::size_t numberOfTimes);
 };
 
 }

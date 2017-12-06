@@ -139,11 +139,9 @@ ParsedResult Handler::parseDataAfterCommand()
 				result.mFirstPoint = utils::fromString<RobotData>(strToParse, flag1);
 
 				const std::size_t foundPosSecond = _data.find('|', foundPosFirst + 1u);
-				strToParse = _data.substr(foundPosFirst + 1u,
-					foundPosSecond - 1u);
+				strToParse = _data.substr(foundPosFirst + 1u, foundPosSecond - 1u);
 				bool flag2;
-				result.mSecondPoint = utils::fromString<RobotData>(strToParse,
-					flag2);
+				result.mSecondPoint = utils::fromString<RobotData>(strToParse, flag2);
 
 				strToParse = _data.substr(foundPosSecond + 1u);
 				bool flag3;

@@ -6,6 +6,7 @@
 #include <memory>
 #include <utility>
 #include <string_view>
+#include <atomic>
 
 
 // Forward declaration.
@@ -25,18 +26,6 @@ namespace utils
  */
 template <class T, class U>
 constexpr bool		isSame() noexcept;
-
-
-/**
- * \brief					One of the common implementation of the splitting strings.
- * \tparam Container		Type of the contatiner for output.
- * \param[in] str			String to split.
- * \param[out] cont			Container for output.
- * \param[in] delims		Delimiter characters.
- */
-template <class Container>
-void				split(const std::string& str, Container& cont, 
-							const std::string_view delims = " ") noexcept;
 
 
 /**
@@ -60,7 +49,7 @@ std::string			toString(const T& value) noexcept;
  * \return			Converted filled data or empty data.
  */
 template <typename T>
-T					fromString(const std::string& str, bool& ok);
+T					fromString(const std::string& str, bool& ok) noexcept;
 
 
 /**
@@ -70,7 +59,7 @@ T					fromString(const std::string& str, bool& ok);
  * \return			Exact same string which forwards into function.
  */
 template <>
-std::string			fromString(const std::string& str, bool& ok);
+std::string			fromString(const std::string& str, bool& ok) noexcept;
 
 
 /**

@@ -107,6 +107,18 @@ void WinsockInterface::init()
 	initSocket(_socketReceive);
 }
 
+void WinsockInterface::close()
+{
+	_isInitialized = false;
+
+	closesocket(_socketSend);
+	closesocket(_socketReceive);
+	WSACleanup();
+
+	_socketSend		= 0;
+	_socketReceive	= 0;
+}
+
 void WinsockInterface::initWinsock(WSADATA& wsaData) const
 {
 	// Initialization Winsock implementation.
@@ -116,6 +128,7 @@ void WinsockInterface::initWinsock(WSADATA& wsaData) const
 	{
 		utils::println("\n\nFAILED. ERROR CODE:", WSAGetLastError());
 		std::cin.get();
+		assert(false);
 		exit(static_cast<int>(ErrorType::FAILED_INITIALIZE_WSDATA));
 	}
 
@@ -133,6 +146,7 @@ void WinsockInterface::initSocket(SOCKET& socketToInit, const int aiProtocol) co
 	{
 		utils::println("\nCOULD NOT CREATE SOCKET.");
 		std::cin.get();
+		assert(false);
 		exit(static_cast<int>(ErrorType::FAILED_CREATE_SOCKET));
 	}
 
@@ -141,7 +155,7 @@ void WinsockInterface::initSocket(SOCKET& socketToInit, const int aiProtocol) co
 }
 
 void WinsockInterface::bindSocket(const SOCKET& socketToBind, SOCKADDR_IN& socketAddress, 
-									const int port) const
+								  const int port) const
 {
 	u_short usPort = static_cast<u_short>(port);
 
@@ -156,6 +170,7 @@ void WinsockInterface::bindSocket(const SOCKET& socketToBind, SOCKADDR_IN& socke
 	{
 		utils::println("\nBIND FAILED.");
 		std::cin.get();
+		assert(false);
 		exit(static_cast<int>(ErrorType::FAILED_BIND));
 	}
 
@@ -172,6 +187,7 @@ void WinsockInterface::listenOn(const SOCKET& socketToList, const int backlog) c
 	{
 		utils::println("\nLISTEN FAILED.");
 		std::cin.get();
+		assert(false);
 		exit(static_cast<int>(ErrorType::FAILED_LISTEN));
 	}
 
@@ -182,7 +198,7 @@ void WinsockInterface::listenOn(const SOCKET& socketToList, const int backlog) c
 }
 
 bool WinsockInterface::tryConnect(const int port, const std::string& ip, 
-									const SOCKET& socketToConnect, SOCKADDR_IN& socketAddress) const
+								  const SOCKET& socketToConnect, SOCKADDR_IN& socketAddress) const
 {
 	const char* serverIP	= ip.c_str();
 	const u_short usPort	= static_cast<u_short>(port);
@@ -225,14 +241,75 @@ void WinsockInterface::sendData(const SOCKET& socketToSend, const std::string& d
 	utils::println("Sent data:", data, "successfully.\n");
 }
 
+std::string WinsockInterface::receiveData(const SOCKET socketToReceive)
+{
+	std::string result;
+
+	int addrlen = sizeof(SOCKADDR_IN);
+
+	SOCKADDR_IN address;
+
+	memset(_message, 0, _MAXRECV);
+	memset(_buffer, 0, _MAXRECV);
+
+	// Get details of the client.
+	getpeername(socketToReceive, reinterpret_cast<SOCKADDR*>(&address),
+				static_cast<int*>(&addrlen));
+
+	const int valRead	= recv(socketToReceive, _buffer, _MAXRECV, 0);
+	const u_short port	= ntohs(address.sin_port);
+
+	// Get IP address back and print it.
+	inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
+
+	if (valRead == SOCKET_ERROR)
+	{
+		const int errorCode = WSAGetLastError();
+
+		if (errorCode == WSAECONNRESET)
+		{
+			// Node disconnected, get his details and print.
+			utils::println("Node disconnected unexpectedly, IP", _message, ", PORT", port);
+		}
+		else
+		{
+			utils::println("recv failed with error code:", errorCode);
+		}
+
+		_isRunning	= false;
+		result		= "";
+	}
+	else if (valRead == 0)
+	{
+		// Node disconnected, get his details and print.
+		utils::println("Node disconnected, IP", _message, ", PORT", port);
+
+		_isRunning	= false;
+		result		= "";
+	}
+	// Process message that came in.
+	else if (valRead > 0)
+	{
+		// Add null character, if you want to use with printf/puts or other string 
+		// handling functions.
+		_buffer[valRead] = '\0';
+
+		utils::println(_message, ':', port, '-', _buffer);
+
+		result = _buffer;
+	}
+
+	return result;
+}
+
 void WinsockInterface::setTimeout(const SOCKET& socketForSetting, const long seconds,
-									const long microseconds) const
+								  const long microseconds) const
 {
 	TIMEVAL timeout;
 	timeout.tv_sec = seconds;
 	timeout.tv_usec = microseconds;
 	setsockopt(socketForSetting, SOL_SOCKET, SO_RCVTIMEO,
-				reinterpret_cast<char*>(&timeout), sizeof timeout);
+			   reinterpret_cast<char*>(&timeout), sizeof timeout);
 }
 
 }

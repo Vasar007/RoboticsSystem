@@ -3,6 +3,8 @@
 
 #include <unordered_map>
 #include <memory>
+#include <atomic>
+
 #include <winsock2.h>
 #include <Ws2tcpip.h>
 
@@ -90,7 +92,7 @@ protected:
 	/**
 	 * \brief Flag used to show status of network interaction.
 	 */
-	bool							_isRunning;
+	std::atomic_bool				_isRunning;
 
 	/**
 	 * \brief Flag used to check whether winsocket had been initialized.
@@ -124,7 +126,7 @@ protected:
 	 * \param[out] wsaData	A reference to the WSADATA data structure that is to receive details
 	 *						of the WinSock implementation.
 	 */
-	void		 initWinsock(WSADATA& wsaData) const;
+	void			initWinsock(WSADATA& wsaData) const;
 
 	/**
 	 * \brief					Function bindes a socket that is bound to a specific transport 
@@ -134,7 +136,7 @@ protected:
 	 *							parameter are specific to the address family and socket type
 	 *							specified. 
 	 */
-	void		 initSocket(SOCKET& socketToInit, const int aiProtocol = 6) const;
+	void			initSocket(SOCKET& socketToInit, const int aiProtocol = 6) const;
 				 
 	/**
 	 * \brief						Function associates a local address with a socket.
@@ -143,8 +145,8 @@ protected:
 	 *								assign to the bound socket.
 	 * \param port					Port for the socket that is being bound.
 	 */
-	void		 bindSocket(const SOCKET& socketToBind, SOCKADDR_IN& socketAddress, 
-							const int port) const;
+	void			bindSocket(const SOCKET& socketToBind, SOCKADDR_IN& socketAddress, 
+							   const int port) const;
 
 	/**
 	 * \brief					Function places a socket in a state in which it is listening for
@@ -152,7 +154,7 @@ protected:
 	 * \param[in] socketToList	A descriptor identifying a bound, unconnected socket.
 	 * \param[in] backlog		The maximum length of the queue of pending connections.
 	 */
-	void		 listenOn(const SOCKET& socketToList, const int backlog = 10) const;
+	void			listenOn(const SOCKET& socketToList, const int backlog = 10) const;
 
 	/**
 	 * \brief						Function establishes a connection to a specified socket.
@@ -165,15 +167,22 @@ protected:
 	 *								returns SOCKET_ERROR, and a specific error code can be 
 	 *								retrieved by calling WSAGetLastError.
 	 */
-	bool		 tryConnect(const int port, const std::string& ip, 
-							const SOCKET& socketToConnect, SOCKADDR_IN& socketAddress) const;
+	bool			tryConnect(const int port, const std::string& ip, 
+							   const SOCKET& socketToConnect, SOCKADDR_IN& socketAddress) const;
 	
 	/**
-	 * \brief				Function sends data on a connected socket.
+	 * \brief					Function sends data on a connected socket.
 	 * \param[out] socketToSend	A descriptor identifying a connected socket.
 	 * \param[out] data			A buffer containing the data to be transmitted.
 	 */
-	void		 sendData(const SOCKET& socketToSend, const std::string& data) const;
+	void			sendData(const SOCKET& socketToSend, const std::string& data) const;
+
+	/**
+	 * \brief						Function receives data from receiving socket.
+	 * \param[in] socketToReceive	A descriptor identifying a receiving socket.
+	 * \return						Received data from receiving socket.
+	 */
+	std::string		receiveData(const SOCKET socketToReceive);
 
 	/**
 	 * \brief						Function sets timeout for socket.
@@ -181,13 +190,13 @@ protected:
 	 * \param[in] seconds			Time interval, in seconds.
 	 * \param[in] microseconds		Time interval, in microseconds.
 	 */
-	void		setTimeout(const SOCKET& socketForSetting,
-							const long seconds, const long microseconds) const;
+	void			setTimeout(const SOCKET& socketForSetting,
+							   const long seconds, const long microseconds) const;
 
 	/**
 	 * \brief Main infinite working loop. All network logic should be placed here.
 	 */
-	virtual void waitLoop() = 0;
+	virtual void	waitLoop() = 0;
 
 
 public:
@@ -237,6 +246,11 @@ public:
 	 * \brief Fuction initializes WSDATA and sockets.
 	 */
 	void				init();
+
+	/**
+	 * \brief Function closes all initialized data.
+	 */
+	void				close();
 
 	/**
 	 * \brief Main method which starts infinite working loop.

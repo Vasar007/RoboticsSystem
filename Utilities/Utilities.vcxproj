@@ -121,6 +121,7 @@
     <ClInclude Include="Source\Utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\Parsing.inl" />
     <None Include="Source\Print.inl" />
     <None Include="Source\Utility.inl" />
   </ItemGroup>

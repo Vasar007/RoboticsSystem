@@ -1,8 +1,6 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <atomic>
-
 #include "WinsockInterface.h"
 #include "Utilities.h"
 
@@ -15,7 +13,7 @@ namespace vasily
  */
 class ServerImitator : public WinsockInterface
 {
-private:
+protected:
 	/**
 	 * \brief Variable used to keep sending port.
 	 */
@@ -54,15 +52,13 @@ private:
 
 	/**
 	 * \brief			Additional loop which has a handler for connections.
-	 * \param[out] flag Flag used to know when client connected.
 	 */
-	void			process(std::atomic_bool& flag);
+	void			process();
 
 	/**
 	 * \brief			Function waits for clients connections.
-	 * \param[out] flag	Flag used to know when client connected.
 	 */
-	void			waitingForConnections(std::atomic_bool& flag);
+	void			waitingForConnections();
 
 
 public:

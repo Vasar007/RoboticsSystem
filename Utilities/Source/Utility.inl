@@ -8,22 +8,6 @@ constexpr bool isSame() noexcept
 	return std::is_same<T, U>::value;
 }
 
-template <class Container>
-void split(const std::string& str, Container& cont, const std::string_view delims) noexcept
-{
-	std::size_t previous	= 0u;
-	std::size_t current		= str.find_first_of(delims);
-
-	while (current != std::string::npos)
-	{
-		cont.push_back(str.substr(previous, current - previous));
-		previous	= current + 1u;
-		current		= str.find_first_of(delims, previous);
-	}
-
-	cont.push_back(str.substr(previous, current - previous));
-}
-
 template <typename T>
 std::string toString(const T& value) noexcept
 {
@@ -35,7 +19,7 @@ std::string toString(const T& value) noexcept
 }
 
 template <typename T> 
-T fromString(const std::string& str, bool& ok)
+T fromString(const std::string& str, bool& ok) noexcept
 {
 	std::stringstream ss(str);
 	T t;
@@ -47,7 +31,7 @@ T fromString(const std::string& str, bool& ok)
 }
 
 template <>
-inline std::string fromString(const std::string& str, bool& ok)
+inline std::string fromString(const std::string& str, bool& ok) noexcept
 {
 	ok = true;
 	return str;
@@ -83,6 +67,5 @@ void swap(T& first, T& second) noexcept
 		swap(first, second);
 	}
 }
-
 
 #endif // UTILITY_INL
