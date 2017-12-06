@@ -148,7 +148,7 @@ void Client::checkConnection(const std::atomic_int64_t& time)
 
 	while (true)
 	{
-		//sendCoordinates(_robotData);
+		sendCoordinates(_robotData);
 	
 		std::this_thread::sleep_for(std::chrono::milliseconds(time));
 	}
@@ -169,9 +169,10 @@ void Client::waitLoop()
 	constexpr std::atomic_int64_t waitingTime = 100LL;
 	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 
-	constexpr std::atomic_int64_t time = 2000LL;
-	std::thread checkThread(&Client::checkConnection, this, std::cref(time));
-	checkThread.detach();
+	// NEED TO DO AFTER DANILA REFACTORING.
+	///constexpr std::atomic_int64_t time = 2000LL;
+	///std::thread checkThread(&Client::checkConnection, this, std::cref(time));
+	///checkThread.detach();
 
 	utils::println("\n\n\nWaiting for reply...\n");
 
