@@ -11,24 +11,26 @@ namespace vasily
 {
 
 ServerImitator::ServerImitator(const int sendingPort, const int recivingPort, const int backlog)
-	: WinsockInterface()
-	, _sendingPort(sendingPort)
-	, _receivingPort(recivingPort)
-	, _backlog(backlog)
-	, _clientSocketSend(0)
-	, _clientSocketReceive(0)
-	, _hasGotCoordSystem(false)
+	:
+	WinsockInterface(),
+	_sendingPort(sendingPort),
+	_receivingPort(recivingPort),
+	_backlog(backlog),
+	_clientSocketSend(0),
+	_clientSocketReceive(0),
+	_hasGotCoordSystem(false)
 {
 }
 
 ServerImitator::ServerImitator(ServerImitator&& other) noexcept
-	: WinsockInterface()
-	, _sendingPort(other._sendingPort)
-	, _receivingPort(other._receivingPort)
-	, _backlog(other._backlog)
-	, _clientSocketSend(0)
-	, _clientSocketReceive(0)
-	, _hasGotCoordSystem(other._hasGotCoordSystem ? true : false)
+	: 
+	WinsockInterface(),
+	_sendingPort(other._sendingPort),
+	_receivingPort(other._receivingPort),
+	_backlog(other._backlog),
+	_clientSocketSend(0),
+	_clientSocketReceive(0),
+	_hasGotCoordSystem(other._hasGotCoordSystem ? true : false)
 {
 	utils::swap(*this, other);
 }

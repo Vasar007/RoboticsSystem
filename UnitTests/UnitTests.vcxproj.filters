@@ -21,12 +21,18 @@
     <ClInclude Include="ClientTest\TestServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ClientTest\ModClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientTest\ClientTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ClientTest\TestServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientTest\ModClientcpp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

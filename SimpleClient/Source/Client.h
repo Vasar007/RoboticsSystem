@@ -170,13 +170,6 @@ protected:
 	void		partialProcessing(const RobotData& firstPoint, const RobotData& secondPoint,
 								  const std::size_t numberOfSteps = 1u);
 
-	/**
-	 * \brief				Function checks if given point is not out of working coordinates.
-	 * \param[in] robotData	Point to check.
-	 * \return				True if point is correct, false otherwise.
-	 */
-	bool		checkCoordinates(const RobotData& robotData) const;
-
 
 public:
 	/**
@@ -290,10 +283,19 @@ public:
 	void		receive();
 
 	/**
-	 * \brief				Function checks coordinates and if it's right sends to robot.
-	 * \param[in] robotData Point to check.
+	 * \brief				Function checks if given point is not out of working coordinates.
+	 * \param[in] robotData	Point to check.
+	 * \return				True if point is correct, false otherwise.
 	 */
-	void		sendCoordinates(const RobotData& robotData);
+	bool		checkCoordinates(const RobotData& robotData) const;
+
+
+	/**
+	 * \brief				Function checks coordinates and if it's right sends to robot.
+	 * \param[in] robotData Point to send.
+	 * \return				True if coordinates sent, false otherwise.
+	 */
+	bool		sendCoordinates(const RobotData& robotData);
 
 	/**
 	 * \brief						Function sends coordinate system to robot.
@@ -301,17 +303,10 @@ public:
 	 */
 	void		sendCoordinateType(const CoordinateType coordinateType) const;
 
+
 	// Friendly swapping fuction.
 	template <class T>
 	friend void utils::swap(T& first, T& second) noexcept;
-
-	/**
-	 * \brief					Friendly function to work with privite fields and methods.
-	 * \details					Create additional thread to receive data from sercer.
-	 * \param[out] client		Client to receive data.
-	 * \param[in] numberOfTimes Number of times to allow connections.
-	 */
-	friend void receiveClient(Client& client, const std::size_t numberOfTimes);
 };
 
 }

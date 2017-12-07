@@ -65,14 +65,15 @@ struct RobotData
 	 * \brief	Calculate length of vector which comtains 6 coordinates.
 	 * \return	Square root of sum of coordinates squares.
 	 */
-	double length() const;
+	double		length() const;
 
 	/**
 	 * \brief			Function checks two structures on full equality.
 	 * \param[in] other Other object to compare.
 	 * \return			True if structures are equal, false otherwise.
 	 */
-	bool isEqual(const RobotData& other) const;
+	bool		isEqual(const RobotData& other) const;
+
 
 	/**
 	 * \brief			Function checks coordinate arrays of two structures on equality.

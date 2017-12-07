@@ -16,34 +16,14 @@ class TestServer : public vasily::ServerImitator
 {
 public:
 	/**
-	 * \brief Constant number of server port.
-	 */
-	static constexpr int	SERVER_PORT				= 9997;
-
-	/**
-	 * \brief Constant number of server port to send.
-	 */
-	static constexpr int	SERVER_PORT_SENDING		= 9999;
-
-	/**
-	 * \brief Constant number of server port to receive.
-	 */
-	static constexpr int	SERVER_PORT_RECEIVING	= 9998;
-
-	/**
-	 * \brief Constant number of server IP.
-	 */
-	static constexpr char	SERVER_IP[]				= "192.168.0.100";
-
-	/**
 	 * \brief Constant number of client port to send.
 	 */
-	static constexpr int	PORT_SENDING			= 9998;
+	static constexpr int	PORT_SENDING	= 9998;
 
 	/**
 	 * \brief Constant number of client port to receive.
 	 */
-	static constexpr int	PORT_RECEIVING			= 9999;
+	static constexpr int	PORT_RECEIVING	= 9999;
 
 	/**
 	 * \brief Mutex to lock thread for safety.
@@ -72,15 +52,15 @@ public:
 	 * \param[in] recivingPort	Port for connection.
 	 * \param[in] backlog		Number of connections allowed on the incoming queue.
 	 */
-	explicit TestServer(const int sendingPort = PORT_SENDING,
-						const int recivingPort = PORT_RECEIVING,
-						const int backlog = 10);
+	explicit	TestServer(const int sendingPort = PORT_SENDING,
+						   const int recivingPort = PORT_RECEIVING,
+						   const int backlog = 10);
 
 	/**
 	 * \brief					Function receives data from receiving socket.
 	 * \param[in] numberOfTimes Number of times to allow connections.
 	 */
-	void receiveDataNTimes(const std::size_t numberOfTimes);
+	void		receiveDataNTimes(const std::size_t numberOfTimes);
 };
 
 }

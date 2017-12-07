@@ -155,10 +155,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ClientTest\ClientTest.h" />
+    <ClInclude Include="ClientTest\ModClient.h" />
     <ClInclude Include="ClientTest\TestServer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientTest\ClientTest.cpp" />
+    <ClCompile Include="ClientTest\ModClientcpp.cpp" />
     <ClCompile Include="ClientTest\TestServer.cpp" />
   </ItemGroup>
   <ItemGroup>

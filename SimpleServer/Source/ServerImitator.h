@@ -112,6 +112,7 @@ public:
 	 */
 	void			launch() override;
 
+
 	// Friendly swapping fuction.
 	template <class T>
 	friend void utils::swap(T& first, T& second) noexcept;

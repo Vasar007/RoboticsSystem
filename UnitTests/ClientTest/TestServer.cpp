@@ -5,10 +5,11 @@ namespace clientTests
 {
 
 TestServer::TestServer(const int sendingPort, const int recivingPort, const int backlog)
-	: ServerImitator(sendingPort, recivingPort, backlog)
-	, mHasConnected(false)
-	, mHasFinished(false)
-	, mStorage()
+	: 
+	ServerImitator(sendingPort, recivingPort, backlog),
+	mHasConnected(false),
+	mHasFinished(false),
+	mStorage()
 {
 }
 
