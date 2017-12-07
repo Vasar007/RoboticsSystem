@@ -14,8 +14,8 @@ void initTestServer(TestServer& testServer, const std::size_t numberOfTimes = 1u
 	testServer.receiveDataNTimes(numberOfTimes);
 }
 
-void initClient(ModClient& client, const std::function<void()> funcToCall,
-		  const std::size_t numberOfTimes = 1u)
+template <typename Functor>
+void initClient(ModClient& client, Functor&& funcToCall, const std::size_t numberOfTimes = 1u)
 {
 	client.init();
 	client.launch();
