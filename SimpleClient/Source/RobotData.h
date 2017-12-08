@@ -39,7 +39,7 @@ struct RobotData
 	 */
 	constexpr	RobotData() noexcept
 					:
-					mCoordinates{},
+					mCoordinates{ 0, 0, 0, 0, 0, 0 },
 					mParameters{ 0, 0, 0 }
 				{
 				}
