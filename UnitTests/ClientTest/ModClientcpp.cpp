@@ -41,7 +41,7 @@ void ModClient::receiveDataNTimes(const std::size_t numberOfTimes)
 					break;
 
 				default:
-					break;;
+					break;
 			}
 		}
 	}

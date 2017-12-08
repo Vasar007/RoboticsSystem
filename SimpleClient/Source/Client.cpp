@@ -7,15 +7,6 @@
 namespace vasily
 {
 
-const RobotData Client::_DEFAULT_POSITION = { 985'000, 0, 940'000, -180'000, 0, 0, 10, 2, 0 };
-
-const std::array<int, Client::_MAIN_COORDINATES> Client::_MIN_COORDS =
-														{  830'000, -400'000, 539'000 };
-
-const std::array<int, Client::_MAIN_COORDINATES> Client::_MAX_COORDS =
-														{ 1'320'000, 317'000, 960'000 };
-
-
 Client::Client(const int serverPort, const std::string_view serverIP)
 	:
 	WinsockInterface(),
@@ -133,7 +124,7 @@ void Client::receive()
 						break;
 						
 					default:
-						break;;
+						break;
 				}
 			}
 		}

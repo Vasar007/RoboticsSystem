@@ -101,22 +101,22 @@ protected:
 	/**
 	 * \brief Default value for server IP.
 	 */
-	static constexpr char							_DEFAULT_SERVER_IP[]	= "192.168.0.21";
+	static constexpr char		_DEFAULT_SERVER_IP[]	= "192.168.0.21";
 
 	/**
 	 * \brief Default value for sending port.
 	 */
-	static constexpr int							_DEFAULT_SENDING_PORT	= 59002;
+	static constexpr int		_DEFAULT_SENDING_PORT	= 59002;
 													
 	/**                                             
 	 * \brief Default value for receiving port.     
 	 */                                             
-	static constexpr int							_DEFAULT_RECEIVING_PORT	= 59003;
+	static constexpr int		_DEFAULT_RECEIVING_PORT	= 59003;
 
 	/**
 	 * \brief Default (beginning) robot position.
 	 */
-	static const RobotData							_DEFAULT_POSITION;
+	static constexpr RobotData	_DEFAULT_POSITION{ 985'000, 0, 940'000, -180'000, 0, 0, 10, 2, 0 };
 
 	/**
 	 * \brief Constant number of coordinates to check to avoid "magic number".
@@ -126,12 +126,12 @@ protected:
 	/**
 	 * \brief Array contains minimum value for first 3 coordinates (x, y, z).
 	 */
-	static const std::array<int, _MAIN_COORDINATES> _MIN_COORDS;
+	static constexpr std::array<int, _MAIN_COORDINATES> _MIN_COORDS{ 830'000, -400'000, 539'000 };
 
 	/**
 	 * \brief Array contains maximum value for first 3 coordinates (x, y, z).
 	 */
-	static const std::array<int, _MAIN_COORDINATES> _MAX_COORDS;
+	static constexpr std::array<int, _MAIN_COORDINATES> _MAX_COORDS{ 1'320'000, 317'000, 960'000 };
 
 
 	/**

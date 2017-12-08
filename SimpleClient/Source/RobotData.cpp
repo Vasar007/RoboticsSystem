@@ -8,21 +8,6 @@
 namespace vasily
 {
 
-RobotData::RobotData()
-	:
-	mCoordinates{},
-	mParameters{ 0, 0, 0 }
-{
-}
-
-RobotData::RobotData(const int x, const int y, const int z, const int w, const int p, const int r,
-						const int segtime, const int movingType, const int lastCommand)
-	:
-	mCoordinates{ x, y, z, w, p, r },
-	mParameters{ segtime, movingType, lastCommand }
-{
-}
-
 std::string RobotData::toString() const
 {
 	std::stringstream stringStream;
