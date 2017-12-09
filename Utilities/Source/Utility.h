@@ -96,6 +96,7 @@ bool				isCorrectNumber(const std::string& str, const int flag = 0) noexcept;
  * \param[in] exclusiveMax	Exclusive maximum of the interval.
  * \return					Random generated integer in interval.
  */
+[[nodiscard]]
 int					randomInt(const int exclusiveMax) noexcept;
 
 
@@ -104,6 +105,7 @@ int					randomInt(const int exclusiveMax) noexcept;
  * \param[in] str	String for parsing to integer.
  * \return			Parsed integer from string.
  */
+[[nodiscard]]
 int					stringToInt(const std::string& str) noexcept;
 
 

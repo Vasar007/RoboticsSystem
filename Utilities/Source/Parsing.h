@@ -12,6 +12,7 @@ namespace utils
  * \param[in] data	Data for parsing.
  * \return			Deserialized data if parsed successful, empty string otherwise.
  */
+[[nodiscard]]
 std::string parseData(const std::string& data) noexcept;
 
 /**

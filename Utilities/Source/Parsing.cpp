@@ -8,6 +8,7 @@
 namespace utils
 {
 
+[[nodiscard]]
 std::string parseData(const std::string& data) noexcept
 {
 	std::string result;

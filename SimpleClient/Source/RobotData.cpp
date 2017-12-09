@@ -1,5 +1,7 @@
 #include <sstream>
 #include <iostream>
+#include <cassert>
+#include <iterator>
 
 #include "Utility.h"
 #include "RobotData.h"
@@ -11,16 +13,12 @@ namespace vasily
 std::string RobotData::toString() const
 {
 	std::stringstream stringStream;
-	
-	for (const auto& coordinate : mCoordinates)
-	{
-		stringStream << coordinate << ' ';
-	}
-	
-	for (const auto& parameter : mParameters)
-	{
-		stringStream << parameter << ' ';
-	}
+
+	std::copy(mCoordinates.begin(), mCoordinates.end(), 
+			  std::ostream_iterator<int>(stringStream, " "));
+
+	std::copy(mParameters.begin(), mParameters.end(),
+			  std::ostream_iterator<int>(stringStream, " "));
 	
 	return stringStream.str();
 }
@@ -95,6 +93,8 @@ RobotData& operator +=(RobotData& lhs, const RobotData& rhs)
 
 RobotData operator /(const RobotData& lhs, const int& rhs)
 {
+	assert(rhs != 0);
+
 	RobotData result;
 	for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
 	{
@@ -115,6 +115,8 @@ RobotData operator /(const RobotData& lhs, const int& rhs)
 
 RobotData& operator /=(RobotData& lhs, const int& rhs)
 {
+	assert(rhs != 0);
+
 	for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
 	{
 		if (lhs.mCoordinates.at(i) == 0)

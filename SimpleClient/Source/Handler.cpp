@@ -70,7 +70,7 @@ bool Handler::checkChangingCoordinateSysytem(const std::string& letter)
 
 			default:
 				utils::println("ERROR 01: Incorrect coordinate system!");
-				break;
+				return false;
 		}
 
 		return true;

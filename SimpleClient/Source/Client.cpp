@@ -284,8 +284,7 @@ void Client::tryReconnect()
 		initSocket(_socketReceive);
 
 		///_isRunning = tryConnect(_serverPort, _serverIP, _socketSend, _socketSendAddress);
-		_isRunning = tryConnect(_serverPortSending, _serverIP, _socketSend,
-								_socketSendAddress)
+		_isRunning = tryConnect(_serverPortSending, _serverIP, _socketSend, _socketSendAddress)
 					&& tryConnect(_serverPortReceiving, _serverIP, _socketReceive,
 								  _socketReceiveAddress);
 

@@ -22,6 +22,7 @@ namespace
 
 }
 
+[[nodiscard]]
 int randomInt(const int exclusiveMax) noexcept
 {
 	if (exclusiveMax <= 0)
@@ -47,11 +48,12 @@ bool isCorrectNumber(const std::string& str, const int flag) noexcept
 	return *ptr == 0;
 }
 
+[[nodiscard]]
 int stringToInt(const std::string& str) noexcept
 {
 	if (utils::isCorrectNumber(str))
 	{
-		return std::atoi(str.c_str());
+		return std::stoi(str.c_str());
 	}
 
 	return 0;

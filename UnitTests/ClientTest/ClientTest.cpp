@@ -76,15 +76,15 @@ void ClientTest::testMethod2()
 		constexpr std::atomic_int64_t waitingTime = 10LL;
 		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 
-		client.sendCoordinates({ 829'000,	0,			940'000, -180'000, 0, 0, 10, 2, 0 });
-		client.sendCoordinates({ 985'000,  -401'000,	940'000, -180'000, 0, 0, 10, 2, 0 });
-		client.sendCoordinates({ 985'000,	0,			538'000, -180'000, 0, 0, 10, 2, 0 });
-		client.sendCoordinates({ 1'321'000, 0,			940'000, -180'000, 0, 0, 10, 2, 0 });
-		client.sendCoordinates({ 985'000,	318'000,	940'000, -180'000, 0, 0, 10, 2, 0 });
-		client.sendCoordinates({ 985'000,	0,			961'000, -180'000, 0, 0, 10, 2, 0 });
-		client.sendCoordinates({ 829'999,	0,			940'000, -180'000, 0, 0, 10, 2, 0 });
-		client.sendCoordinates({ 1'320'001, 0,			940'000, -180'000, 0, 0, 10, 2, 0 });
-		client.sendCoordinates({ 830'000,  -400'001,	538'999, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 829'000,	0,			940'000, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 985'000,   -401'000,	940'000, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 985'000,	0,			538'000, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 1'321'000,  0,			940'000, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 985'000,	318'000,	940'000, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 985'000,	0,			961'000, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 829'999,	0,			940'000, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 1'320'001,  0,			940'000, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 830'000,   -400'001,	538'999, -180'000, 0, 0, 10, 2, 0 });
 	}, 0u);
 
 
