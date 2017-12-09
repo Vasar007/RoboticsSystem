@@ -9,16 +9,15 @@ namespace vasily
 {
 
 Handler::Handler()
-	:
-	_state(State::DEFAULT),
-	_mode(Mode::COMMAND),
-	_coorninateSystem(CoorninateSystem::WORLD),
-	_data(),
-	_coefficient(10'000),
-	_numberOfIterations(0u),
-	_parsedResult(),
-	_mapping({
-		{ "q", State::FORWARD },		{ "a", State::BACK },
+	: _state(State::DEFAULT),
+	  _mode(Mode::COMMAND),
+	  _coorninateSystem(CoorninateSystem::WORLD),
+	  _data(),
+	  _coefficient(10'000),
+	  _numberOfIterations(0u),
+	  _parsedResult(),
+	  _mapping({
+	  	{ "q", State::FORWARD },		{ "a", State::BACK },
 		{ "w", State::LEFT },			{ "s", State::RIGHT },
 		{ "e", State::UP },				{ "d", State::DOWN },
 		{ "r", State::ROLL_PLUS },		{ "f", State::ROLL_MINUS },

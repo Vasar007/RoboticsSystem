@@ -6,6 +6,11 @@
 namespace clientTests
 {
 
+/**              
+ * \brief                   Function initializes server and launches it in detached thread.
+ * \param[out] testServer   Thread to launch.
+ * \param[in] numberOfTimes Number of times to allow connections.
+ */
 void initTestServer(TestServer& testServer, const std::size_t numberOfTimes = 1u)
 {
 	testServer.init();
@@ -14,6 +19,14 @@ void initTestServer(TestServer& testServer, const std::size_t numberOfTimes = 1u
 	testServer.receiveDataNTimes(numberOfTimes);
 }
 
+/**
+ * \brief                   Function initialized client, sends data to server and launch receiving
+ *                          thread for client.
+ * \tparam Functor          Type of functor object.
+ * \param[out] client       Client to launch.
+ * \param[in] funcToCall    Functor object to call, it sends data to server.
+ * \param[in] numberOfTimes Number of times to allow connections.
+ */
 template <typename Functor>
 void initClient(ModClient& client, Functor&& funcToCall, const std::size_t numberOfTimes = 1u)
 {

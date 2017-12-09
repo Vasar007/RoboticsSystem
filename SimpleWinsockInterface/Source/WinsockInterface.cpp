@@ -70,17 +70,16 @@ const std::unordered_map<int, std::string> WinsockInterface::_TABLE_OF_ERRORS =
 };
 
 WinsockInterface::WinsockInterface()
-	:
-	_wsaData(),
-	_socketSend(),
-	_socketReceive(),
-	_socketSendAddress(),
-	_socketReceiveAddress(),
-	_addressInfo(nullptr),
-	_isRunning(false),
-	_isInitialized(false),
-	_buffer(new char[_MAXRECV]),
-	_message(new char[_MAXRECV])
+	: _wsaData(),
+	  _socketSend(),
+	  _socketReceive(),
+	  _socketSendAddress(),
+	  _socketReceiveAddress(),
+	  _addressInfo(nullptr),
+	  _isRunning(false),
+	  _isInitialized(false),
+	  _buffer(new char[_MAXRECV]),
+	  _message(new char[_MAXRECV])
 {
 }
 

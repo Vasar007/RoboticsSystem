@@ -24,7 +24,7 @@ public:
 	 */
 	enum class CoordinateType
 	{
-		JOINT = 1,
+		JOINT = 0,
 		WORLD = 2
 	};
 

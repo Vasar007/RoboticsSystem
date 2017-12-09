@@ -8,51 +8,48 @@ namespace vasily
 {
 
 Client::Client(const int serverPort, const std::string_view serverIP)
-	:
-	WinsockInterface(),
-	_robotData(),
-	_serverIP(serverIP),
-	_serverPort(serverPort),
-	_serverPortSending(0),
-	_serverPortReceiving(0),
-	_handler(),
-	_start(std::chrono::steady_clock::now()),
-	_duration(),
-	_waitAnswer(),
-	_isNeedToWait(false),
-	_circlicState()
+	: WinsockInterface(),
+	  _robotData(),
+	  _serverIP(serverIP),
+	  _serverPort(serverPort),
+	  _serverPortSending(0),
+	  _serverPortReceiving(0),
+	  _handler(),
+	  _start(std::chrono::steady_clock::now()),
+	  _duration(),
+	  _waitAnswer(),
+	  _isNeedToWait(false),
+	  _circlicState()
 {
 }
 
 Client::Client(const int serverPortSending, const int serverReceiving,
 			   const std::string_view serverIP)
-	:
-	WinsockInterface(),
-	_robotData(),
-	_serverIP(serverIP),
-	_serverPort(0),
-	_serverPortSending(serverPortSending),
-	_serverPortReceiving(serverReceiving),
-	_handler(),
-	_start(std::chrono::steady_clock::now()),
-	_duration(),
-	_waitAnswer(),
-	_isNeedToWait(false),
-	_circlicState()
+	: WinsockInterface(),
+	  _robotData(),
+	  _serverIP(serverIP),
+	  _serverPort(0),
+	  _serverPortSending(serverPortSending),
+	  _serverPortReceiving(serverReceiving),
+	  _handler(),
+	  _start(std::chrono::steady_clock::now()),
+	  _duration(),
+	  _waitAnswer(),
+	  _isNeedToWait(false),
+	  _circlicState()
 {
 }
 
 Client::Client(Client&& other) noexcept
-	:
-	WinsockInterface(),
-	_robotData(other._robotData),
-	_serverIP(other._serverIP),
-	_serverPort(other._serverPort),
-	_handler(other._handler),
-	_start(other._start),
-	_waitAnswer(other._waitAnswer),
-	_isNeedToWait(other._isNeedToWait ? true : false),
-	_circlicState(other._circlicState)
+	: WinsockInterface(),
+	  _robotData(other._robotData),
+	  _serverIP(other._serverIP),
+	  _serverPort(other._serverPort),
+	  _handler(other._handler),
+	  _start(other._start),
+	  _waitAnswer(other._waitAnswer),
+	  _isNeedToWait(other._isNeedToWait ? true : false),
+	  _circlicState(other._circlicState)
 {
 	utils::swap(*this, other);
 }

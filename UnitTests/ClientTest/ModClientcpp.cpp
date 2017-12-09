@@ -6,10 +6,9 @@ namespace clientTests
 
 	ModClient::ModClient(const int serverPortSending, const int serverReceiving, 
 						 const std::string_view serverIP)
-	: 
-	Client(serverPortSending, serverReceiving, serverIP),
-	mHasFinished(),
-	mStorage()
+	: Client(serverPortSending, serverReceiving, serverIP),
+	  mHasFinished(),
+	  mStorage()
 {
 }
 
