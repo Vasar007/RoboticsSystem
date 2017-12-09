@@ -58,7 +58,7 @@ T					fromString(const std::string& str, bool& ok) noexcept;
  * \return			Exact same string which forwards into function.
  */
 template <>
-std::string			fromString(const std::string& str, bool& ok) noexcept;
+inline std::string	fromString(const std::string& str, bool& ok) noexcept;
 
 
 /**
