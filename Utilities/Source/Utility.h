@@ -28,18 +28,6 @@ constexpr bool		isSame() noexcept;
 
 
 /**
- * \brief					One of the common implementation of the splitting strings.
- * \tparam Container		Type of the contatiner for output.
- * \param[in] str			String to split.
- * \param[out] cont			Container for output.
- * \param[in] delims		Delimiter characters.
- */
-template <class Container>
-void				split(const std::string& str, Container& cont, 
-							const std::string_view delims = " ") noexcept;
-
-
-/**
  * \brief			Since std::to_string doesn't work on MinGW we have to implement our own
  *					to support all platforms.
  * \details			Function doesn't work with user's objects.
@@ -60,7 +48,7 @@ std::string			toString(const T& value) noexcept;
  * \return			Converted filled data or empty data.
  */
 template <typename T>
-T					fromString(const std::string& str, bool& ok);
+T					fromString(const std::string& str, bool& ok) noexcept;
 
 
 /**
@@ -70,7 +58,7 @@ T					fromString(const std::string& str, bool& ok);
  * \return			Exact same string which forwards into function.
  */
 template <>
-std::string			fromString(const std::string& str, bool& ok);
+inline std::string	fromString(const std::string& str, bool& ok) noexcept;
 
 
 /**
@@ -108,6 +96,7 @@ bool				isCorrectNumber(const std::string& str, const int flag = 0) noexcept;
  * \param[in] exclusiveMax	Exclusive maximum of the interval.
  * \return					Random generated integer in interval.
  */
+[[nodiscard]]
 int					randomInt(const int exclusiveMax) noexcept;
 
 
@@ -116,6 +105,7 @@ int					randomInt(const int exclusiveMax) noexcept;
  * \param[in] str	String for parsing to integer.
  * \return			Parsed integer from string.
  */
+[[nodiscard]]
 int					stringToInt(const std::string& str) noexcept;
 
 

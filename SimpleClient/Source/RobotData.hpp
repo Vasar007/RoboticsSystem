@@ -2,6 +2,7 @@
 #define ROBOT_DATA_H
 
 #include <array>
+#include <sstream>
 
 
 namespace vasily
@@ -39,7 +40,7 @@ struct RobotData
 	 */
 	constexpr	RobotData() noexcept
 					:
-					mCoordinates{ 0, 0, 0, 0, 0, 0 },
+					mCoordinates{},
 					mParameters{ 0, 0, 0 }
 				{
 				}
@@ -123,7 +124,16 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of sustraction.
 	 */
-	friend RobotData operator -(const RobotData& lhs, const RobotData& rhs);
+	friend constexpr RobotData operator -(const RobotData& lhs, const RobotData& rhs)
+	{
+		RobotData result;
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			result.mCoordinates.at(i) = lhs.mCoordinates.at(i) - rhs.mCoordinates.at(i);
+		}
+
+		return result;
+	}
 
 	/**
 	 * \brief			Function sum coordinate of lhs and rhs objects.
@@ -131,7 +141,16 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of sum.
 	 */
-	friend RobotData operator +(const RobotData& lhs, const RobotData& rhs);
+	friend constexpr RobotData operator +(const RobotData& lhs, const RobotData& rhs)
+	{
+		RobotData result;
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			result.mCoordinates.at(i) = lhs.mCoordinates.at(i) + rhs.mCoordinates.at(i);
+		}
+
+		return result;
+	}
 
 	/**
 	 * \brief			Function sum coordinate of lhs and rhs objects.
@@ -139,7 +158,15 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of sum puts in lhs object.
 	 */
-	friend RobotData& operator +=(RobotData& lhs, const RobotData& rhs);
+	friend constexpr RobotData& operator +=(RobotData& lhs, const RobotData& rhs)
+	{
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			lhs.mCoordinates.at(i) += rhs.mCoordinates.at(i);
+		}
+
+		return lhs;
+	}
 
 	/**
 	 * \brief			Function divides coordinate of lhs and rhs objects.
@@ -147,7 +174,26 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of division.
 	 */
-	friend RobotData operator /(const RobotData& lhs, const int& rhs);
+	friend constexpr RobotData operator /(const RobotData& lhs, const int& rhs)
+	{
+		RobotData result;
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			if (lhs.mCoordinates.at(i) == 0)
+			{
+				continue;
+			}
+
+			result.mCoordinates.at(i) = lhs.mCoordinates.at(i) / rhs;
+			if (result.mCoordinates.at(i) == 0)
+			{
+				result.mCoordinates.at(i) = 1;
+			}
+		}
+
+		return result;
+	}
+
 
 	/**
 	 * \brief			Function divides coordinate of lhs and rhs objects.
@@ -155,7 +201,24 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of division puts in lhs object.
 	 */
-	friend RobotData& operator /=(RobotData& lhs, const int& rhs);
+	friend constexpr RobotData& operator /=(RobotData& lhs, const int& rhs)
+	{
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			if (lhs.mCoordinates.at(i) == 0)
+			{
+				continue;
+			}
+
+			lhs.mCoordinates.at(i) = lhs.mCoordinates.at(i) / rhs;
+			if (lhs.mCoordinates.at(i) == 0)
+			{
+				lhs.mCoordinates.at(i) = 1;
+			}
+		}
+
+		return lhs;
+	}
 
 	/**
 	 * \brief				Operator overloading for istream.
@@ -163,7 +226,20 @@ struct RobotData
 	 * \param[in] robotData	Object for records.
 	 * \return				A reference to the original istream object.
 	 */
-	friend std::istream& operator >>(std::istream& cin, RobotData& robotData);
+	friend constexpr std::istream& operator >>(std::istream& cin, RobotData& robotData)
+	{
+		for (auto& coordinate : robotData.mCoordinates)
+		{
+			cin >> coordinate;
+		}
+
+		for (auto& parameter : robotData.mParameters)
+		{
+			cin >> parameter;
+		}
+
+		return cin;
+	}
 };
 
 }

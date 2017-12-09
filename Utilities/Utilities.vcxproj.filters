@@ -35,6 +35,9 @@
     <None Include="Source\Print.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="Source\Parsing.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utility.cpp">
