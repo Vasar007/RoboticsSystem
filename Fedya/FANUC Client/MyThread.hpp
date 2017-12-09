@@ -70,7 +70,7 @@ struct MyThread
 	/**
 	 * \brief Function for stopping current thread.
 	 */
-	void join();
+	void stopThread();
 
 	/**
 	 * \brief Default destructor.

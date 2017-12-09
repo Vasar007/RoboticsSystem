@@ -1,8 +1,7 @@
+#ifndef MY_SHOWER
+#define MY_SHOWER
 #pragma once
 
-#ifndef MY_SHOWER
-
-#define MY_SHOWER
 #include "StaticField.hpp"
 #include "MyThread.hpp"
 #include <map>
@@ -10,13 +9,12 @@
 #include <vector>
 
 /**
-* \brief Namespace of thread protected conosole inteface.
+* \brief Namespace of thread protected console interface.
 */
 namespace myInterface 
 {
-	//синглтон интерфейса
 	/**
-	 * \brief Singlton of debug inteface.
+	 * \brief Singlton of debug interface.
 	 */
 	class MyShower
 	{
@@ -26,9 +24,9 @@ namespace myInterface
 		std::vector<Message> _logs;
 
 		/**
-		 * \brief Map for sorring fields.
+		 * \brief Map for showing fields.
 		 */
-		std::map<int, Message*> _list;
+		std::map<int, Message*> _fields;
 		
 		/**
 		 * \brief Handle of console (only for windows).
@@ -36,7 +34,7 @@ namespace myInterface
 		HANDLE _hConsole;
 
 		/**
-		 * \brief Flag if interface need to be fully reoutputted.
+		 * \brief Flag if interface need to be fully re outputted.
 		 */
 		bool _needFullUpdate;
 		
@@ -51,17 +49,17 @@ namespace myInterface
 		int _nextFreeField = 0;
 
 		/**
-		 * \brief Thread for paralel showing interface.
+		 * \brief Thread for parallel showing.
 		 */
-		MyThread _paralelShower;
+		MyThread _parallelShower;
 
 		/**
-		 * \brief Static function for paralel updating interface.
-		 * \param mt Mutex for locking thread.
-		 * \param flag Flag for ending this thread.
+		 * \brief Static method for parallel updating interface.
+		 * \param mt Pointer to mutex for locking thread.
+		 * \param flag Pointer to flag for ending this thread.
 		 * \param instance Pointer to instance of this class.
 		 */
-		static void paralelShower(std::mutex* mt, bool* flag, MyShower* instance);
+		static void parallelShower(std::mutex* mt, bool* flag, MyShower* instance);
 
 		/**
 		 * \brief Default constructor.
@@ -94,22 +92,22 @@ namespace myInterface
 
 		/**
 		 * \brief Method for adding new field.
-		 * \param line Link to new field.
-		 * \return Number of this link in storrage.
+		 * \param newField Pointer to new field.
+		 * \return Id of this link in storage.
 		 */
-		int addField(Message* line);
+		int addField(Message* newField);
 
 		/**
 		 * \brief Method for adding new log.
-		 * \param str Discription of this log.
+		 * \param str Description of this log.
 		 */
 		void addLog(std::string str);
 
 		/**
 		 * \brief Method for adding new log.
-		 * \tparam T Type of information for showing.
-		 * \param str Discription of this log.
-		 * \param obj Information for showing.
+		 * \tparam T Type of information.
+		 * \param str Description of this log.
+		 * \param obj Object for showing.
 		 */
 		template<typename T>
 		void addLog(std::string str, T obj);
@@ -120,13 +118,13 @@ namespace myInterface
 		void clearLog();
 
 		/**
-		 * \brief Static Method for getting instance of this class.
+		 * \brief Static method for getting instance of this class.
 		 * \return Instance of this class.
 		 */
 		static MyShower& getInstance();
 
 		/**
-		 * \brief Method for deleting field by it index.
+		 * \brief Method for deleting field by id.
 		 * \param fieldId Id of field.
 		 */
 		void deleteField(int fieldId);
@@ -141,6 +139,6 @@ namespace myInterface
  * Adding controlling for supervisor.
  */
 
-#include "MyShowerDifinition.inl"
+#include "MyShowerDefinition.inl"
 
 #endif

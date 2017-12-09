@@ -23,12 +23,12 @@ class RobotConnect
 	/**
 	 * \brief Port for sending.
 	 */
-	int _ports = -1;
+	int _sendPort = -1;
 	
 	/**
 	 * \brief Port for reciving.
 	 */
-	int _portr = -1; 
+	int _recvPort = -1; 
 	
 	/**
 	 * \brief IP adress of server.
@@ -42,23 +42,23 @@ class RobotConnect
 	/**
 	 * \brief Robot speed for calculations.
 	 */
-	double _robotSpeed = -1.0;
+	double _robotAssumingSpeed = -1.0;
 	
 	/**
 	 * \brief Type of cordinates in which we move.
 	 */
-	int _syscoord = -1;
+	int _sysCoord = -1;
 	// 0 - JOINT | 2 - WORLD
 	
 	/**
 	 * \brief Time delay between checking connectoin.
 	 */
-	int _disconnectTime1 = -1;
+	int _timeBetweenEchoConnectionCheking = -1;
 	
 	/**
 	 * \brief Time between last reciving and starting restart connection.
 	 */
-	int _disconnectTime2 = -1;
+	int _timeBetweenReconnection = -1;
 
 	/**
 	 * \brief SOCKET for sending points. 
@@ -125,18 +125,12 @@ class RobotConnect
 	int healServerSecondConnection() const;
 
 	/**
-	 * \brief Function for making connection to the robot.
-	 * \return 0 if no error, else non-zero.
-	 */
-	int conRobot();
-
-	/**
 	 * \brief Static function for paralel reciving points.
 	 * \param mt Mutex for locking thread.
 	 * \param f Flag for finishing thread.
 	 * \param ins Instace of this class.
 	 */
-	static void reverseStream(std::mutex* mt, bool* f, RobotConnect* ins);
+	static void recivingStream(std::mutex* mt, bool* f, RobotConnect* ins);
 
 	/**
 	 * \brief Static function for paralel sending points
@@ -144,13 +138,13 @@ class RobotConnect
 	 * \param f Flag for finishing thread.
 	 * \param ins Instance of this class.
 	 */
-	static void sendParalel(std::mutex* mt, bool* f, RobotConnect* ins);
+	static void sendingStream(std::mutex* mt, bool* f, RobotConnect* ins);
 
 	/**
 	 * \brief Function for starting communication with robot.
 	 * \return 0 if no errors, else non-zero.
 	 */
-	int startWorking();
+	int beginConnection();
 
 	/**
 	 * \brief Function for begining communication with robot.
@@ -160,12 +154,12 @@ class RobotConnect
 	/**
 	 * \brief Functon for ending communication wuth robot.
 	 */
-	void finishWorking();
+	void endConnection();
 
 	/**
 	 * \brief Function for resarting communication with robot.
 	 */
-	void restart();
+	void restartConnection();
 
 	/**
 	 * \brief Static function for paralel stable comunication with robot.

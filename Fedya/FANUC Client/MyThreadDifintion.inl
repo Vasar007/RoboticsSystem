@@ -6,7 +6,7 @@ template <typename Fn, typename ... Args>
 void MyThread::startThread(Fn&& fn, Args&&... arg)
 {
 	//finishing current thread
-	join();
+	stopThread();
 
 	//starting new thread
 	_flag = true;

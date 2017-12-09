@@ -11,8 +11,8 @@ template <typename T>
 int ServerTCP<T>::initialise(int port)
 {
 	_statusField.setObject("intialising");
-	_main = SocketWorking::getInstance().getFreeSocket();
-	if (_main == INVALID_SOCKET)
+	_sockMain = SocketWorking::getInstance().getFreeSocket();
+	if (_sockMain == INVALID_SOCKET)
 	{
 		//freeaddrinfo(server_addr);
 		return WSAGetLastError();
@@ -24,19 +24,19 @@ int ServerTCP<T>::initialise(int port)
 	destAddr.sin_port = htons(static_cast<u_short>(port));
 	destAddr.sin_addr.s_addr = INADDR_ANY;
 
-	if (bind(_main, reinterpret_cast<sockaddr *>(&destAddr), sizeof(destAddr)) < 0)
+	if (bind(_sockMain, reinterpret_cast<sockaddr *>(&destAddr), sizeof(destAddr)) < 0)
 	{
-		closesocket(_main);
-		_main = INVALID_SOCKET;
+		closesocket(_sockMain);
+		_sockMain = INVALID_SOCKET;
 		std::cout << WSAGetLastError();
 		return WSAGetLastError();
 	}
 	//binding socket
 
-	if (listen(_main, SOMAXCONN) < 0)
+	if (listen(_sockMain, SOMAXCONN) < 0)
 	{
-		closesocket(_main);
-		_main = INVALID_SOCKET;
+		closesocket(_sockMain);
+		_sockMain = INVALID_SOCKET;
 		return WSAGetLastError();
 	}
 	//let socket be connetable
@@ -59,7 +59,7 @@ void ServerTCP<T>::tcpWorkin(std::mutex* mt, bool* f, ServerTCP* ins)
 		}
 		mt->unlock();
 
-		ins->_contcp->sendCoord();
+		ins->_curConnectedClient->sendCoord();
 
 		Sleep(10);
 	}
@@ -79,7 +79,7 @@ void ServerTCP<T>::tcpWorkout(std::mutex* mt, bool* f, ServerTCP* ins)
 		}
 		mt->unlock();
 
-		if (ins->_contcp->recvCoord() == 0)
+		if (ins->_curConnectedClient->recvCoord() == 0)
 			ins->_prevRecieve = clock();
 
 		if (clock() - ins->_prevRecieve > ins->_timeOut)
@@ -104,7 +104,7 @@ void ServerTCP<T>::oneConnection(std::mutex* mt, bool* f, ServerTCP* instance, M
 		mt->unlock();
 		if (!instance->_socketConnectionsQueue.empty())
 		{
-			instance->closeServer();
+			instance->stopServer();
 			instance->forceAccept(sendQueue, recieveQueue);
 			instance->_connected = true;
 		}
@@ -116,9 +116,9 @@ template <typename T>
 void ServerTCP<T>::paralelAccept(std::mutex* mt, bool* f, ServerTCP* instance)
 {
 	unsigned long value = 1;
-	ioctlsocket(instance->_main, FIONBIO, &value);
+	ioctlsocket(instance->_sockMain, FIONBIO, &value);
 
-	fd_set sSet = { 1,{ instance->_main } };
+	fd_set sSet = { 1,{ instance->_sockMain } };
 	timeval timeout = { instance->_timeOut / 500, 0 };
 	while (true)
 	{
@@ -140,7 +140,7 @@ void ServerTCP<T>::paralelAccept(std::mutex* mt, bool* f, ServerTCP* instance)
 			SOCKADDR_IN nsa;
 			int sizeofNsa = sizeof(nsa);
 
-			const SOCKET connectedSocket = accept(instance->_main, reinterpret_cast<SOCKADDR *>(&nsa), &sizeofNsa);
+			const SOCKET connectedSocket = accept(instance->_sockMain, reinterpret_cast<SOCKADDR *>(&nsa), &sizeofNsa);
 			if (connectedSocket == INVALID_SOCKET)
 				continue;
 			instance->_socketConnectionsQueue.push(connectedSocket);
@@ -154,7 +154,7 @@ ServerTCP<T>::ServerTCP(int port, int timeOut)
 :_timeOut(timeOut), _statusField("Clients status: ", "no connection")
 {
 	initialise(port);
-	_contcp = nullptr;
+	_curConnectedClient = nullptr;
 	_paralelAccept.startThread(paralelAccept, this);
 }
 
@@ -166,8 +166,8 @@ int ServerTCP<T>::tryAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 	{
 		SOCKET connectedSocket = _socketConnectionsQueue.front();
 		_socketConnectionsQueue.pop();
-		_contcp = new ConnectionTCP<T>(connectedSocket, sendQueue, recieveQueue);
-		_conSocketWorkin.startThread(tcpWorkin, this);
+		_curConnectedClient = new ConnectionTCP<T>(connectedSocket, sendQueue, recieveQueue);
+		_coordsInputStream.startThread(tcpWorkin, this);
 		_conSocketWorkout.startThread(tcpWorkout, this);
 		return 0;
 	}
@@ -184,9 +184,9 @@ int ServerTCP<T>::forceAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 	}
 	SOCKET connectedSocket = _socketConnectionsQueue.front();
 	_socketConnectionsQueue.pop();
-	_contcp = new ConnectionTCP<T>(connectedSocket, sendQueue, recieveQueue);
-	_conSocketWorkin.startThread(tcpWorkin, this);
-	_conSocketWorkout.startThread(tcpWorkout, this);
+	_curConnectedClient = new ConnectionTCP<T>(connectedSocket, sendQueue, recieveQueue);
+	_coordsInputStream.startThread(tcpWorkin, this);
+	_coordsOuputStream.startThread(tcpWorkout, this);
 	_statusField.setObject("connected");
 	return 0;
 }
@@ -198,22 +198,22 @@ void ServerTCP<T>::supportOneConnection(MyQueue<T>* sendQueue, MyQueue<T>* recie
 }
 
 template <typename T>
-void ServerTCP<T>::closeServer()
+void ServerTCP<T>::stopServer()
 {
-	_conSocketWorkin.join();
-	_conSocketWorkout.join();
-	if (_contcp != nullptr)
+	_coordsInputStream.stopThread();
+	_coordsOuputStream.stopThread();
+	if (_curConnectedClient != nullptr)
 	{
-		delete _contcp;
-		_contcp = nullptr;
+		delete _curConnectedClient;
+		_curConnectedClient = nullptr;
 	}
 }
 
 template <typename T>
 ServerTCP<T>::~ServerTCP()
 {
-	_paralelAccept.join();
-	_oneConnection.join();
-	closeServer();
+	_paralelAccept.stopThread();
+	_oneConnection.stopThread();
+	stopServer();
 }
 #endif

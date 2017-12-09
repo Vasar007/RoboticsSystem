@@ -76,7 +76,7 @@ void MyQueue<T>::swap(MyQueue& q) noexcept
 }
 
 template <typename T>
-std::pair<bool, T> MyQueue<T>::pull()
+std::pair<bool, T> MyQueue<T>::tryPull()
 {
 	std::pair<bool, T> ans;
 	_mt.lock();

@@ -3,16 +3,14 @@
 #pragma once
 
 #include "Message.hpp"
-#include <iostream>
-#include <Windows.h>
 
 /**
-* \brief Namespace of thread protected conosole inteface.
+* \brief Namespace of thread protected console interface.
 */
 namespace myInterface
 {
 	/**
-	 * \brief Class for showing field with changable information.
+	 * \brief Class for showing field with changeable information.
 	 * \tparam T Type of this information.
 	 */
 	template<typename T>
@@ -26,23 +24,23 @@ namespace myInterface
 	public:
 		
 		/**
-		 * \brief Getter of object.
+		 * \brief Object getter.
 		 * \return Object.
 		 */
 		T getObject();
 
 		/**
-		 * \brief Setter of object.
-		 * \param newObject Object ofr showing.
+		 * \brief Object setter.
+		 * \param newObject Object for showing.
 		 */
 		void setObject(T newObject);
 
 		/**
 		 * \brief Constructor.
-		 * \param discription Discription of this field.
+		 * \param description Description of this field.
 		 * \param object Object for showing.
 		 */
-		Field(std::string discription, T object);
+		Field(std::string description, T object);
 
 		/**
 		 * \brief Destructor.
@@ -53,6 +51,6 @@ namespace myInterface
 	
 };
 
-#include "FieldDifinition.inl"
+#include "FieldDefinition.inl"
 
 #endif

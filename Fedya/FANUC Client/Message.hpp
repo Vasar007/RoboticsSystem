@@ -6,48 +6,43 @@
 #include <Windows.h>
 
 /**
- * \brief Namespace of thread protected conosole inteface.
+ * \brief Namespace of thread protected console interface.
  */
 namespace myInterface 
 {
 	/**
-	 * \brief Class of filed showing.
+	 * \brief Class of field showing.
 	 */
 	class Message
 	{
 	protected:
 
 		/**
-		* \brief Discription of this message.
+		* \brief Description of this message.
 		*/
-		std::string _discription;
+		std::string _description;
 
 		/**
-		 * \brief Informstoin in this message.
+		 * \brief Informatoin in this message.
 		 */
 		std::string _message;
 
 		/**
-		 * \brief Flag if this message should be updateed.
+		 * \brief Flag if this message should be update.
 		 */
 		bool _needUpdate = true;
 
 	public:
 
 		/**
-		 * \brief Default constructor.
+		 * \brief Constructor.
+		 * \param description String with description of this message.
+		 * \param message String with information in this message.
 		 */
-		Message() = default;
+		Message(std::string description, std::string message);
 
 		/**
-		 * \brief Constructor for showing number.
-		 * \param discription String with discription of this message.
-		 * \param message String with Information in this message.
-		 */
-		explicit Message(std::string discription, std::string message);
-
-		/**
-		 * \brief Method for "quick" ouputting this message.
+		 * \brief Method for "quick" outputting this message.
 		 */
 		void showQuick(HANDLE hConsole,int line);
 
@@ -68,7 +63,5 @@ namespace myInterface
 		virtual ~Message() = default;
 	};
 }
-
-#include "MessageDifinition.inl"
 
 #endif

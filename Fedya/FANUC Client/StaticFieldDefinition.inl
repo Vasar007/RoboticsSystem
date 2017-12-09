@@ -7,13 +7,13 @@
 template <typename T>
 myInterface::StaticField<T>::StaticField(std::string str, T object):Field<T>(str,object)
 {
-	_pos = MyShower::getInstance().addField(this);
+	_id = MyShower::getInstance().addField(this);
 }
 
 template <typename T>
 myInterface::StaticField<T>::~StaticField()
 {
-	MyShower::getInstance().deleteField(_pos);
+	MyShower::getInstance().deleteField(_id);
 }
 
 #endif

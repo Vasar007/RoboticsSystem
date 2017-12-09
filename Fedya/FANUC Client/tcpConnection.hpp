@@ -30,7 +30,7 @@ class ConnectionTCP
 	/**
 	 * \brief String of resived bytes which we parse to take points.
 	 */
-	std::string _sbuf;
+	std::string _stringBuffer;
 
 	myInterface::StaticField<int> _pocketsRecived;
 

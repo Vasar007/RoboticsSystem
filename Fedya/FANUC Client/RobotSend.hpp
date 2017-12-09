@@ -28,7 +28,7 @@ class RobotSend
 		 *			if diference between two points is greater than it
 		 *			so we should send next point two times for bieng sure we was in this positin.
 		 */
-		int _acyrancy;
+		double _acyrancy;
 	
 		/**
 		 * \brief		Method for sending point and adding it to cloneQueue.
@@ -64,7 +64,7 @@ class RobotSend
 		 * \param forceSend Flag if this point should be send in any case.
 		 * \return			0 if point was send, else 1.
 		 */
-		int sendRobotCoord(T rc, bool forceSend = false);
+		int moveCoord(T rc, bool forceSend = false);
 	
 		/**
 		 * \brief	Function for sending previous point to robot.

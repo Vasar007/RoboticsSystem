@@ -147,26 +147,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Field.cpp" />
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MyQueue.cpp" />
     <ClCompile Include="MyShower.cpp" />
     <ClCompile Include="MyThread.cpp" />
-    <ClCompile Include="RobotComunication.cpp" />
-    <ClCompile Include="RobotRecieve.cpp" />
-    <ClCompile Include="RobotSend.cpp" />
     <ClCompile Include="SocketWorking.cpp" />
-    <ClCompile Include="StaticField.cpp" />
-    <ClCompile Include="tcpConnection.cpp" />
-    <ClCompile Include="tcpServer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Field.hpp" />
-    <ClInclude Include="FieldDifinition.inl" />
-    <ClInclude Include="MessageDifinition.inl" />
+    <ClInclude Include="FieldDefinition.inl" />
     <ClInclude Include="MyQueueDifintion.inl" />
-    <ClInclude Include="MyShowerDifinition.inl" />
+    <ClInclude Include="MyShowerDefinition.inl" />
     <ClInclude Include="MyThreadDifintion.inl" />
     <ClInclude Include="RobotComunicationDifinition.inl" />
     <ClInclude Include="RobotCoord.hpp" />
@@ -180,7 +171,6 @@
     <ClInclude Include="RobotSend.hpp" />
     <ClInclude Include="RobotSendDifinition.inl" />
     <ClInclude Include="SocketWorking.hpp" />
-    <ClInclude Include="SocketWorkingDifinition.inl" />
     <ClInclude Include="StaticField.hpp" />
     <ClInclude Include="tcpConnection.hpp" />
     <ClInclude Include="tcpConnectionDifinition.inl" />
@@ -194,7 +184,7 @@
     <Text Include="sets.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="StaticFieldDifinition.inl" />
+    <None Include="StaticFieldDefinition.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -26,7 +26,7 @@ RobotSend<T>::RobotSend(SOCKET soc, MyQueue<T>* cloneQueue, int acyrancy) :
 }
 
 template <typename T>
-int RobotSend<T>::sendRobotCoord(T rc, bool forceSend)
+int RobotSend<T>::moveCoord(T rc, bool forceSend)
 {
 	if (forceSend == _wasFirstPoint || _prevCoord != rc)
 	{
@@ -64,7 +64,7 @@ int RobotSend<T>::resendCloneQueue()
 		_cloneQueue->swap(send);
 	while (!send.empty())
 	{
-		sendRobotCoord(send.front());
+		sendCoord(send.front());
 		send.pop();
 	}
 	return 0;
