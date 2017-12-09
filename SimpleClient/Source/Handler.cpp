@@ -9,15 +9,15 @@ namespace vasily
 {
 
 Handler::Handler()
-	: _state(State::DEFAULT)
-	, _mode(Mode::COMMAND)
-	, _coorninateSystem(CoorninateSystem::WORLD)
-	, _data()
-	, _coefficient(10'000)
-	, _numberOfIterations(0u)
-	, _parsedResult()
-	, _mapping({
-		{ "q", State::FORWARD },		{ "a", State::BACK },
+	: _state(State::DEFAULT),
+	  _mode(Mode::COMMAND),
+	  _coorninateSystem(CoorninateSystem::WORLD),
+	  _data(),
+	  _coefficient(10'000),
+	  _numberOfIterations(0u),
+	  _parsedResult(),
+	  _mapping({
+	  	{ "q", State::FORWARD },		{ "a", State::BACK },
 		{ "w", State::LEFT },			{ "s", State::RIGHT },
 		{ "e", State::UP },				{ "d", State::DOWN },
 		{ "r", State::ROLL_PLUS },		{ "f", State::ROLL_MINUS },
@@ -69,7 +69,7 @@ bool Handler::checkChangingCoordinateSysytem(const std::string& letter)
 
 			default:
 				utils::println("ERROR 01: Incorrect coordinate system!");
-				break;
+				return false;
 		}
 
 		return true;
@@ -139,11 +139,9 @@ ParsedResult Handler::parseDataAfterCommand()
 				result.mFirstPoint = utils::fromString<RobotData>(strToParse, flag1);
 
 				const std::size_t foundPosSecond = _data.find('|', foundPosFirst + 1u);
-				strToParse = _data.substr(foundPosFirst + 1u,
-					foundPosSecond - 1u);
+				strToParse = _data.substr(foundPosFirst + 1u, foundPosSecond - 1u);
 				bool flag2;
-				result.mSecondPoint = utils::fromString<RobotData>(strToParse,
-					flag2);
+				result.mSecondPoint = utils::fromString<RobotData>(strToParse, flag2);
 
 				strToParse = _data.substr(foundPosSecond + 1u);
 				bool flag3;

@@ -2,8 +2,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Utilities.h"
-#include "WinsockInterface.h"
 #include "Client.h"
 #include "Transmitter.h"
 
@@ -19,10 +17,10 @@ void init(vasily::Client& client)
 
 int main()
 {
-	constexpr int SERVER_PORT			= 9997;
-	constexpr int SERVER_PORT_SENDING	= 9999;
-	constexpr int SERVER_PORT_RECEIVING = 9998;
-	const std::string SERVER_IP			= "192.168.0.100";
+	constexpr int	SERVER_PORT				= 9997;
+	constexpr int	SERVER_PORT_SENDING		= 9999;
+	constexpr int	SERVER_PORT_RECEIVING	= 9998;
+	constexpr char	SERVER_IP[]				= "192.168.0.105";
 
 	// MAKE SURE THAT YOU USE RIGHT CLIENT TO WORK WITH ROBOT: 1 - DEBUG, 2 - WORKING WITH ROBOT.
 	vasily::Client client(SERVER_PORT_SENDING, SERVER_PORT_RECEIVING, SERVER_IP);

@@ -77,6 +77,7 @@ template <class T>
 constexpr std::string_view typeName() noexcept;
 
 #include "Print.inl"
+
 }
 
 #endif // PRINT_H
