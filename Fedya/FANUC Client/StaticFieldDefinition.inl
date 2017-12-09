@@ -5,7 +5,8 @@
 #include "MyShower.hpp"
 
 template <typename T>
-myInterface::StaticField<T>::StaticField(std::string str, T object):Field<T>(str,object)
+myInterface::StaticField<T>::StaticField(std::string str, T object)
+:Field<T>(str,object)
 {
 	_id = MyShower::getInstance().addField(this);
 }

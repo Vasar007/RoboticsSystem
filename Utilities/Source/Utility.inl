@@ -1,10 +1,15 @@
 #ifndef UTILITY_INL
 #define UTILITY_INL
-#pragma once
 
+
+template <class T, class U>
+constexpr bool isSame() noexcept
+{
+	return std::is_same<T, U>::value;
+}
 
 template <class Container>
-void split(const std::string& str, Container& cont, const std::string& delims) noexcept
+void split(const std::string& str, Container& cont, const std::string_view delims) noexcept
 {
 	std::size_t previous	= 0u;
 	std::size_t current		= str.find_first_of(delims);
@@ -29,13 +34,32 @@ std::string toString(const T& value) noexcept
 	return stream.str();
 }
 
-template<class T>
+template <typename T> 
+T fromString(const std::string& str, bool& ok)
+{
+	std::stringstream ss(str);
+	T t;
+
+	ss >> t;
+	ok = !ss.fail();
+
+	return t;
+}
+
+template <>
+inline std::string fromString(const std::string& str, bool& ok)
+{
+	ok = true;
+	return str;
+}
+
+template <typename T>
 std::unique_ptr<T> copyUnique(const std::unique_ptr<T>& source) noexcept
 {
 	return source ? std::make_unique<T>(*source) : nullptr;
 }
 
-template<class T>
+template <class T>
 void swap(T& first, T& second) noexcept
 {
 	// Enable ADL (not necessary in our case, but good practice).
