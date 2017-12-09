@@ -272,7 +272,7 @@ void foo(// Many args..
   }
   
   int m = arg1 + agr2 + ...
-        + ... + argN;
+          + ... + argN;
 }
 ```
 
