@@ -37,12 +37,12 @@ class ServerTCP
 	/**
 	 * \brief Paralel thread for support one connection.
 	 */
-	MyThread _oneConnection;
+	MyThread _supportOneConnection;
 	
 	/**
 	 * \brief Paralel thread for accepting new clients.
 	 */
-	MyThread _paralelAccept;
+	MyThread _parallelAccept;
 
 	/**
 	 * \brief Queue of SOCKET for communication with clients.
@@ -79,7 +79,7 @@ class ServerTCP
 	 * \param f Flag for ending thread.
 	 * \param ins Instance of this class.
 	 */
-	static void tcpWorkin(std::mutex* mt, bool* f, ServerTCP* ins);
+	static void recieveThread(std::mutex* mt, bool* f, ServerTCP* ins);
 
 	/**
 	 * \brief Static function for paralel sending points
@@ -87,7 +87,7 @@ class ServerTCP
 	 * \param f Flag for ending thread.
 	 * \param ins Instance of this class.
 	 */
-	static void tcpWorkout(std::mutex* mt, bool* f, ServerTCP* ins);
+	static void sendThread(std::mutex* mt, bool* f, ServerTCP* ins);
 
 	/**
 	 * \brief Static function for supporting oneactual connection.
@@ -97,7 +97,7 @@ class ServerTCP
 	 * \param sendQueue Pointer to Queue of sending points.
 	 * \param recieveQueue Pointer to queue of reciving points.
 	 */
-	static void oneConnection(std::mutex* mt, bool* f, ServerTCP* instance, MyQueue<T>* sendQueue,
+	static void oneConnectionThread(std::mutex* mt, bool* f, ServerTCP* instance, MyQueue<T>* sendQueue,
 	                          MyQueue<T>* recieveQueue);
 
 	/**
@@ -106,7 +106,7 @@ class ServerTCP
 	 * \param f Flag for ending thread.
 	 * \param instance Instance of this class.
 	 */
-	static void paralelAccept(std::mutex* mt, bool* f, ServerTCP* instance);
+	static void paralelAcceptThread(std::mutex* mt, bool* f, ServerTCP* instance);
 
 public:
 

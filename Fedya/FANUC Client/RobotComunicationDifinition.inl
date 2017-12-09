@@ -9,7 +9,7 @@
 #include "RobotCoord.hpp"
 
 template <typename T>
-int RobotConnect<T>::healServerSecondConnection() const
+int RobotConnect<T>::launchRecivingSocletAndEndingIt() const
 {
 
 	SOCKET sockrecv = SocketWorking::getInstance().getConnectedSocket(_serverAddrString.c_str(), _recvPort,
@@ -25,7 +25,7 @@ int RobotConnect<T>::healServerSecondConnection() const
 }
 
 template <typename T>
-void RobotConnect<T>::recivingStream(std::mutex* mt, bool* f, RobotConnect* ins)
+void RobotConnect<T>::recievingStream(std::mutex* mt, bool* f, RobotConnect* ins)
 {
 	long long prevConnetectedTime = clock();
 	bool wasFirstPoint = false;
@@ -43,7 +43,7 @@ void RobotConnect<T>::recivingStream(std::mutex* mt, bool* f, RobotConnect* ins)
 			if ((clock() - prevConnetectedTime > ins->_timeBetweenEchoConnectionCheking * was + sleepBonus) && wasFirstPoint)
 			{
 				ins->_connected = false;
-				ins->_connectionField.setObject("Unanswered");
+				ins->_statusField.setObject("Unanswered");
 				if (ins->_cloneQueue.empty())
 				{
 					ins->_robotSend->sendPrevCoord();
@@ -58,7 +58,7 @@ void RobotConnect<T>::recivingStream(std::mutex* mt, bool* f, RobotConnect* ins)
 		else
 		{
 			ins->_connected = true;
-			ins->_connectionField.setObject("connected");
+			ins->_statusField.setObject("connected");
 			prevConnetectedTime = clock();
 			was = 1;
 			wasFirstPoint = true;
@@ -147,7 +147,7 @@ int RobotConnect<T>::beginConnection()
 
 	_threadSend.startThread(sendingStream, this);
 
-	_threadRecv.startThread(recivingStream, this);
+	_threadRecv.startThread(recievingStream, this);
 
 	return 0;
 }
@@ -158,12 +158,12 @@ void RobotConnect<T>::tryConnect()
 	int steps = 0;
 	while (beginConnection() < 0)
 	{
-		_connectionField.setObject("connecting");
+		_statusField.setObject("connecting");
 		Sleep(_timeBetweenReconnection);
 		++steps;
 		if (steps >= 3)
 		{
-			healServerSecondConnection();
+			launchRecivingSocletAndEndingIt();
 			steps = 0;
 		}
 	}
@@ -220,7 +220,7 @@ void RobotConnect<T>::mainLoop(std::mutex* mt, bool* f, RobotConnect* ins)
 
 template <typename T>
 RobotConnect<T>::RobotConnect(std::string configFileName, MyQueue<T>* sendingQueue, MyQueue<T>* recivingQueue) :
-	_sendingQueue(sendingQueue), _recivingQueue(recivingQueue),_cloneQueue("clone queue"),_connectionField("FANUC M20iA ","disconneted")
+	_sendingQueue(sendingQueue), _recivingQueue(recivingQueue),_cloneQueue("clone queue"),_statusField("FANUC M20iA ","disconneted")
 {
 	_sockRecv = _sockSend = INVALID_SOCKET;
 	_connected = _forcedRestart = false;

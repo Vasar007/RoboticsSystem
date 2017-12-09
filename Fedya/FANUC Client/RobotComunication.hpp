@@ -33,7 +33,7 @@ class RobotConnect
 	/**
 	 * \brief IP adress of server.
 	 */
-	std::string _serverAddrString;	
+	std::string _serverAddrString = "";	
 	/**
 	 * \brief Time delay between points processing.
 	 */
@@ -116,13 +116,16 @@ class RobotConnect
 	 */
 	bool _connected;
 
-	myInterface::StaticField<std::string> _connectionField;
+	/**
+	 * \brief Status field.
+	 */
+	myInterface::StaticField<std::string> _statusField;
 
 	/**
 	 * \brief Method for making one connection and closing it.
 	 * \return 0 if no errors, else non-zero.
 	 */
-	int healServerSecondConnection() const;
+	int launchRecivingSocletAndEndingIt() const;
 
 	/**
 	 * \brief Static function for paralel reciving points.
@@ -130,7 +133,7 @@ class RobotConnect
 	 * \param f Flag for finishing thread.
 	 * \param ins Instace of this class.
 	 */
-	static void recivingStream(std::mutex* mt, bool* f, RobotConnect* ins);
+	static void recievingStream(std::mutex* mt, bool* f, RobotConnect* ins);
 
 	/**
 	 * \brief Static function for paralel sending points

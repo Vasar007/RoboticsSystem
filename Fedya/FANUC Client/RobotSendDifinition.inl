@@ -26,16 +26,16 @@ RobotSend<T>::RobotSend(SOCKET soc, MyQueue<T>* cloneQueue, int acyrancy) :
 }
 
 template <typename T>
-int RobotSend<T>::moveCoord(T rc, bool forceSend)
+int RobotSend<T>::moveRobot(T rc, bool forceSend)
 {
-	if (forceSend == _wasFirstPoint || _prevCoord != rc)
+	if (forceSend == _wasFirstPoint || _previousCoord != rc)
 	{
-		if (_prevCoord.difference(rc) > _acyrancy || !_wasFirstPoint)
+		if (_previousCoord.difference(rc) > _acyrancy || !_wasFirstPoint)
 		{
 			sendCoord(rc);
 		}
 
-		_prevCoord = rc;
+		_previousCoord = rc;
 
 		sendCoord(rc);
 		_wasFirstPoint = true;
@@ -46,11 +46,11 @@ int RobotSend<T>::moveCoord(T rc, bool forceSend)
 }
 
 template <typename T>
-int RobotSend<T>::sendPrevCoord()
+int RobotSend<T>::sendPreviousCoord()
 {
 	if (_wasFirstPoint)
 	{
-		sendCoord(_prevCoord);
+		sendCoord(_previousCoord);
 		return 0;
 	}
 	return 1;

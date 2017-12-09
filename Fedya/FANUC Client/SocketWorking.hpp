@@ -41,13 +41,13 @@ public:
 	 * \brief Method for intialasing winSock.
 	 * \return 0 if no error, else non-zero.
 	 */
-	int initialise();
+	int startWinSock();
 
 	/**
-	 * \brief Method for de intialise winSock.
+	 * \brief Method for shutting down winSock.
 	 * \return 0 if no error, else 1
 	 */
-	int deintialise();
+	int closeWinSock();
 
 	/**
 	 * \brief Method for getting new SOCKET.

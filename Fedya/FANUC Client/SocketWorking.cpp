@@ -28,7 +28,7 @@ SocketWorking& SocketWorking::getInstance()
 	return instance;
 }
 
-int SocketWorking::initialise()
+int SocketWorking::startWinSock()
 {
 	if (!_isInitialised)
 	{
@@ -47,7 +47,7 @@ int SocketWorking::initialise()
 }
 
 
-int SocketWorking::deintialise()
+int SocketWorking::closeWinSock()
 {
 	if (_isInitialised)
 	{
@@ -62,7 +62,7 @@ int SocketWorking::deintialise()
 SOCKET SocketWorking::getFreeSocket()
 {
 	if (!_isInitialised)
-		initialise();
+		startWinSock();
 	const SOCKET ans = socket(AF_INET, SOCK_STREAM, 0);
 	return ans;
 }
@@ -71,7 +71,7 @@ SOCKET SocketWorking::getFreeSocket()
 void SocketWorking::deleteSocket(SOCKET& soc)
 {
 	if (!_isInitialised)
-		initialise();
+		startWinSock();
 	closesocket(soc);
 	soc = INVALID_SOCKET;
 }
@@ -81,7 +81,7 @@ void SocketWorking::deleteSocket(SOCKET& soc)
 SOCKET SocketWorking::getConnectedSocket(const char* serveraddr, int port, int disconnectTime2)
 {
 	if (!_isInitialised)
-		initialise();
+		startWinSock();
 	const SOCKET ans = getFreeSocket();
 	unsigned long value = 1;
 	if (ioctlsocket(ans, FIONBIO, &value) == SOCKET_ERROR)

@@ -5,14 +5,14 @@
 #include "MyQueue.hpp"
 
 template <typename T>
-int RobotRecieve<T>::readCoord()
+int RobotRecieve<T>::recieveCoord()
 {
 	char recvbuf[128];
 	ZeroMemory(recvbuf, 128);
 	T rc;
 
 	struct timeval timeout;
-	timeout.tv_sec = _readTime;
+	timeout.tv_sec = _recieveTime;
 	timeout.tv_usec = 0;
 	setsockopt(_sockRecv, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&timeout), sizeof timeout);
 	//для unix-систем убрать (char*)
@@ -64,7 +64,7 @@ RobotRecieve<T>::RobotRecieve(SOCKET socRecv, MyQueue<T>* cloneQueue, MyQueue<T>
 	_sockRecv(socRecv)
 	, _cloneQueue(cloneQueue)
 	, _returnQueue(returnQueue)
-	, _readTime(readTime)
+	, _recieveTime(readTime)
 {
 	_stringBuffer = "";
 }

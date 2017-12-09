@@ -46,7 +46,7 @@ class RobotSend
 		/**
 		 * \brief Previous point which we send.
 		 */
-		T _prevCoord;
+		T _previousCoord;
 	
 		/**
 		 * \brief				Constructor.
@@ -64,13 +64,13 @@ class RobotSend
 		 * \param forceSend Flag if this point should be send in any case.
 		 * \return			0 if point was send, else 1.
 		 */
-		int moveCoord(T rc, bool forceSend = false);
+		int moveRobot(T rc, bool forceSend = false);
 	
 		/**
 		 * \brief	Function for sending previous point to robot.
 		 * \return	0 if point was send, else 1.
 		 */
-		int sendPrevCoord();
+		int sendPreviousCoord();
 	
 		/**
 		 * \brief	Function for sending points in cloneQueue

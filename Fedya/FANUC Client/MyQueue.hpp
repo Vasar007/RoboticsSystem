@@ -61,7 +61,7 @@ public:
 	 * \brief Function for checking size of queue.
 	 * \return Retrun a size of queue.
 	 */
-	int size();
+	size_t size();
 
 	/**
 	 * \brief Function for getting time when front element was added.

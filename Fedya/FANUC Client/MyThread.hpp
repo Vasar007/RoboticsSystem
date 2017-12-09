@@ -53,7 +53,7 @@ struct MyThread
 
 	/**
 	 * \brief Function for checking if this thread may be joind.
-	 * \return True if this thread may be joind, else false.
+	 * \return True if this thread may be joined, else false.
 	 */
 	bool joinable() const;
 

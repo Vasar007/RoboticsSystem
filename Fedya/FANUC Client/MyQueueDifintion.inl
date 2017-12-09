@@ -29,7 +29,7 @@ bool MyQueue<T>::empty()
 }
 
 template <typename T>
-int MyQueue<T>::size()
+size_t MyQueue<T>::size()
 {
 	_mt.lock();
 	const int ans = _q.size();

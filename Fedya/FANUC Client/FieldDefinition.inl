@@ -25,7 +25,7 @@ void myInterface::Field<T>::setObject(T newObject)
 
 template <typename T>
 myInterface::Field<T>::Field(std::string difinition, T object)
-	:Message(difinition,"")
+	: Message(difinition,"")
 {
 	setObject(object);
 }

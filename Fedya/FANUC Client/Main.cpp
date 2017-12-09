@@ -20,7 +20,7 @@
 
 int main()
 {
-	SocketWorking::getInstance().initialise();
+	SocketWorking::getInstance().startWinSock();
 
 	MyQueue<RobotCoord> fromOtherProcesToFanuc("from client to robot"), fromFanucToOtherProces("from robot to client");
 
@@ -52,7 +52,7 @@ int main()
 
 	fanuc.stopMainLoop();
 
-	SocketWorking::getInstance().deintialise();
+	SocketWorking::getInstance().closeWinSock();
 
 	return 0;
 }

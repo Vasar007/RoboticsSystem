@@ -47,7 +47,7 @@ int ServerTCP<T>::initialise(int port)
 }
 
 template <typename T>
-void ServerTCP<T>::tcpWorkin(std::mutex* mt, bool* f, ServerTCP* ins)
+void ServerTCP<T>::recieveThread(std::mutex* mt, bool* f, ServerTCP* ins)
 {
 	while (true)
 	{
@@ -66,7 +66,7 @@ void ServerTCP<T>::tcpWorkin(std::mutex* mt, bool* f, ServerTCP* ins)
 }
 
 template <typename T>
-void ServerTCP<T>::tcpWorkout(std::mutex* mt, bool* f, ServerTCP* ins)
+void ServerTCP<T>::sendThread(std::mutex* mt, bool* f, ServerTCP* ins)
 {
 	ins->_prevRecieve = clock();
 	while (true)
@@ -90,7 +90,7 @@ void ServerTCP<T>::tcpWorkout(std::mutex* mt, bool* f, ServerTCP* ins)
 }
 
 template <typename T>
-void ServerTCP<T>::oneConnection(std::mutex* mt, bool* f, ServerTCP* instance, MyQueue<T>* sendQueue,
+void ServerTCP<T>::oneConnectionThread(std::mutex* mt, bool* f, ServerTCP* instance, MyQueue<T>* sendQueue,
 	MyQueue<T>* recieveQueue)
 {
 	while (true)
@@ -113,7 +113,7 @@ void ServerTCP<T>::oneConnection(std::mutex* mt, bool* f, ServerTCP* instance, M
 }
 
 template <typename T>
-void ServerTCP<T>::paralelAccept(std::mutex* mt, bool* f, ServerTCP* instance)
+void ServerTCP<T>::paralelAcceptThread(std::mutex* mt, bool* f, ServerTCP* instance)
 {
 	unsigned long value = 1;
 	ioctlsocket(instance->_sockMain, FIONBIO, &value);
@@ -155,7 +155,7 @@ ServerTCP<T>::ServerTCP(int port, int timeOut)
 {
 	initialise(port);
 	_curConnectedClient = nullptr;
-	_paralelAccept.startThread(paralelAccept, this);
+	_parallelAccept.startThread(paralelAccept, this);
 }
 
 template <typename T>
@@ -194,7 +194,7 @@ int ServerTCP<T>::forceAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 template <typename T>
 void ServerTCP<T>::supportOneConnection(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 {
-	_oneConnection.startThread(oneConnection, this, sendQueue, recieveQueue);
+	_supportOneConnection.startThread(oneConnection, this, sendQueue, recieveQueue);
 }
 
 template <typename T>
@@ -212,8 +212,8 @@ void ServerTCP<T>::stopServer()
 template <typename T>
 ServerTCP<T>::~ServerTCP()
 {
-	_paralelAccept.stopThread();
-	_oneConnection.stopThread();
+	_parallelAccept.stopThread();
+	_supportOneConnection.stopThread();
 	stopServer();
 }
 #endif

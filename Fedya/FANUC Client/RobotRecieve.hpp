@@ -38,7 +38,7 @@ class RobotRecieve
 	/**
 	 * \brief Max time delay between reciving points.
 	 */
-	int _readTime;
+	int _recieveTime;
 public:
 
 	/**
@@ -50,7 +50,7 @@ public:
 	 * \brief Method for recveving and parsing points from robot.
 	 * \return 0 if smth was recived, else non-zero.
 	 */
-	int readCoord();
+	int recieveCoord();
 
 	/**
 	 * \brief Constructor
