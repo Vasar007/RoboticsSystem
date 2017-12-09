@@ -90,7 +90,7 @@ public:
 	 * \brief Function which trys to erase ans return front element.
 	 * \return True and object if there was front element or false and defult object if there wasn't front object.
 	 */
-	std::pair<bool, T> pull();
+	std::pair<bool, T> tryPull();
 
 	/**
 	 * \brief Default destructor.

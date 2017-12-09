@@ -5,33 +5,33 @@
 #include "Field.hpp"
 
 /**
-* \brief Namespace of thread protected conosole inteface.
+* \brief Namespace of thread protected console interface.
 */
 namespace myInterface
 {
 	/**
 	 * \brief Class for continuously showing field with changeable information.
-	 * \tparam T Type of infirmation.
+	 * \tparam T Type of information.
 	 */
 	template<typename T>
 	class StaticField:public Field<T>
 	{
 
 		/**
-		 * \brief Position of this field in storage.
+		 * \brief Id of this field.
 		 */
-		int _pos;
+		int _id;
 
 	public:
 		/**
-		 * \brief Constructor with adding this field to storrage
-		 * \param str Discription of this field.
+		 * \brief Constructor with adding this field to storage
+		 * \param str Description of this field.
 		 * \param object Object for showing.
 		 */
 		StaticField(std::string str, T object);
 
 		/**
-		 * \brief Distructor with erasing this field from storrage.
+		 * \brief Destructor with erasing this field from storage.
 		 */
 		~StaticField();
 	};
@@ -39,6 +39,6 @@ namespace myInterface
 	
 }
 
-#include "StaticFieldDifinition.inl"
+#include "StaticFieldDefinition.inl"
 
 #endif

@@ -1,6 +1,8 @@
 #include "MyShower.hpp"
+#include <iostream>
 
-void myInterface::MyShower::paralelShower(std::mutex* mt, bool* flag, MyShower* instance)
+
+void myInterface::MyShower::parallelShower(std::mutex* mt, bool* flag, MyShower* instance)
 {
 	int logsShown = 0;
 
@@ -22,7 +24,7 @@ void myInterface::MyShower::paralelShower(std::mutex* mt, bool* flag, MyShower* 
 		{
 			system("cls");
 
-			for (auto& it : instance->_list)
+			for (auto& it : instance->_fields)
 			{
 				it.second->show();
 				++curLine;
@@ -49,7 +51,7 @@ void myInterface::MyShower::paralelShower(std::mutex* mt, bool* flag, MyShower* 
 			_CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
 			GetConsoleScreenBufferInfo(instance->_hConsole, &consoleInfo);
 
-			for (const auto& it : instance->_list)
+			for (const auto& it : instance->_fields)
 			{
 				it.second->showQuick(instance->_hConsole, curLine);
 				curLine += static_cast<int>(it.second->size()) / consoleInfo.dwSize.X + 1;
@@ -90,13 +92,13 @@ void myInterface::MyShower::paralelShower(std::mutex* mt, bool* flag, MyShower* 
 myInterface::MyShower::MyShower() : _needFullUpdate(true)
 {
 	_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	_paralelShower.startThread(paralelShower, this);
+	_parallelShower.startThread(parallelShower, this);
 }
 
 int myInterface::MyShower::addField(Message* line)
 {
 	_mt.lock();
-	_list.insert(std::make_pair(++_nextFreeField, line));
+	_fields.insert(std::make_pair(++_nextFreeField, line));
 	//_list[++_lineNumber] = line;
 	_needFullUpdate = true;
 	_mt.unlock();
@@ -126,14 +128,14 @@ myInterface::MyShower& myInterface::MyShower::getInstance()
 void myInterface::MyShower::deleteField(int fieldId)
 {
 	_mt.lock();
-	_list.erase(fieldId);
+	_fields.erase(fieldId);
 	_needFullUpdate = true;
 	_mt.unlock();
 }
 
 myInterface::MyShower::~MyShower()
 {
-	_list.clear();
+	_fields.clear();
 	_logs.clear();
-	_paralelShower.join();
+	_parallelShower.stopThread();
 }

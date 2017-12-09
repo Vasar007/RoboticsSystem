@@ -2,8 +2,6 @@
 #define ROBOT_COMUNICATION_DIFINTION
 #pragma once
 
-
-
 #include <fstream>
 
 #include "MyShower.hpp"
@@ -14,8 +12,8 @@ template <typename T>
 int RobotConnect<T>::healServerSecondConnection() const
 {
 
-	SOCKET sockrecv = SocketWorking::getInstance().connectToRobotServer(_serverAddrString.c_str(), _portr,
-		_disconnectTime2);
+	SOCKET sockrecv = SocketWorking::getInstance().getConnectedSocket(_serverAddrString.c_str(), _recvPort,
+		_timeBetweenReconnection);
 
 	if (sockrecv == INVALID_SOCKET)
 	{
@@ -27,29 +25,7 @@ int RobotConnect<T>::healServerSecondConnection() const
 }
 
 template <typename T>
-int RobotConnect<T>::conRobot()
-{
-	//создание сокеа отправки
-	_sockSend = SocketWorking::getInstance().connectToRobotServer(_serverAddrString.c_str(), _ports, _disconnectTime2);
-	if (_sockSend == INVALID_SOCKET)
-	{
-		myInterface::MyShower::getInstance().addLog("send socket error ", WSAGetLastError());
-		return 1;
-	}
-
-	//содание сокета приема
-	_sockRecv = SocketWorking::getInstance().connectToRobotServer(_serverAddrString.c_str(), _portr, _disconnectTime2);
-	if (_sockRecv == INVALID_SOCKET)
-	{
-		myInterface::MyShower::getInstance().addLog("recive socket error ", WSAGetLastError());
-		return 2;
-	}
-
-	return 0;
-}
-
-template <typename T>
-void RobotConnect<T>::reverseStream(std::mutex* mt, bool* f, RobotConnect* ins)
+void RobotConnect<T>::recivingStream(std::mutex* mt, bool* f, RobotConnect* ins)
 {
 	long long prevConnetectedTime = clock();
 	bool wasFirstPoint = false;
@@ -60,11 +36,11 @@ void RobotConnect<T>::reverseStream(std::mutex* mt, bool* f, RobotConnect* ins)
 	{
 		if (ins->_robotRecieve->readCoord() == -15)
 		{
-			if ((clock() - prevConnetectedTime > ins->_disconnectTime2 + sleepBonus) && wasFirstPoint)
+			if ((clock() - prevConnetectedTime > ins->_timeBetweenReconnection + sleepBonus) && wasFirstPoint)
 			{
 				ins->_forcedRestart = true;
 			}
-			if ((clock() - prevConnetectedTime > ins->_disconnectTime1 * was + sleepBonus) && wasFirstPoint)
+			if ((clock() - prevConnetectedTime > ins->_timeBetweenEchoConnectionCheking * was + sleepBonus) && wasFirstPoint)
 			{
 				ins->_connected = false;
 				ins->_connectionField.setObject("Unanswered");
@@ -74,7 +50,7 @@ void RobotConnect<T>::reverseStream(std::mutex* mt, bool* f, RobotConnect* ins)
 				}
 				else
 				{
-					sleepBonus = static_cast<int>(ins->_robotRecieve->_prevCoord.difference(ins->_cloneQueue.front()) / ins->_robotSpeed);
+					sleepBonus = static_cast<int>(ins->_robotRecieve->_prevCoord.difference(ins->_cloneQueue.front()) / ins->_robotAssumingSpeed);
 				}
 				was++;
 			}
@@ -99,7 +75,7 @@ void RobotConnect<T>::reverseStream(std::mutex* mt, bool* f, RobotConnect* ins)
 }
 
 template <typename T>
-void RobotConnect<T>::sendParalel(std::mutex* mt, bool* f, RobotConnect* ins)
+void RobotConnect<T>::sendingStream(std::mutex* mt, bool* f, RobotConnect* ins)
 {
 	ins->_robotSend->resendCloneQueue();
 
@@ -107,9 +83,9 @@ void RobotConnect<T>::sendParalel(std::mutex* mt, bool* f, RobotConnect* ins)
 	{
 		if (ins->_connected)
 		{
-			const std::pair<bool, RobotCoord> tryPull = ins->_sendingQueue->pull();
+			const std::pair<bool, RobotCoord> tryPull = ins->_sendingQueue->tryPull();
 			if (tryPull.first)
-				ins->_robotSend->sendRobotCoord(tryPull.second);//отправляем буфер
+				ins->_robotSend->moveCoord(tryPull.second);//отправляем буфер
 		}
 		mt->lock();
 		if (!(*f))
@@ -121,7 +97,7 @@ void RobotConnect<T>::sendParalel(std::mutex* mt, bool* f, RobotConnect* ins)
 				{
 					const RobotCoord rc = ins->_sendingQueue->front();
 					ins->_sendingQueue->pop();
-					ins->_robotSend->sendRobotCoord(rc);//отправляем буфер
+					ins->_robotSend->moveCoord(rc);//отправляем буфер
 				}
 				Sleep(1000);
 			}
@@ -133,22 +109,30 @@ void RobotConnect<T>::sendParalel(std::mutex* mt, bool* f, RobotConnect* ins)
 }
 
 template <typename T>
-int RobotConnect<T>::startWorking()
+int RobotConnect<T>::beginConnection()
 {
-	const int iResult = conRobot();
-	if (iResult)
+	//создание сокета отправки
+	_sockSend = SocketWorking::getInstance().getConnectedSocket(_serverAddrString.c_str(), _sendPort, _timeBetweenReconnection);
+	if (_sockSend == INVALID_SOCKET)
 	{
-		//std::cout << "Conection error " << iResult << " " << WSAGetLastError() << std::endl;
-		myInterface::MyShower::getInstance().addLog("Conection error ", WSAGetLastError());
-		closesocket(_sockSend);
-		closesocket(_sockRecv);
-		return -4;
+		myInterface::MyShower::getInstance().addLog("send socket error ", WSAGetLastError());
+		return 1;
 	}
+
+	//содание сокета приема
+	_sockRecv = SocketWorking::getInstance().getConnectedSocket(_serverAddrString.c_str(), _recvPort, _timeBetweenReconnection);
+	if (_sockRecv == INVALID_SOCKET)
+	{
+		myInterface::MyShower::getInstance().addLog("recive socket error ", WSAGetLastError());
+		closesocket(_sockSend);
+		return 2;
+	}
+
 	/// подлючение к роботу
 
 	//type of cordiates:0 = JOINT | 1 = JOGFRAME | 2 = WORLDFRAME | 3 = TOOLFRAME | 4 = USER FRAME
 	char coord[3] = { 0,0,0 };
-	sprintf_s(coord, "%d ", _syscoord);
+	sprintf_s(coord, "%d ", _sysCoord);
 	if (send(_sockSend, coord, 1, 0) == SOCKET_ERROR)
 	{
 		//std::cout << "Conection error " << WSAGetLastError() << std::endl;
@@ -159,11 +143,11 @@ int RobotConnect<T>::startWorking()
 	 ///выбор системы координат
 
 	_robotSend = new RobotSend<T>(_sockSend, &_cloneQueue);
-	_robotRecieve = new RobotRecieve<T>(_sockRecv, &_cloneQueue, _recivingQueue, _disconnectTime1 / 3);
+	_robotRecieve = new RobotRecieve<T>(_sockRecv, &_cloneQueue, _recivingQueue, _timeBetweenEchoConnectionCheking / 3);
 
-	_threadSend.startThread(sendParalel, this);
+	_threadSend.startThread(sendingStream, this);
 
-	_threadRecv.startThread(reverseStream, this);
+	_threadRecv.startThread(recivingStream, this);
 
 	return 0;
 }
@@ -172,10 +156,10 @@ template <typename T>
 void RobotConnect<T>::tryConnect()
 {
 	int steps = 0;
-	while (startWorking() < 0)
+	while (beginConnection() < 0)
 	{
 		_connectionField.setObject("connecting");
-		Sleep(_disconnectTime2);
+		Sleep(_timeBetweenReconnection);
 		++steps;
 		if (steps >= 3)
 		{
@@ -186,10 +170,10 @@ void RobotConnect<T>::tryConnect()
 }
 
 template <typename T>
-void RobotConnect<T>::finishWorking()
+void RobotConnect<T>::endConnection()
 {
-	_threadSend.join();
-	_threadRecv.join();
+	_threadSend.stopThread();
+	_threadRecv.stopThread();
 
 	SocketWorking::getInstance().deleteSocket(_sockSend);
 	SocketWorking::getInstance().deleteSocket(_sockRecv);
@@ -201,9 +185,9 @@ void RobotConnect<T>::finishWorking()
 }
 
 template <typename T>
-void RobotConnect<T>::restart()
+void RobotConnect<T>::restartConnection()
 {
-	finishWorking();
+	endConnection();
 
 	tryConnect();
 }
@@ -219,14 +203,14 @@ void RobotConnect<T>::mainLoop(std::mutex* mt, bool* f, RobotConnect* ins)
 		if (!*f)
 		{
 			mt->unlock();
-			ins->finishWorking();
+			ins->endConnection();
 			break;
 		}
 		mt->unlock();
 
 		if (ins->_forcedRestart)
 		{
-			ins->restart();
+			ins->restartConnection();
 			ins->_forcedRestart = false;
 		}
 
@@ -253,12 +237,12 @@ RobotConnect<T>::RobotConnect(std::string configFileName, MyQueue<T>* sendingQue
 
 
 	in >> _serverAddrString ///считываем IP сервера
-		>> _ports >> _portr /// счиьывае номера портов
+		>> _sendPort >> _recvPort /// счиьывае номера портов
 		>> _segtime /// время перехода из одной точки в другую
-		>> _robotSpeed ///расчетная скорость передвижения между точками
-		>> _syscoord /// тип системы кординат
-		>> _disconnectTime1 /// время после, которого проверяется подключение
-		>> _disconnectTime2; /// время после которого происходит переподключение
+		>> _robotAssumingSpeed ///расчетная скорость передвижения между точками
+		>> _sysCoord /// тип системы кординат
+		>> _timeBetweenEchoConnectionCheking /// время после, которого проверяется подключение
+		>> _timeBetweenReconnection; /// время после которого происходит переподключение
 
 	in.close();
 }
@@ -272,7 +256,7 @@ void RobotConnect<T>::startMainLoop()
 template <typename T>
 void RobotConnect<T>::stopMainLoop()
 {
-	_mainThread.join();
+	_mainThread.stopThread();
 }
 
 template <typename T>
@@ -285,7 +269,7 @@ void RobotConnect<T>::restartMainLoop()
 template <typename T>
 RobotConnect<T>::~RobotConnect()
 {
-	_mainThread.join();
+	_mainThread.stopThread();
 }
 
 #endif

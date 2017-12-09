@@ -78,7 +78,7 @@ void SocketWorking::deleteSocket(SOCKET& soc)
 
 
 
-SOCKET SocketWorking::connectToRobotServer(const char* serveraddr, int port, int disconnectTime2)
+SOCKET SocketWorking::getConnectedSocket(const char* serveraddr, int port, int disconnectTime2)
 {
 	if (!_isInitialised)
 		initialise();

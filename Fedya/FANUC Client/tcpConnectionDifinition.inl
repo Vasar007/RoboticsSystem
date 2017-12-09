@@ -40,24 +40,24 @@ int ConnectionTCP<T>::recvCoord()
 	}
 	if (l > 0)
 	{
-		_sbuf += buf;
+		_stringBuffer += buf;
 		int tmp = 0;
-		for (int i = 0; i < _sbuf.size() && tmp < 9; ++i)
+		for (int i = 0; i < _stringBuffer.size() && tmp < 9; ++i)
 		{
-			if (_sbuf[i] != ' ')
+			if (_stringBuffer[i] != ' ')
 			{
-				for (; i < _sbuf.size() && ((_sbuf[i] >= '0' && _sbuf[i] <= '9') || _sbuf[i] == '-'); ++i);
-				if (i < _sbuf.size() && _sbuf[i] != ' ')
-					return _sbuf[i];
+				for (; i < _stringBuffer.size() && ((_stringBuffer[i] >= '0' && _stringBuffer[i] <= '9') || _stringBuffer[i] == '-'); ++i);
+				if (i < _stringBuffer.size() && _stringBuffer[i] != ' ')
+					return _stringBuffer[i];
 				tmp++;
 			}
 			if (tmp == 9)
 			{
-				sscanf_s(_sbuf.c_str(), "%d %d %d %d %d %d %d %d %d",
+				sscanf_s(_stringBuffer.c_str(), "%d %d %d %d %d %d %d %d %d",
 					&rc._xr, &rc._yr, &rc._zr, &rc._uw, &rc._up, &rc._uz, &rc._segTime, &rc._typeOfMoving, &rc._control);
 				_reciveQueue->push(rc);
 				_pocketsRecived.setObject(_pocketsRecived.getObject() + 1);
-				_sbuf = _sbuf.substr(i);
+				_stringBuffer = _stringBuffer.substr(i);
 				tmp = 0;
 				i = 0;
 			}

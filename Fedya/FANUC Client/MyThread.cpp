@@ -22,7 +22,7 @@ bool MyThread::joinable() const
 	return _work.joinable();
 }
 
-void MyThread::join()
+void MyThread::stopThread()
 {
 	if (joinable())
 	{
@@ -35,5 +35,5 @@ void MyThread::join()
 
 MyThread::~MyThread()
 {
-	join();
+	stopThread();
 }//*/

@@ -33,7 +33,7 @@ class RobotRecieve
 	/**
 	 * \brief String which was recived from robot.
 	 */
-	std::string _sbuf;
+	std::string _stringBuffer;
 	
 	/**
 	 * \brief Max time delay between reciving points.

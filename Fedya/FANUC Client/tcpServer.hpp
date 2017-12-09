@@ -17,22 +17,22 @@ class ServerTCP
 	/**
 	 * \brief Main SOCKET for binding.
 	 */
-	SOCKET _main;
+	SOCKET _sockMain;
 
 	/**
 	 * \brief Class for processing client connection.
 	 */
-	ConnectionTCP<T>* _contcp;
+	ConnectionTCP<T>* _curConnectedClient;
 	
 	/**
 	 * \brief Paralel thread for reciving new points from client.
 	 */
-	MyThread _conSocketWorkin;
+	MyThread _coordsInputStream;
 	
 	/**
 	 * \brief Paralel thread for sending points to client.
 	 */
-	MyThread _conSocketWorkout;
+	MyThread _coordsOuputStream;
 	
 	/**
 	 * \brief Paralel thread for support one connection.
@@ -115,7 +115,7 @@ public:
 	 * \param port Port for finding new clients.
 	 * \param timeOut Time for checking new points.
 	 */
-	explicit ServerTCP(int port, int timeOut);
+	ServerTCP(int port, int timeOut);
 
 	/**
 	 * \brief Method for trying to accept any connection.
@@ -143,7 +143,7 @@ public:
 	/**
 	 * \brief Method for finishing working.
 	 */
-	void closeServer();
+	void stopServer();
 
 	/**
 	 * \brief Default destructor.

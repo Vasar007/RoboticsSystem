@@ -68,9 +68,7 @@ public:
 	 * \param disconnectTime2 Time for connecting to robot.
 	 * \return SOCKET which connected to robot.
 	 */
-	SOCKET connectToRobotServer(const char* serveraddr, int port, int disconnectTime2);
+	SOCKET getConnectedSocket(const char* serveraddr, int port, int disconnectTime2);
 };
-
-#include"SocketWorkingDifinition.inl"
 
 #endif

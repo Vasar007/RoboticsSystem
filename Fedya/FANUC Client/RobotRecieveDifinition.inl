@@ -28,20 +28,20 @@ int RobotRecieve<T>::readCoord()
 	}
 	else
 	{
-		_sbuf += recvbuf;
+		_stringBuffer += recvbuf;
 		int coordsNumber = 0;
-		for (int i = 0; i < _sbuf.size(); i++)
+		for (int i = 0; i < _stringBuffer.size(); i++)
 		{
-			if (_sbuf[i] != ' ')
+			if (_stringBuffer[i] != ' ')
 			{
-				while (i < _sbuf.size() && _sbuf[i] != ' ')
+				while (i < _stringBuffer.size() && _stringBuffer[i] != ' ')
 					i++;
-				if (i < _sbuf.size() && _sbuf[i] == ' ')
+				if (i < _stringBuffer.size() && _stringBuffer[i] == ' ')
 					++coordsNumber;
 			}
 			if (coordsNumber == 7)
 			{
-				sscanf_s(_sbuf.c_str(), "%d %d %d %d %d %d %d", &rc._xr, &rc._yr, &rc._zr, &rc._uw, &rc._up, &rc._uz, &rc._segTime);
+				sscanf_s(_stringBuffer.c_str(), "%d %d %d %d %d %d %d", &rc._xr, &rc._yr, &rc._zr, &rc._uw, &rc._up, &rc._uz, &rc._segTime);
 				rc._typeOfMoving = 0;
 				rc._control = 0;
 				_returnQueue->push(rc);
@@ -50,7 +50,7 @@ int RobotRecieve<T>::readCoord()
 				{
 					_cloneQueue->pop();
 				}
-				_sbuf = _sbuf.substr(i);
+				_stringBuffer = _stringBuffer.substr(i);
 				i = 0;
 				coordsNumber = 0;
 			}
@@ -66,7 +66,7 @@ RobotRecieve<T>::RobotRecieve(SOCKET socRecv, MyQueue<T>* cloneQueue, MyQueue<T>
 	, _returnQueue(returnQueue)
 	, _readTime(readTime)
 {
-	_sbuf = "";
+	_stringBuffer = "";
 }
 
 #endif
