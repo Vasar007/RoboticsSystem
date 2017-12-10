@@ -30,7 +30,7 @@ public:
 	/**
 	 * \brief Constant number of server IP.
 	 */
-	static constexpr char	SERVER_IP[]				= "192.168.0.105";
+	static constexpr char	SERVER_IP[]				= "192.168.0.100";
 
 	/**
 	 * \brief Mutex to lock thread for safety.

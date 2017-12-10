@@ -17,7 +17,8 @@ ServerImitator::ServerImitator(const int sendingPort, const int recivingPort, co
 	  _backlog(backlog),
 	  _clientSocketSend(0),
 	  _clientSocketReceive(0),
-	  _hasGotCoordSystem(false)
+	  _hasGotCoordSystem(false),
+	  _logger(_DEFAULT_FILE_NAME)
 {
 }
 
@@ -28,7 +29,8 @@ ServerImitator::ServerImitator(ServerImitator&& other) noexcept
 	  _backlog(other._backlog),
 	  _clientSocketSend(0),
 	  _clientSocketReceive(0),
-	  _hasGotCoordSystem(other._hasGotCoordSystem ? true : false)
+	  _hasGotCoordSystem(other._hasGotCoordSystem ? true : false),
+	  _logger(_DEFAULT_FILE_NAME)
 {
 	utils::swap(*this, other);
 }
@@ -50,7 +52,9 @@ void ServerImitator::process()
 
 	SOCKADDR_IN address;
 
-	utils::println("\n\n\nWaiting for connections...\n");
+	utils::println(std::cout, "\n\n\nWaiting for connections...\n");
+
+	_logger.write("\n\nServer waiting for connections at", utils::getCurrentSystemTime());
 
 	while (!_isRunning)
 	{
@@ -84,8 +88,8 @@ void ServerImitator::process()
 		inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
 
 		// Inform user of socket number — used in send and receive commands.
-		utils::println("New connection, socket FD is", socketReceive, ", ip is:", _message,
-					   ", PORT:", ntohs(address.sin_port));
+		utils::println(std::cout, "New connection, socket FD is", socketReceive, ", ip is:", 
+					   _message, ", PORT:", ntohs(address.sin_port));
 
 		if (!_isRunning)
 		{
@@ -102,9 +106,11 @@ void ServerImitator::waitLoop()
 	std::string dataBuffer;
 	std::string toSending;
 
-	utils::println("\n\n\nWaiting for reply...\n");
+	utils::println(std::cout, "\n\n\nWaiting for reply...\n");
 
 	waitingForConnections();
+
+	_logger.write("Server started to receive at", utils::getCurrentSystemTime());
 
 	while (true)
 	{
@@ -118,18 +124,19 @@ void ServerImitator::waitLoop()
 		if (!_hasGotCoordSystem && !dataBuffer.empty())
 		{
 			const std::string coordSystemStr = dataBuffer.substr(0u, 1u);
-			utils::println(coordSystemStr);
+			utils::println(std::cout, coordSystemStr);
 			_hasGotCoordSystem = true;
 		}
 
-		toSending = utils::parseData(dataBuffer);
+		_logger.write(_message, '-', dataBuffer);
+
+		toSending = utils::parseFullData(dataBuffer);
 
 		if (!toSending.empty())
 		{
 			sendData(_clientSocketSend, toSending);
 			dataBuffer.clear();
 		}
-
 
 		constexpr std::atomic_int64_t waitingTime = 10LL;
 		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));

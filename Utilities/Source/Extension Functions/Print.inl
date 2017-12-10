@@ -2,30 +2,31 @@
 #define PRINT_INL
 
 
-template <typename T>
-void print(const T& t) noexcept
+template <class OutputStream, typename T>
+void print(OutputStream& out, const T& t) noexcept
 {
-	std::cout << t << ' ';
+	out << t << ' ';
 }
 
-template <typename T, typename... Args>
-void print(const T& t, const Args&... args) noexcept
+template <class OutputStream, typename T, typename... Args>
+void print(OutputStream& out, const T& t, const Args&... args) noexcept
 {
-	std::cout << t << ' ';
-	print(args...);
+	out << t << ' ';
+	print(out, args...);
 }
 
-template <typename T>
-void println(const T& t) noexcept
+
+template <class OutputStream, typename T>
+void println(OutputStream& out, const T& t) noexcept
 {
-	std::cout << t << '\n';
+	out << t << '\n';
 }
 
-template <typename T, typename... Args>
-void println(const T& t, const Args&... args) noexcept
+template <class OutputStream, typename T, typename... Args>
+void println(OutputStream& out, const T& t, const Args&... args) noexcept
 {
-	std::cout << t << ' ';
-	println(args...);
+	out << t << ' ';
+	println(out, args...);
 }
 
 template <class T>

@@ -42,7 +42,7 @@ bool isCorrectNumber(const std::string& str, const int flag) noexcept
 
 	if (flag == 1)
 	{
-		utils::println('\n', out);
+		utils::println(std::cout, '\n', out);
 	}
 
 	return *ptr == 0;
@@ -57,6 +57,28 @@ int stringToInt(const std::string& str) noexcept
 	}
 
 	return 0;
+}
+
+std::string getCurrentSystemTime(const int flag)
+{
+	// Get current time.
+	const auto timeNow = std::chrono::system_clock::now();
+
+	// Convert time to ctime.
+	std::time_t timeNowT = std::chrono::system_clock::to_time_t(timeNow);
+
+	// Parse time in readable format.
+	tm timeInfo;
+	localtime_s(&timeInfo, &timeNowT);
+	char timebuf[26];
+	const errno_t err = asctime_s(timebuf, 26, &timeInfo);
+
+	if (flag == 1)
+	{
+		utils::println(std::cout, '\n', err);
+	}
+
+	return timebuf;
 }
 
 }

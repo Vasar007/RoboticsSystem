@@ -3,8 +3,10 @@
 
 
 template <class Container>
-void split(const std::string& str, Container& cont, const std::string_view delims) noexcept
+Container split(const std::string& str, const std::string_view delims) noexcept
 {
+	Container cont;
+
 	std::size_t previous	= 0u;
 	std::size_t current		= str.find_first_of(delims);
 
@@ -16,11 +18,15 @@ void split(const std::string& str, Container& cont, const std::string_view delim
 	}
 
 	cont.push_back(str.substr(previous, current - previous));
+
+	return cont;
 }
 
 template <class Container>
-void fsplit(const std::string& str, Container& cont, const std::string_view delim) noexcept
+Container fsplit(const std::string& str, const std::string_view delim) noexcept
 {
+	Container cont;
+
 	const std::size_t length	= delim.size();
 	std::size_t previous		= 0u;
 	std::size_t current			= str.find(delim);
@@ -31,6 +37,8 @@ void fsplit(const std::string& str, Container& cont, const std::string_view deli
 		previous	= current + length;
 		current		= str.find(delim, previous);
 	}
+
+	return cont;
 }
 
 #endif // PARSING_INL

@@ -5,8 +5,8 @@
 #include <chrono>
 
 #include "WinsockInterface.h"
-#include "RobotData.h"
 #include "Utilities.h"
+#include "RobotData.h"
 #include "Handler.h"
 
 
@@ -20,14 +20,9 @@ class Client : public WinsockInterface
 {
 public:
 	/**
-	 * \brief Array of coordinates type.
+	 * \brief Simplify coordinate system enum.
 	 */
-	enum class CoordinateType
-	{
-		JOINT = 0,
-		WORLD = 2
-	};
-
+	typedef Handler::CoordinateSystem CoordinateSystem;
 
 protected:
 	/**
@@ -97,6 +92,16 @@ protected:
 	 * \brief Current state of work in circle.
 	 */
 	CirclicState		_circlicState;
+
+	/**
+	 * \brief Logger used to write received data to file.
+	 */
+	logger::Logger      _logger;
+
+	/**
+	 * \brief Default file name for output.
+	 */
+	static constexpr char       _DEFAULT_FILE_NAME[]    = "out.txt";
 
 	/**
 	 * \brief Default value for server IP.
@@ -301,7 +306,7 @@ public:
 	 * \brief						Function sends coordinate system to robot.
 	 * \param[in] coordinateType	Coordinate system to send.
 	 */
-	void		sendCoordinateType(const CoordinateType coordinateType) const;
+	void		sendCoordinateType(const CoordinateSystem coordinateType) const;
 
 
 	// Friendly swapping fuction.

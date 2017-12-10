@@ -80,12 +80,12 @@ public:
 	};
 
 	/**
-	 * \brief Array of coordinate type to work with robot.
-	 */
-	enum class CoorninateSystem
+	* \brief Array of coordinates type.
+	*/
+	enum class CoordinateSystem
 	{
-		JOINT	= 1,
-		WORLD	= 2
+		JOINT = 0,
+		WORLD = 2
 	};
 
 	/**
@@ -141,9 +141,9 @@ private:
 	Mode									_mode;
 
 	/**
-	 * \brief Coordinate type for working.
+	 * \brief Coordinate type to work.
 	 */
-	CoorninateSystem						_coorninateSystem;
+	CoordinateSystem						_coorninateSystem;
 
 	/**
 	 * \brief Data buffer from client.
@@ -254,13 +254,13 @@ public:
 	* \brief	Function returns coordinate type.
 	* \return	Current coordinate type to work with robot.
 	*/
-	CoorninateSystem getCoordinateSystem() const;
+	CoordinateSystem getCoordinateSystem() const;
 
 	/**
 	* \brief						Function sets coordinate type to work with robot.
-	* \param[in] coorninateSystem	New value to set.
+	* \param[in] coordninateSystem	New value to set.
 	*/
-	void setCoordinateSystem(const CoorninateSystem coorninateSystem);
+	void setCoordinateSystem(const CoordinateSystem coordninateSystem);
 
 	/**
 	 * \brief	Function returns number of iterations.

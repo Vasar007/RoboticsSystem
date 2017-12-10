@@ -17,32 +17,42 @@ protected:
 	/**
 	 * \brief Variable used to keep sending port.
 	 */
-	int					_sendingPort;
+	int					    _sendingPort;
 					
 	/**
 	 * \brief Variable used to keep reciving port.
 	 */
-	int					_receivingPort;
+	int					    _receivingPort;
 					
 	/**
 	 * \brief The maximum length of the queue of pending connections.
 	 */
-	int					_backlog;
+	int					    _backlog;
 
 	/**
 	 * \brief Connected client socket used to send data.
 	 */
-	SOCKET				_clientSocketSend;
+	SOCKET				    _clientSocketSend;
 
 	/**
 	 * \brief Connected client socket used to receive data.
 	 */
-	SOCKET				_clientSocketReceive;
+	SOCKET				    _clientSocketReceive;
 
 	/**
 	 * \brief Additional flag used to define coordinate type from client data.
 	 */
-	std::atomic_bool	_hasGotCoordSystem;
+	std::atomic_bool	    _hasGotCoordSystem;
+
+	/**
+	 * \brief Logger used to write received data to file.
+	 */
+	logger::Logger          _logger;
+
+	/**
+	 * \brief Default file name for output.
+	 */
+	static constexpr char   _DEFAULT_FILE_NAME[] = "out.txt";
 	
 
 	/**

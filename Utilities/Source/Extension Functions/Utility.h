@@ -109,6 +109,14 @@ int					randomInt(const int exclusiveMax) noexcept;
 int					stringToInt(const std::string& str) noexcept;
 
 
+/**
+ * \brief           Function gets current system time.
+ * \param[in] flag  Additional flag to perfom some actions.
+ * \return          String that cintains current readable time.
+ */
+std::string         getCurrentSystemTime(const int flag = 0);
+
+
 #include "Utility.inl"
 
 }

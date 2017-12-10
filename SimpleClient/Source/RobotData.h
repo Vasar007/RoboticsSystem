@@ -38,9 +38,8 @@ struct RobotData
 	 * \brief Default constructor.
 	 */
 	constexpr	RobotData() noexcept
-					:
-					mCoordinates{ 0, 0, 0, 0, 0, 0 },
-					mParameters{ 0, 0, 0 }
+					: mCoordinates{ 0, 0, 0, 0, 0, 0 },
+					  mParameters{ 0, 0, 0 }
 				{
 				}
 
@@ -59,9 +58,8 @@ struct RobotData
 	constexpr	RobotData(const int x, const int y, const int z, const int w, const int p, 
 						  const int r, const int segtime, const int movingType, 
 						  const int lastCommand) noexcept
-					:
-					mCoordinates{ x, y, z, w, p, r },
-					mParameters{ segtime, movingType, lastCommand }
+					: mCoordinates{ x, y, z, w, p, r },
+					  mParameters{ segtime, movingType, lastCommand }
 				{
 				}
 

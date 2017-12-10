@@ -46,7 +46,7 @@ void TestServer::receiveDataNTimes(const std::size_t numberOfTimes)
 
 		if (std::count(dataBuffer.begin(), dataBuffer.end(), ' ') > 9)
 		{
-			utils::fsplit(dataBuffer, mStorage, " 10 2 0 ");
+			mStorage= utils::fsplit<std::vector<std::string>>(dataBuffer, " 10 2 0 ");
 		}
 		else
 		{
@@ -54,7 +54,7 @@ void TestServer::receiveDataNTimes(const std::size_t numberOfTimes)
 		}
 
 
-		toSending = utils::parseData(dataBuffer);
+		toSending = utils::parseFullData(dataBuffer);
 		if (!toSending.empty())
 		{
 			sendData(_clientSocketSend, toSending);

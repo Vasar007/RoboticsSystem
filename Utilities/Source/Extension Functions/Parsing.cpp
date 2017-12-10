@@ -9,11 +9,10 @@ namespace utils
 {
 
 [[nodiscard]]
-std::string parseData(const std::string& data) noexcept
+std::string parseFullData(const std::string& data) noexcept
 {
 	std::string result;
-	std::vector<std::string> strStorage;
-	utils::split(data, strStorage);
+	std::vector<std::string> strStorage = utils::split<std::vector<std::string>>(data);
 
 	strStorage.erase(std::remove(strStorage.begin(), strStorage.end(), ""), strStorage.end());
 
@@ -43,6 +42,23 @@ std::string parseData(const std::string& data) noexcept
 	}
 
 	return result;
+}
+
+// TODO: finish this function with Danila.
+std::string parseData(const std::string& data) noexcept
+{
+	std::vector<std::string> strStorage = utils::split<std::vector<std::string>>(data);
+
+	std::size_t count = 0u;
+	for (const auto& str : strStorage)
+	{
+		if (utils::isCorrectNumber(str))
+		{
+			++count;
+		}
+	}
+
+	return "";
 }
 
 }

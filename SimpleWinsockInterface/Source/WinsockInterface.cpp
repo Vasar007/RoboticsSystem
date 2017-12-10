@@ -122,42 +122,42 @@ void WinsockInterface::close()
 void WinsockInterface::initWinsock(WSADATA& wsaData) const
 {
 	// Initialization Winsock implementation.
-	utils::print("Initializing Winsock...");
+	utils::print(std::cout, "Initializing Winsock...");
 
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != NO_ERROR)
 	{
-		utils::println("\n\nFAILED. ERROR CODE:", WSAGetLastError());
+		utils::println(std::cout, "\n\nFAILED. ERROR CODE:", WSAGetLastError());
 		std::cin.get();
 		assert(false);
 		exit(static_cast<int>(ErrorType::FAILED_INITIALIZE_WSDATA));
 	}
 
-	utils::println(" done.");
+	utils::println(std::cout, " done.");
 }
 
 void WinsockInterface::initSocket(SOCKET& socketToInit, const int aiProtocol) const
 {
 	// Initialization socket.
-	utils::println("Initialized socket.");
+	utils::println(std::cout, "Initialized socket.");
 
 	socketToInit = socket(AF_INET, SOCK_STREAM, aiProtocol);
 
 	if (socketToInit == INVALID_SOCKET)
 	{
-		utils::println("\nCOULD NOT CREATE SOCKET.");
+		utils::println(std::cout, "\nCOULD NOT CREATE SOCKET.");
 		std::cin.get();
 		assert(false);
 		exit(static_cast<int>(ErrorType::FAILED_CREATE_SOCKET));
 	}
 
-	utils::println("Socket created.");
+	utils::println(std::cout, "Socket created.");
 
 }
 
 void WinsockInterface::bindSocket(const SOCKET& socketToBind, SOCKADDR_IN& socketAddress, 
 								  const int port) const
 {
-	u_short usPort = static_cast<u_short>(port);
+	const u_short usPort = static_cast<u_short>(port);
 
 	// Set socket settings.
 	socketAddress.sin_family			= AF_INET;
@@ -168,13 +168,13 @@ void WinsockInterface::bindSocket(const SOCKET& socketToBind, SOCKADDR_IN& socke
 	if (bind(socketToBind, reinterpret_cast<SOCKADDR*>(&socketAddress),
 		sizeof socketAddress) == SOCKET_ERROR)
 	{
-		utils::println("\nBIND FAILED.");
+		utils::println(std::cout, "\nBIND FAILED.");
 		std::cin.get();
 		assert(false);
 		exit(static_cast<int>(ErrorType::FAILED_BIND));
 	}
 
-	utils::println("Bind done.");
+	utils::println(std::cout, "Bind done.");
 }
 
 void WinsockInterface::listenOn(const SOCKET& socketToList, const int backlog) const
@@ -185,13 +185,13 @@ void WinsockInterface::listenOn(const SOCKET& socketToList, const int backlog) c
 	// Include "listening" mode for receiving incoming connections.
 	if (listen(socketToList, backlog) == SOCKET_ERROR)
 	{
-		utils::println("\nLISTEN FAILED.");
+		utils::println(std::cout, "\nLISTEN FAILED.");
 		std::cin.get();
 		assert(false);
 		exit(static_cast<int>(ErrorType::FAILED_LISTEN));
 	}
 
-	utils::println("Enabled listening.");
+	utils::println(std::cout, "Enabled listening.");
 
 	// Cleaning addresses.
 	freeaddrinfo(_addressInfo.get());
@@ -212,12 +212,12 @@ bool WinsockInterface::tryConnect(const int port, const std::string& ip,
 	if (connect(socketToConnect, reinterpret_cast<SOCKADDR*>(&socketAddress),
 		sizeof socketAddress) == SOCKET_ERROR)
 	{
-		utils::println("\nCONNECTION TO SERVER WAS FAILED.");
+		utils::println(std::cout, "\nCONNECTION TO SERVER WAS FAILED.");
 
 		return false;
 	}
 
-	utils::println("Connected successfully.\n");
+	utils::println(std::cout, "Connected successfully.\n");
 	
 	return true;
 }
@@ -234,11 +234,11 @@ void WinsockInterface::sendData(const SOCKET& socketToSend, const std::string& d
 	// Sending data on socket.
 	if (send(socketToSend, dataChar, strlen(dataChar), 0) == SOCKET_ERROR)
 	{
-		utils::println("SEND FAILED.");
+		utils::println(std::cout, "SEND FAILED.");
 		return;
 	}
 
-	utils::println("Sent data:", data, "successfully.\n");
+	utils::println(std::cout, "Sent data:", data, "successfully.\n");
 }
 
 std::string WinsockInterface::receiveData(const SOCKET socketToReceive)
@@ -269,11 +269,12 @@ std::string WinsockInterface::receiveData(const SOCKET socketToReceive)
 		if (errorCode == WSAECONNRESET)
 		{
 			// Node disconnected, get his details and print.
-			utils::println("Node disconnected unexpectedly, IP", _message, ", PORT", port);
+			utils::println(std::cout, "Node disconnected unexpectedly, IP", _message, ", PORT", 
+						   port);
 		}
 		else
 		{
-			utils::println("recv failed with error code:", errorCode);
+			utils::println(std::cout, "recv failed with error code:", errorCode);
 		}
 
 		_isRunning	= false;
@@ -282,7 +283,7 @@ std::string WinsockInterface::receiveData(const SOCKET socketToReceive)
 	else if (valRead == 0)
 	{
 		// Node disconnected, get his details and print.
-		utils::println("Node disconnected, IP", _message, ", PORT", port);
+		utils::println(std::cout, "Node disconnected, IP", _message, ", PORT", port);
 
 		_isRunning	= false;
 		result		= "";
@@ -294,7 +295,7 @@ std::string WinsockInterface::receiveData(const SOCKET socketToReceive)
 		// handling functions.
 		_buffer[valRead] = '\0';
 
-		utils::println(_message, ':', port, '-', _buffer);
+		utils::println(std::cout, _message, ':', port, '-', _buffer);
 
 		result = _buffer;
 	}
@@ -306,7 +307,7 @@ void WinsockInterface::setTimeout(const SOCKET& socketForSetting, const long sec
 								  const long microseconds) const
 {
 	TIMEVAL timeout;
-	timeout.tv_sec = seconds;
+	timeout.tv_sec  = seconds;
 	timeout.tv_usec = microseconds;
 	setsockopt(socketForSetting, SOL_SOCKET, SO_RCVTIMEO,
 			   reinterpret_cast<char*>(&timeout), sizeof timeout);

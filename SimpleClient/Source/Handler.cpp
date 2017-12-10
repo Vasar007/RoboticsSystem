@@ -11,7 +11,7 @@ namespace vasily
 Handler::Handler()
 	: _state(State::DEFAULT),
 	  _mode(Mode::COMMAND),
-	  _coorninateSystem(CoorninateSystem::WORLD),
+	  _coorninateSystem(CoordinateSystem::WORLD),
 	  _data(),
 	  _coefficient(10'000),
 	  _numberOfIterations(0u),
@@ -60,15 +60,15 @@ bool Handler::checkChangingCoordinateSysytem(const std::string& letter)
 		switch (type)
 		{
 			case 1:
-				setCoordinateSystem(CoorninateSystem::JOINT);
+				setCoordinateSystem(CoordinateSystem::JOINT);
 				break;
 
 			case 2:
-				setCoordinateSystem(CoorninateSystem::WORLD);
+				setCoordinateSystem(CoordinateSystem::WORLD);
 				break;
 
 			default:
-				utils::println("ERROR 01: Incorrect coordinate system!");
+				utils::println(std::cout, "ERROR 01: Incorrect coordinate system!");
 				return false;
 		}
 
@@ -99,7 +99,7 @@ Handler::State Handler::parseCommand(const std::string_view command)
 
 	if (!flag)
 	{
-		utils::println("ERROR 03: Incorrect input data!");
+		utils::println(std::cout, "ERROR 03: Incorrect input data!");
 	}
 
 	return State::DEFAULT;
@@ -206,7 +206,7 @@ ParsedResult Handler::parseDataAfterCommand()
 			break;
 	}
 
-	utils::println("ERROR 02: Incorrect input data after literal!");
+	utils::println(std::cout, "ERROR 02: Incorrect input data after literal!");
 	result.mIsCorrect = false;
 	return result;
 }
@@ -340,12 +340,12 @@ void Handler::setMode(const Mode mode)
 	_mode = mode;
 }
 
-Handler::CoorninateSystem Handler::getCoordinateSystem() const
+Handler::CoordinateSystem Handler::getCoordinateSystem() const
 {
 	return _coorninateSystem;
 }
 
-void Handler::setCoordinateSystem(const CoorninateSystem coorninateType)
+void Handler::setCoordinateSystem(const CoordinateSystem coorninateType)
 {
 	_coorninateSystem = coorninateType;
 }
