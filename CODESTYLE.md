@@ -2,13 +2,15 @@
 
 ## Naming conventions
 
-- File names: PascalCase
-- Folder names: PascalCase
+- File names: UpperCamelCase (PascalCase)
+- Folder names: UpperCamelCase
 
-- Class names: PascalCase
-- Struct names: PascalCase
+- Class names: UpperCamelCase
+- Struct names: UpperCamelCase
+- Enum names: UpperCamelCase
+- Union names: UpperCamelCase
 - Class private and protected members: _camelCase
-- Class public members: mCamelCase
+- Class public members: camelCase
 
 - Functions: camelCase
 - Local variables: camelCase
@@ -50,8 +52,7 @@ public:
 
 ```C++
 Foo::Foo(int x, int y)
-    : 
-      x(x),
+    : x(x),
       y(y) 
 {
 }
@@ -60,7 +61,6 @@ Foo::Foo(int x, int y)
 ## Namespaces
 
 - NO `using namespace std;` Your pull request ***will*** be denied if that is included
-- Namespaces must be camelCase
 - Spaces framing namespace (at the begin and at the end) are optional
 - **[OPTIONAL]** You can use tabulation for content only in nested namespaces
 - Nested namespaces:
@@ -147,7 +147,7 @@ class World
 
 ## Functions
 - Function names should be descriptive of what they do and should be a verb ("doing word")
-- Functions which return `bool` should be a question e.g. 
+- **[OPTIONAL]** Functions which return `bool` should be a question e.g. 
 
 ```C++
 bool isXGreaterThan5(int x)
@@ -258,7 +258,7 @@ select(next);
 ```
 
 ## Word wrapping
-- **[OPTIONAL]** Maximum lenght of line = 100 characters
+- Maximum lenght of line = 100 characters
 - It's necessary to word wrapping like:
 ```C++
 void foo(// Many args..
@@ -272,7 +272,7 @@ void foo(// Many args..
   }
   
   int m = arg1 + agr2 + ...
-        + ... + argN;
+          + ... + argN;
 }
 ```
 
