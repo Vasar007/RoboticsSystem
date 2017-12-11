@@ -78,17 +78,13 @@ WinsockInterface::WinsockInterface()
 	  _addressInfo(nullptr),
 	  _isRunning(false),
 	  _isInitialized(false),
-	  _buffer(new char[_MAXRECV]),
-	  _message(new char[_MAXRECV])
+	  _buffer(),
+	  _message()
 {
 }
 
 WinsockInterface::~WinsockInterface() noexcept
 {
-	// Delete buffers.
-	delete[] _buffer;
-	delete[] _message;
-
 	if (_isInitialized)
 	{
 		// The closing of the socket and Winsock.

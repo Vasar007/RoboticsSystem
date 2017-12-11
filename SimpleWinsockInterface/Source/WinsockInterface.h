@@ -100,20 +100,19 @@ protected:
 	bool							_isInitialized;
 
 	/**
-	 * \brief Receive buffer that is used to keep answers from clients.
-	 */
-	char*							_buffer;
-
-	/**
-	 * \brief Buffer that is used to keep clients addresses.
-	 */
-	char*							_message;
-
-	/**
 	 * \brief Size of receive buffer, this is string length.
 	 */
 	static constexpr std::size_t	_MAXRECV = 1024u;
 
+	/**
+	 * \brief Receive buffer that is used to keep answers from clients.
+	 */
+	char							_buffer[_MAXRECV];
+
+	/**
+	 * \brief Buffer that is used to keep clients addresses.
+	 */
+	char							_message[_MAXRECV];
 
 	/**
 	 * \brief Table of WinSock errors, which you can get from function WSAGetLastError().
