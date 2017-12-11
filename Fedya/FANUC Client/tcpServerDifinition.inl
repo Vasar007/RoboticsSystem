@@ -155,7 +155,7 @@ ServerTCP<T>::ServerTCP(int port, int timeOut)
 {
 	initialise(port);
 	_curConnectedClient = nullptr;
-	_parallelAccept.startThread(paralelAccept, this);
+	_parallelAccept.startThread(paralelAcceptThread, this);
 }
 
 template <typename T>
@@ -167,8 +167,8 @@ int ServerTCP<T>::tryAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 		SOCKET connectedSocket = _socketConnectionsQueue.front();
 		_socketConnectionsQueue.pop();
 		_curConnectedClient = new ConnectionTCP<T>(connectedSocket, sendQueue, recieveQueue);
-		_coordsInputStream.startThread(tcpWorkin, this);
-		_conSocketWorkout.startThread(tcpWorkout, this);
+		_coordsInputStream.startThread(recieveThread, this);
+        _coordsOuputStream.startThread(sendThread, this);
 		return 0;
 	}
 	return -1;
@@ -185,8 +185,8 @@ int ServerTCP<T>::forceAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 	SOCKET connectedSocket = _socketConnectionsQueue.front();
 	_socketConnectionsQueue.pop();
 	_curConnectedClient = new ConnectionTCP<T>(connectedSocket, sendQueue, recieveQueue);
-	_coordsInputStream.startThread(tcpWorkin, this);
-	_coordsOuputStream.startThread(tcpWorkout, this);
+	_coordsInputStream.startThread(recieveThread, this);
+	_coordsOuputStream.startThread(sendThread, this);
 	_statusField.setObject("connected");
 	return 0;
 }
@@ -194,7 +194,7 @@ int ServerTCP<T>::forceAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 template <typename T>
 void ServerTCP<T>::supportOneConnection(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 {
-	_supportOneConnection.startThread(oneConnection, this, sendQueue, recieveQueue);
+	_supportOneConnection.startThread(oneConnectionThread, this, sendQueue, recieveQueue);
 }
 
 template <typename T>
