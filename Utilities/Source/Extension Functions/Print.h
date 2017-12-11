@@ -15,14 +15,14 @@ namespace utils
 {
 
 /**
- * \brief			Function prints string or space by default to outstream.
+ * \brief			Print string or space by default to outstream.
  * \param[in] str   String to print.
  */
 void stdoutPrint(const std::string_view str = " ") noexcept;
 
 
 /**
- * \brief		        Fuction prints datatype to outstream.
+ * \brief		        Print datatype to outstream.
  * \tparam OutputStream	Type of output stream.
  * \tparam T	        Datatype to print (need to be overloaded operator '<<').
  * \param[out] out      Output stream to write.
@@ -33,7 +33,7 @@ void print(OutputStream& out, const T& t) noexcept;
 
 
 /**
- * \brief			    Fuction prints datatypes (unlimited) to outstream.
+ * \brief			    Print datatypes (unlimited) to outstream.
  * \tparam OutputStream	Type of output stream.
  * \tparam T		    Datatype to print (need to be overloaded operator '<<').
  * \tparam Args		    Variadic datatypes (need to be overloaded operator '<<').
@@ -46,14 +46,14 @@ void print(OutputStream& out, const T& t, const Args&... args) noexcept;
 
 
 /**
- * \brief			Function prints string or endline by default to outstream.
+ * \brief			Print string or endline by default to outstream.
  * \param[in] str	String to print.
  */
 void stdoutPrintln(const std::string_view str = "") noexcept;
 
 
 /**
- * \brief		        Fuction prints datatype to outstream.
+ * \brief		        Print datatype to outstream.
  * \tparam OutputStream	Typpe of output stream.
  * \tparam T	        Datatype to print (need to be overloaded operator '<<').
  * \param[out] out      Output stream to write.
@@ -64,7 +64,7 @@ void println(OutputStream& out, const T& t) noexcept;
 
 
 /**
- * \brief			    Fuction prints datatypes (unlimited) to outstream.
+ * \brief			    FPrint datatypes (unlimited) to outstream.
  * \tparam OutputStream	Typpe of output stream.
  * \tparam T		    Datatype to print (need to be overloaded operator '<<').
  * \tparam Args		    Variadic datatypes (need to be overloaded operator '<<').
@@ -77,7 +77,7 @@ void println(OutputStream& out, const T& t, const Args&... args) noexcept;
 
 
 /**
- * \brief		Function knows about type name of variable.
+ * \brief		Define the type name of variable.
  * \tparam T	Datatype to process (use 'decltype()' to send data).
  * \return		String which contains type name of variable.
  */

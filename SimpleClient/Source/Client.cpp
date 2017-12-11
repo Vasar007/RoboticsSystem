@@ -20,7 +20,7 @@ Client::Client(const int serverPort, const std::string_view serverIP)
 	  _waitAnswer(),
 	  _isNeedToWait(false),
 	  _circlicState(),
-	  _logger(_DEFAULT_FILE_NAME)
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
 {
 }
 
@@ -38,7 +38,7 @@ Client::Client(const int serverPortSending, const int serverReceiving,
 	  _waitAnswer(),
 	  _isNeedToWait(false),
 	  _circlicState(),
-	  _logger(_DEFAULT_FILE_NAME)
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
 {
 }
 
@@ -52,7 +52,7 @@ Client::Client(Client&& other) noexcept
 	  _waitAnswer(other._waitAnswer),
 	  _isNeedToWait(other._isNeedToWait ? true : false),
 	  _circlicState(other._circlicState),
-	  _logger(_DEFAULT_FILE_NAME)
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
 {
 	utils::swap(*this, other);
 }
@@ -207,6 +207,20 @@ void Client::waitLoop()
 				else if (_handler.getCurrentState() == Handler::State::HOME)
 				{
 					sendCoordinates(_DEFAULT_POSITION);
+				}
+				else if (_handler.getCurrentState() == Handler::State::FROM_FILE)
+				{
+					_robotData = _logger.read<RobotData>();
+					if (!_logger.hasAnyInputErrors())
+					{
+						sendCoordinates(_robotData);
+					}
+					else
+					{
+						utils::println(std::cout, "ERROR 06: Some error occurred in input stream!",
+									   "Input stream will be restarted.");
+						_logger.restartStream(logger::Logger::TypeStream::INPUT_STREAM);
+					}
 				}
 				else if (_handler.getCurrentState() != Handler::State::DEFAULT)
 				{

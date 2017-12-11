@@ -48,11 +48,16 @@ protected:
 	 * \brief Logger used to write received data to file.
 	 */
 	logger::Logger          _logger;
+	
+	/**
+	 * \brief Default file name for input.
+	 */
+	static constexpr char   _DEFAULT_IN_FILE_NAME[]     = "in.txt";
 
 	/**
 	 * \brief Default file name for output.
 	 */
-	static constexpr char   _DEFAULT_FILE_NAME[] = "out.txt";
+	static constexpr char   _DEFAULT_OUT_FILE_NAME[]    = "out.txt";	
 	
 
 	/**
@@ -61,12 +66,12 @@ protected:
 	void			waitLoop() override;
 
 	/**
-	 * \brief			Additional loop which has a handler for connections.
+	 * \brief Additional loop which has a handler for connections.
 	 */
 	void			process();
 
 	/**
-	 * \brief			Function waits for clients connections.
+	 * \brief Wait for clients connections.
 	 */
 	void			waitingForConnections();
 

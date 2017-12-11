@@ -122,14 +122,14 @@ protected:
 
 
 	/**
-	 * \brief				Function initiates use of the Winsock DLL by a process.
+	 * \brief				Initiate use of the Winsock DLL by a process.
 	 * \param[out] wsaData	A reference to the WSADATA data structure that is to receive details
 	 *						of the WinSock implementation.
 	 */
 	void			initWinsock(WSADATA& wsaData) const;
 
 	/**
-	 * \brief					Function bindes a socket that is bound to a specific transport 
+	 * \brief					Bind a socket that is bound to a specific transport 
 	 *							service provider.
 	 * \param[out] socketToInit	Descriptor referencing socket.
 	 * \param[in] aiProtocol	The protocol to be used. The possible options for the protocol
@@ -139,7 +139,7 @@ protected:
 	void			initSocket(SOCKET& socketToInit, const int aiProtocol = 6) const;
 				 
 	/**
-	 * \brief						Function associates a local address with a socket.
+	 * \brief						Associate a local address with a socket.
 	 * \param[in] socketToBind		A descriptor identifying an unbound socket.
 	 * \param[out] socketAddress	A pointer to a sockaddr structure of the local address to 
 	 *								assign to the bound socket.
@@ -149,7 +149,7 @@ protected:
 							   const int port) const;
 
 	/**
-	 * \brief					Function places a socket in a state in which it is listening for
+	 * \brief					Place a socket in a state in which it is listening for
 	 *							an incoming connection.
 	 * \param[in] socketToList	A descriptor identifying a bound, unconnected socket.
 	 * \param[in] backlog		The maximum length of the queue of pending connections.
@@ -157,7 +157,7 @@ protected:
 	void			listenOn(const SOCKET& socketToList, const int backlog = 10) const;
 
 	/**
-	 * \brief						Function establishes a connection to a specified socket.
+	 * \brief						Establishe a connection to a specified socket.
 	 * \param[in] port				Port for connection.
 	 * \param[in] ip				IP address for connection.
 	 * \param[in] socketToConnect	A descriptor identifying an unconnected socket.
@@ -171,21 +171,21 @@ protected:
 							   const SOCKET& socketToConnect, SOCKADDR_IN& socketAddress) const;
 	
 	/**
-	 * \brief					Function sends data on a connected socket.
+	 * \brief					Send data on a connected socket.
 	 * \param[out] socketToSend	A descriptor identifying a connected socket.
 	 * \param[out] data			A buffer containing the data to be transmitted.
 	 */
 	void			sendData(const SOCKET& socketToSend, const std::string& data) const;
 
 	/**
-	 * \brief						Function receives data from receiving socket.
+	 * \brief						Receive data from receiving socket.
 	 * \param[in] socketToReceive	A descriptor identifying a receiving socket.
 	 * \return						Received data from receiving socket.
 	 */
 	std::string		receiveData(const SOCKET socketToReceive);
 
 	/**
-	 * \brief						Function sets timeout for socket.
+	 * \brief						Set timeout for socket.
 	 * \param[in] socketForSetting	A descriptor identifying a socket.
 	 * \param[in] seconds			Time interval, in seconds.
 	 * \param[in] microseconds		Time interval, in microseconds.
@@ -243,12 +243,12 @@ public:
 	bool				isRun() const;
 
 	/**
-	 * \brief Fuction initializes WSDATA and sockets.
+	 * \brief Initialize WSDATA and sockets.
 	 */
 	void				init();
 
 	/**
-	 * \brief Function closes all initialized data.
+	 * \brief Close all initialized data.
 	 */
 	void				close();
 
@@ -258,7 +258,7 @@ public:
 	virtual void		run() = 0;
 
 	/**
-	 * \brief Fuction processes sockets.
+	 * \brief Process sockets.
 	 */
 	virtual void		launch() = 0;
 };

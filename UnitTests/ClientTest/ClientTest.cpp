@@ -7,7 +7,7 @@ namespace clientTests
 {
 
 /**              
- * \brief                   Function initializes server and launches it in detached thread.
+ * \brief                   Initialize server and launches it in detached thread.
  * \param[out] testServer   Thread to launch.
  * \param[in] numberOfTimes Number of times to allow connections.
  */
@@ -20,7 +20,7 @@ void initTestServer(TestServer& testServer, const std::size_t numberOfTimes = 1u
 }
 
 /**
- * \brief                   Function initialized client, sends data to server and launch receiving
+ * \brief                   Initialize client, sends data to server and launch receiving
  *                          thread for client.
  * \tparam Functor          Type of functor object.
  * \param[out] client       Client to launch.

@@ -59,6 +59,7 @@ public:
 		CIRCLIC,
 		PARTIAL,
 		HOME,
+		FROM_FILE,
 
 		FORWARD,
 		BACK,
@@ -172,27 +173,27 @@ private:
 
 
 	/**
-	 * \brief				Function parses input string into command.
+	 * \brief				Parse input string into command.
 	 * \param[in] command	String for parsing.
 	 * \return				Move state command.
 	 */
 	State parseCommand(const std::string_view command);
 
 	/**
-	 * \brief	Function parses input string after command literal.
+	 * \brief	Parse input string after command literal.
 	 * \return	Parsed structure which contains all stuf for interact with robot.
 	 */
 	ParsedResult parseDataAfterCommand();
 
 	/**
-	 * \brief				Fuction checks if letter contains command to change current mode.
+	 * \brief				Check if letter contains command to change current mode.
 	 * \param[in] letter	String for parsing.
 	 * \return				True if mode is changed, false otherwise.
 	 */
 	bool checkChangingMode(const std::string& letter);
 
 	/**
-	 * \brief				Fuction checks if letter contains command to change current coordinate
+	 * \brief				Check if letter contains command to change current coordinate
 	 *						system.
 	 * \param[in] letter	String for parsing.
 	 * \return				True if system is changed, false otherwise.
@@ -207,69 +208,69 @@ public:
 	Handler();
 
 	/**
-	 * \brief					Gets command and changes current state if its valid.
+	 * \brief					Get command and change current state if its valid.
 	 * \param[in] command		String for parsing.
 	 * \param[out] robotData	Robot data which contains coordinates to change.
 	 */
 	void appendCommand(const std::string_view command, RobotData& robotData);
 
 	/**
-	 * \brief					Gets input data and changes current state if its valid.
+	 * \brief					Get input data and change current state if its valid.
 	 * \param[in] data			String for parsing.
 	 * \param[out] robotData	Robot data which contains coordinates to change.
 	 */
 	void parseRawData(const std::string& data, RobotData& robotData);
 
 	/**
-	 * \brief	Function returns current moving coefficient.
+	 * \brief	Get current moving coefficient.
 	 * \return	Current moving coefficient.
 	 */
 	int getCoefficient() const;
 
 	/**
-	 * \brief					Functions sets moving coefficient.
+	 * \brief					Set moving coefficient.
 	 * \param[in] coefficient	New value to set.
 	 */
 	void setCoefficient(const int coefficient);
 
 	/**
-	 * \brief	Function returns handle state.
+	 * \brief	Get handle state.
 	 * \return	Current handle state.
 	 */
 	State getCurrentState() const;
 
 	/**
-	 * \brief	Function returns client mode.
+	 * \brief	Get client mode.
 	 * \return	Current client mode.
 	 */
 	Mode getCurrentMode() const;
 
 	/**
-	 * \brief			Function sets mode to client.
+	 * \brief			Set mode to client.
 	 * \param[in] mode	New value to set.
 	 */
 	void setMode(const Mode mode);
 
 	/**
-	* \brief	Function returns coordinate type.
+	* \brief	Get coordinate type.
 	* \return	Current coordinate type to work with robot.
 	*/
 	CoordinateSystem getCoordinateSystem() const;
 
 	/**
-	* \brief						Function sets coordinate type to work with robot.
+	* \brief						Set coordinate type to work with robot.
 	* \param[in] coordninateSystem	New value to set.
 	*/
 	void setCoordinateSystem(const CoordinateSystem coordninateSystem);
 
 	/**
-	 * \brief	Function returns number of iterations.
+	 * \brief	Get number of iterations.
 	 * \return	Current number of iterations.
 	 */
 	int getNumberOfIterations() const;
 
 	/**
-	 * \brief	Function returns parsed result after command.
+	 * \brief	Get parsed result after command.
 	 * \return	Current parsed result after command.
 	 */
 	ParsedResult getParsedResult() const;

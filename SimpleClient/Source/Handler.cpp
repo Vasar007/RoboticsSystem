@@ -17,14 +17,14 @@ Handler::Handler()
 	  _numberOfIterations(0u),
 	  _parsedResult(),
 	  _mapping({
-	  	{ "q", State::FORWARD },		{ "a", State::BACK },
+		{ "q", State::FORWARD },		{ "a", State::BACK },
 		{ "w", State::LEFT },			{ "s", State::RIGHT },
 		{ "e", State::UP },				{ "d", State::DOWN },
 		{ "r", State::ROLL_PLUS },		{ "f", State::ROLL_MINUS },
 		{ "t", State::PITHCH_PLUS },	{ "g", State::PITHCH_MINUS },
 		{ "y", State::YAW_PLUS },		{ "h", State::YAW_MINUS },
 		{ "c", State::CIRCLIC },		{ "p", State::PARTIAL },
-		{ "z", State::HOME } })
+		{ "z", State::HOME },           { "x", State::FROM_FILE } })
 {
 }
 
@@ -155,6 +155,8 @@ ParsedResult Handler::parseDataAfterCommand()
 			break;
 
 		case State::HOME:
+			[[fallthrough]];
+		case State::FROM_FILE:
 			if (_data.size() == 1u)
 			{
 				return result;
@@ -259,6 +261,9 @@ void Handler::appendCommand(const std::string_view command, RobotData& robotData
 			break;
 
 		case State::HOME:
+			break;
+		
+		case State::FROM_FILE:
 			break;
 
 		case State::FORWARD:

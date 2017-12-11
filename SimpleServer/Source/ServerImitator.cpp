@@ -18,7 +18,7 @@ ServerImitator::ServerImitator(const int sendingPort, const int recivingPort, co
 	  _clientSocketSend(0),
 	  _clientSocketReceive(0),
 	  _hasGotCoordSystem(false),
-	  _logger(_DEFAULT_FILE_NAME)
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
 {
 }
 
@@ -30,7 +30,7 @@ ServerImitator::ServerImitator(ServerImitator&& other) noexcept
 	  _clientSocketSend(0),
 	  _clientSocketReceive(0),
 	  _hasGotCoordSystem(other._hasGotCoordSystem ? true : false),
-	  _logger(_DEFAULT_FILE_NAME)
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
 {
 	utils::swap(*this, other);
 }
