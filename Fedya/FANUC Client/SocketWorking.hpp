@@ -1,6 +1,5 @@
-#ifndef SOCKET_WORKING
-#define SOCKET_WORKING
-#pragma once
+#ifndef SOCKET_WORKING_H
+#define SOCKET_WORKING_H
 
 #include<WinSock2.h>
 
@@ -9,68 +8,79 @@
  */
 class SocketWorking
 {
+private:
+
 	/**
-	 * \brief Flag if winSock was Initialised.
+	 * \brief Flag if winSock was initialized.
 	 */
-	bool _isInitialised;
+	bool _isInitialized;
 
 	/**
 	 * \brief Private constructor.
 	 */
-	SocketWorking();
+    SocketWorking();
+
+     /**
+     * \brief Deleted constructor.
+     */
+    SocketWorking(const SocketWorking&) = delete;
+
+    /**
+    * \brief Deleted constructor.
+    * \return
+    */
+    SocketWorking& operator =(SocketWorking&) = delete;
+    
+	/**
+	 * \brief Deleted constructor.
+	 */
+	SocketWorking(const SocketWorking&&) = delete;
 
 	/**
-	 * \brief Private copy constructor.
+	 * \brief Deleted constructor. 
+	 * \return 
 	 */
-	SocketWorking(const SocketWorking&);
-
-	/**
-	 * \brief Private assignment constructor. 
-	 * \return Instance of singlton.
-	 */
-	SocketWorking& operator =(SocketWorking&);
+	SocketWorking& operator =(SocketWorking&&) = delete;
 public:
 
 	/**
-	 * \brief Static function for getting instance of singlton.
-	 * \return Instance of singleton.
+	 * \brief   Static method for getting instance of singlton.
+	 * \return  Instance of singlton.
 	 */
 	static SocketWorking& getInstance();
 
 	/**
-	 * \brief Method for intialasing winSock.
-	 * \return 0 if no error, else non-zero.
+	 * \brief   Method for intialazing winSock.
+	 * \return  0 if no error, else non-zero.
 	 */
-	int initialise();
+	int launchWinSock();
 
 	/**
-	 * \brief Method for de intialise winSock.
-	 * \return 0 if no error, else 1
+	 * \brief   Method for shutting down winSock.
+	 * \return  0 if no error, else 1
 	 */
-	int deintialise();
+	int closeWinSock();
 
 	/**
-	 * \brief Method for getting new SOCKET.
-	 * \return New SOCKET.
+	 * \brief   Method for getting new SOCKET.
+	 * \return  New SOCKET.
 	 */
 	SOCKET getFreeSocket();
 
 	/**
-	 * \brief Method for deleting SOCKET.
-	 * \param soc SOCKET for deleting.
+	 * \brief           Method for deleting SOCKET.
+	 * \param[in] soc   SOCKET for deleting.
 	 */
 	void deleteSocket(SOCKET& soc);
 
 	/**
-	 * \brief Method for connectong to FANUCM20I-A.
-	 * \param serveraddr IP adress of robot.
-	 * \param port Port for connecting.
-	 * \param disconnectTime2 Time for connecting to robot.
-	 * \return SOCKET which connected to robot.
+	 * \brief                       Method for connecting to FANUCM20I-A.
+	 * \param[in] serveraddr        IP adress of robot.
+	 * \param[in] port              Port for connecting.
+	 * \param[in] disconnectTime2   Time for connecting to robot.
+	 * \return                      SOCKET which connected to robot.
 	 */
-	SOCKET connectToRobotServer(const char* serveraddr, int port, int disconnectTime2);
+	SOCKET getConnectedSocket(const char* serveraddr, int port, int disconnectTime2);
 };
 
-#include"SocketWorkingDifinition.inl"
-
-#endif
+#endif // SOCKET_WORKING_H

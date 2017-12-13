@@ -1,28 +1,30 @@
-#ifndef MY_THREAD_DEF
-#define MY_THREAD_DEF
-#pragma once
+#ifndef MY_THREAD_H
+#define MY_THREAD_H
 
 #include<thread>
 #include<mutex>
 
-
 /**
- * \brief Class for working threads.
+ * \brief Class for working with parallel threads.
  */
-struct MyThread 
+class MyThread 
 {
+private:
+
 	/**
 	 * \brief Current thread.
 	 */
 	std::thread _work;
 	/**
-	 * \brief Mutex for locking curretn thread.
+	 * \brief Mutex for locking current thread.
 	 */
 	std::mutex _mt;
 	/**
 	 * \brief Flag for finishing or continuing current thread.
 	 */
-	bool _flag{ false };
+	bool _flag = false;
+
+public:
 
 	/**
 	 * \brief Default constructor.
@@ -30,47 +32,47 @@ struct MyThread
 	MyThread() = default;
 
 	/**
-	 * \brief Constructor with starting new thread.
-	 * \tparam Fn Static function.
-	 * \tparam Args Params of static function.
-	 * \param fn Link to static function.
-	 * \param arg Params whick tale this staitc function.
+	 * \brief           Constructor with starting new thread.
+	 * \tparam Fn       Static function.
+	 * \tparam Args     Parameters of static function.
+	 * \param[in] fn    Link to static function.
+	 * \param[in] arg   Parameters which take this static function.
 	 */
 	template <typename Fn, typename... Args>
 	explicit MyThread(Fn&& fn, Args&&... arg);
 
 	/**
-	 * \brief Method for swapping threads.
-	 * \param th Thread for swapping.
+	 * \brief               Method for swapping threads.
+	 * \param[in] newThread Thread for swapping.
 	 */
-	void swap(std::thread& th);
+	void swap(std::thread& newThread);
 
 	/**
-	 * \brief Function for swapping threads.
-	 * \param th MyThread for swapping.
+	 * \brief               Method for swapping threads.
+	 * \param[in] newThread MyThread for swapping.
 	 */
-	void swap(MyThread& th) noexcept;
+	void swap(MyThread& newThread) noexcept;
 
 	/**
-	 * \brief Function for checking if this thread may be joind.
-	 * \return True if this thread may be joind, else false.
+	 * \brief    Method for checking if this thread may be joined.
+	 * \return  True if this thread may be joined, else false.
 	 */
 	bool joinable() const;
 
 	/**
-	 * \brief Function for starting new thread.
-	 * \tparam Fn Static function.
-	 * \tparam Args Params of static function.
-	 * \param fn Link to static function.
-	 * \param arg Params whick tale this staitc function.
+	 * \brief           Method for launching new thread.
+	 * \tparam Fn       Static function.
+	 * \tparam Args     Parameters of static function.
+	 * \param[in] fn    Link to static function.
+	 * \param[in] arg   Parameters which take this static function.
 	 */
 	template <typename Fn, typename... Args>
 	void startThread(Fn&& fn, Args&&... arg);
 
 	/**
-	 * \brief Function for stopping current thread.
+	 * \brief Method for closing current thread.
 	 */
-	void join();
+	void closeThread();
 
 	/**
 	 * \brief Default destructor.
@@ -78,6 +80,6 @@ struct MyThread
 	~MyThread();
 };
 
-#include "MyThreadDifintion.inl"
+#include "MyThread.inl"
 
-#endif // MyThread_def
+#endif // MY_THREAD_H

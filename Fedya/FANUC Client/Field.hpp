@@ -1,58 +1,57 @@
-#ifndef MY_FIELD
-#define MY_FIELD
-#pragma once
+#ifndef FIELD_H
+#define FIELD_H
 
 #include "Message.hpp"
-#include <iostream>
-#include <Windows.h>
 
 /**
-* \brief Namespace of thread protected conosole inteface.
+* \brief Namespace of thread protected console interface.
 */
 namespace myInterface
 {
-	/**
-	 * \brief Class for showing field with changable information.
-	 * \tparam T Type of this information.
+
+/**
+ * \brief       Class for showing field with changeable information.
+ * \tparam T    Type of this information.
+ */
+template<typename T>
+class Field: public Message
+{
+private:
+
+    /**
+	 * \brief Object which is now showing.
 	 */
-	template<typename T>
-	class Field: public Message
-	{
-		/**
-		 * \brief Object which is now showing.
-		 */
-		T _object;
+	T _object;
 
-	public:
+public:
 		
-		/**
-		 * \brief Getter of object.
-		 * \return Object.
-		 */
-		T getObject();
+	/**
+	 * \brief   Object getter.
+	 * \return  Object.
+	 */
+	T getObject();
 
-		/**
-		 * \brief Setter of object.
-		 * \param newObject Object ofr showing.
-		 */
-		void setObject(T newObject);
+    /**
+	 * \brief       Object setter.
+	 * \param[in]   newObject Object for showing.
+	 */
+	void setObject(const T& newObject);
 
-		/**
-		 * \brief Constructor.
-		 * \param discription Discription of this field.
-		 * \param object Object for showing.
-		 */
-		Field(std::string discription, T object);
+    /**
+	 * \brief       Constructor.
+	 * \param[in]   description Description of this field.
+	 * \param[in]   object Object for showing.
+	 */
+	explicit Field(const std::string& description,const T& object);
 
-		/**
-		 * \brief Destructor.
-		 */
-		virtual ~Field();
-	};
-
-	
+	/**
+	 * \brief Destructor.
+	 */
+	virtual ~Field() = default;
 };
+	
+}
 
-#include "FieldDifinition.inl"
+#include "Field.inl"
 
-#endif
+#endif // FIELD_H

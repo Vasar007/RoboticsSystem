@@ -1,48 +1,50 @@
-#ifndef TCP_SERVER
-#define TCP_SERVER
-#pragma once
+#ifndef TCP_SERVER_H
+#define TCP_SERVER_H
 
 #include <WinSock2.h>
+
 #include "MyThread.hpp"
 #include "MyQueue.hpp"
 #include "tcpConnection.hpp"
 
 /**
- * \brief Class impliments server for client connections.
- * \tparam T Type of cordinates for comunication.
+ * \brief       Class implements server for client connections.
+ * \tparam T    Type of cordinates for communication.
  */
 template<typename T>
 class ServerTCP
 {
+private:
+
 	/**
 	 * \brief Main SOCKET for binding.
 	 */
-	SOCKET _main;
+	SOCKET _sockMain = INVALID_SOCKET;
 
 	/**
 	 * \brief Class for processing client connection.
 	 */
-	ConnectionTCP<T>* _contcp;
+	ConnectionTCP<T>* _curConnectedClient = nullptr;
 	
 	/**
-	 * \brief Paralel thread for reciving new points from client.
+	 * \brief Parallel thread for receiving new cordinates from client.
 	 */
-	MyThread _conSocketWorkin;
+	MyThread _coordsInputStream;
 	
 	/**
-	 * \brief Paralel thread for sending points to client.
+	 * \brief Parallel thread for sending cordinates to client.
 	 */
-	MyThread _conSocketWorkout;
+	MyThread _coordsOuputStream;
 	
 	/**
-	 * \brief Paralel thread for support one connection.
+	 * \brief Parallel thread for supporting one connection.
 	 */
-	MyThread _oneConnection;
+	MyThread _supportOneConnection;
 	
 	/**
-	 * \brief Paralel thread for accepting new clients.
+	 * \brief Parallel thread for accepting new clients.
 	 */
-	MyThread _paralelAccept;
+	MyThread _parallelAccept;
 
 	/**
 	 * \brief Queue of SOCKET for communication with clients.
@@ -50,12 +52,12 @@ class ServerTCP
 	MyQueue<SOCKET> _socketConnectionsQueue;
 
 	/**
-	 * \brief time of previous point acception.
+	 * \brief Time of previous point acceptance.
 	 */
-	int _prevRecieve;
+	int _prevRecieveTime;
 	
 	/**
-	 * \brief Time for waiting before disconnect.
+	 * \brief Time for waiting before the disconnection.
 	 */
 	int _timeOut;
 
@@ -64,86 +66,89 @@ class ServerTCP
 	 */
 	bool _connected = false;
 
+    /**
+	 * \brief Field describing current status of server.
+	 */
 	myInterface::StaticField<std::string> _statusField;
 
 	/**
-	 * \brief Method for intialsing listening SOCKET.
-	 * \param port Port for listening.
-	 * \return 0 if no errors, else code of error.
+	 * \brief           Method for initializing listening SOCKET.
+	 * \param[in] port  Port for listening.
+	 * \return          0 if no errors, else code of error.
 	 */
 	int initialise(int port);
 
 	/**
-	 * \brief Static function for paralel reciving points.
-	 * \param mt Mutex for locking thread.
-	 * \param f Flag for ending thread.
-	 * \param ins Instance of this class.
+	 * \brief           Static method for parallel receiving coordinates.
+	 * \param[in] mt    Mutex for locking thread.
+	 * \param[in] f     Flag for closing thread.
+	 * \param[in] ins   Instance of this class.
 	 */
-	static void tcpWorkin(std::mutex* mt, bool* f, ServerTCP* ins);
+	static void recieveThread(std::mutex* mt, bool* f, ServerTCP* ins);
 
 	/**
-	 * \brief Static function for paralel sending points
-	 * \param mt Mutex for locking thread.
-	 * \param f Flag for ending thread.
-	 * \param ins Instance of this class.
+	 * \brief           Static method for parallel sending coordinates.
+	 * \param[in] mt    Mutex for locking thread.
+	 * \param[in] f     Flag for closing thread.
+	 * \param[in] ins   Instance of this class.
 	 */
-	static void tcpWorkout(std::mutex* mt, bool* f, ServerTCP* ins);
+	static void sendThread(std::mutex* mt, bool* f, ServerTCP* ins);
 
 	/**
-	 * \brief Static function for supporting oneactual connection.
-	 * \param mt Mutex for locking thread.
-	 * \param f Flag for ending thread.
-	 * \param instance Instance of this class.
-	 * \param sendQueue Pointer to Queue of sending points.
-	 * \param recieveQueue Pointer to queue of reciving points.
+	 * \brief                   Static method for supporting one actual connection.
+	 * \param[in] mt            Mutex for locking thread.
+	 * \param[in] f             Flag for closing thread.
+	 * \param[in] instance      Instance of this class.
+	 * \param[in] sendQueue     Pointer to Queue of sending coordinates.
+	 * \param[in] recieveQueue  Pointer to queue of receiving coordinates.
 	 */
-	static void oneConnection(std::mutex* mt, bool* f, ServerTCP* instance, MyQueue<T>* sendQueue,
-	                          MyQueue<T>* recieveQueue);
+	static void oneConnectionSupportThread(std::mutex* mt, bool* f, ServerTCP* instance,
+                                           MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue);
 
 	/**
-	 * \brief Satic function for paralel accepting new clients.
-	 * \param mt Mutex for locking thread.
-	 * \param f Flag for ending thread.
-	 * \param instance Instance of this class.
+	 * \brief               Satic method for parallel accepting new clients.
+	 * \param[in] mt        Mutex for locking thread.
+	 * \param[in] f         Flag for closing thread.
+	 * \param[in] instance  Instance of this class.
 	 */
-	static void paralelAccept(std::mutex* mt, bool* f, ServerTCP* instance);
+	static void paralelAcceptThread(std::mutex* mt, bool* f, ServerTCP* instance);
 
 public:
 
 	/**
-	 * \brief Constructor:(
-	 * \param port Port for finding new clients.
-	 * \param timeOut Time for checking new points.
+	 * \brief               Constructor
+	 * \param[in] port      Port for accepting new clients.
+	 * \param[in] timeOut   Time for checking new coordinates.
 	 */
 	explicit ServerTCP(int port, int timeOut);
 
 	/**
-	 * \brief Method for trying to accept any connection.
-	 * \param sendQueue Pointer to queue of sending points.
-	 * \param recieveQueue Pointer to queue of reciving queue.
-	 * \return 0 if no errors, -1 if no connections.
+	 * \brief                   Method for trying to accept any connection.
+	 * \param[in] sendQueue     Link to queue of sending coordinates.
+	 * \param[in] recieveQueue  Link to queue of receiving coordinates.
+	 * \return                  0 if no errors, -1 if no connections.
 	 */
 	int tryAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue);
 
 	/**
-	 * \brief Method for accepting new client.
-	 * \param sendQueue Pointer to queue of sending points.
-	 * \param recieveQueue Pointer to queue of reciving points.
-	 * \return 0 if no errors, else non-zero.
+	 * \brief                   Method for accepting new client.
+	 * \param[in] sendQueue     Link to queue of sending coordinates.
+	 * \param[in] recieveQueue  Link to queue of reciving coordinates.
+	 * \return                  0 if no errors, else non-zero.
 	 */
 	int forceAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue);
 
 	/**
-	 * \brief Method for starting working in one client mode.
-	 * \param sendQueue Pointer to queue of sending points.
-	 * \param recieveQueue Pointer to queue of reciving points.
+	 * \brief                   Method for starting working in one client mode.
+	 * \param[in] sendQueue     Link to queue of sending coordinates.
+	 * \param[in] recieveQueue  Link to queue of reciving coordinates.
 	 */
 	void supportOneConnection(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue);
 
 	/**
 	 * \brief Method for finishing working.
 	 */
-	void closeServer();
+	void stopServer();
 
 	/**
 	 * \brief Default destructor.
@@ -151,6 +156,6 @@ public:
 	~ServerTCP();
 };
 
-#include "tcpServerDifinition.inl"
+#include "tcpServer.inl"
 
-#endif
+#endif // TCP_SERVER_H

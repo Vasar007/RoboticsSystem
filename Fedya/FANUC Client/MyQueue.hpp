@@ -1,20 +1,20 @@
-#pragma once
-
-#ifndef MY_QUEUE_DEF
-
-#define MY_QUEUE_DEF
+#ifndef MY_QUEUE_H
+#define MY_QUEUE_H
 
 #include<queue>
 #include<mutex>
+
 #include"StaticField.hpp"
 
 /**
- * \brief Class which impliment a queue for multithreading and time measurement.
- * \tparam T Object in queue.
+ * \brief       Class which implement a multi-thread-protected queue and time measurement.
+ * \tparam T    Type of object in queue.
  */
 template<typename T>
 class MyQueue
 {
+private:
+
 	/**
 	 * \brief Basic queue with elements.
 	 */
@@ -26,78 +26,83 @@ class MyQueue
 	std::mutex _mt;
 
 	/**
-	 * \brief Size of queue for interface.
+	 * \brief Interface field with size of queue.
 	 */
 	myInterface::StaticField<int> _sizeOfQueue{"Size of queue: ",0};
 	
 	/**
-	 * \brief Time differnce of last erased element betwen adding and erasing elemnt in queue.
+	 * \brief Time difference of last erased element between adding and erasing element in queue.
 	 */
 	myInterface::StaticField<int> _timeDifference{"Time delay in queue: ",0};
 	
 public:
-	/**
-	 * \brief Contructor of queue.
-	 * \param comment Discription of this queue which will show in interface. 
-	 * If it isn't specify this queue would be with default.
-	 */
-	explicit MyQueue(std::string comment);
 
+	/**
+	 * \brief               Contructor of queue.
+	 * \param[in] comment   Description of this queue which will show in interface. 
+	 *                      If it isn't specify this queue would be with default description.
+	 */
+	explicit MyQueue(const std::string& comment);
+
+    /**
+	 * \brief Constructor.
+	 */
 	explicit MyQueue() = default;
 
 	/**
-	 * \brief Function for adding element.
-	 * \param elem Element for adding.
+	 * \brief               Method for adding element.
+	 * \param[in] object    Element for adding.
 	 */
-	void push(T elem);
+	void push(const T object);
 
 	/**
-	 * \brief Fuction for checking if this queue is empty.
-	 * \return True if epmty, else false.
+	 * \brief   Method for checking if this queue is empty.
+	 * \return  True if empty, else false.
 	 */
-	bool empty();
+	bool isEmpty();
 
 	/**
-	 * \brief Function for checking size of queue.
-	 * \return Retrun a size of queue.
+	 * \brief   Method for getting size of queue.
+	 * \return  Number of elements in queue.
 	 */
-	int size();
+	size_t size();
 
 	/**
-	 * \brief Function for getting time when front element was added.
-	 * \return Return time of adding front element.
+	 * \brief   Method for getting time, when front element was added.
+	 * \return  Return time of adding front element.
 	 */
 	clock_t frontTime();
 
 	/**
-	 * \brief Function for getting front element.
-	 * \return Front element.
+	 * \brief   Method for getting front element.
+	 * \return  Front element.
 	 */
 	T front();
 
 	/**
-	 * \brief Erase front element.
+	 * \brief Method for erasing front element.
 	 */
 	void pop();
 
 	/**
-	 * \brief function for swapping queues
-	 * \param q MyQueue for swapping
+	 * \brief               Method for swapping queues.
+	 * \param[in] newQueue  MyQueue for swapping.
 	 */
-	void swap(MyQueue& q) noexcept;
+	void swap(MyQueue& newQueue) noexcept;
 
 	/**
-	 * \brief Function which trys to erase ans return front element.
-	 * \return True and object if there was front element or false and defult object if there wasn't front object.
+	 * \brief   Method which tries to erase and return front element.
+	 * \return  True and object if there was front element or
+	 *          false and default object if there wasn't front object.
 	 */
-	std::pair<bool, T> pull();
+	std::pair<bool, T> tryPull();
 
 	/**
 	 * \brief Default destructor.
 	 */
-	~MyQueue();
+	~MyQueue() = default;
 };
 
-#include "MyQueueDifintion.inl"
+#include "MyQueue.inl"
 
-#endif // !MY_QUEUE_DEF
+#endif // MY_QUEUE_H

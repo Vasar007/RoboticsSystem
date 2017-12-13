@@ -1,18 +1,12 @@
-// Пример непростого TCP клиента
+//  Пример непростого TCP клиента
 
 #define WIN32_LEAN_AND_MEAN
 
-
-#define WITHOUT_POINTS_SAVER
-//#define WITHOUT_INTERFACE
-
-#include <string>
 #include <windows.h>
-#include <iostream>
 #include <conio.h>
-#include "MyShower.hpp"
+
 #include "tcpServer.hpp"
-#include "RobotComunication.hpp"
+#include "RobotCommunication.hpp"
 #include "MyQueue.hpp"
 
 
@@ -20,39 +14,46 @@
 
 int main()
 {
-	SocketWorking::getInstance().initialise();
+    // Initializing winSock.
+	SocketWorking::getInstance().launchWinSock();
 
-	MyQueue<RobotCoord> fromOtherProcesToFanuc("from client to robot"), fromFanucToOtherProces("from robot to client");
+    // Queue with coordinates from client to robot.
+    MyQueue<RobotCoord> fromOtherProcesToFanuc("from client to robot");
+    
+    // Queue with coordinates from robot to client.
+    MyQueue<RobotCoord> fromFanucToOtherProces("from robot to client");
 
-
+    // Comunication with fanuc.
 	RobotConnect<RobotCoord> fanuc("sets.txt", &fromOtherProcesToFanuc, &fromFanucToOtherProces);
-	//кдасс общения с роботом фанук
 	
 	fanuc.startMainLoop();
 
+    // Initialize server.
 	ServerTCP<RobotCoord> serv(9997, 1000);
 
 	serv.supportOneConnection(&fromFanucToOtherProces, &fromOtherProcesToFanuc);
 
+    //control commands
 	while (true) {
 		if (_kbhit()) {
 			const int c = _getch();
-			if (c == '+') {
-				std::string comand;
-				std::getline(std::cin, comand);
-				if (comand == "exit") {
-					break;
-				} if (comand == "restart") {
-					fanuc.restartMainLoop();
-				}
+			if (c == '+')
+            {
+				break;
 			}
+            if (c == '-')
+            {
+                fanuc.restartMainLoop();
+            }
 		}
-		Sleep(5);
+		Sleep(20);
 	}
+
+    serv.stopServer();
 
 	fanuc.stopMainLoop();
 
-	SocketWorking::getInstance().deintialise();
+	SocketWorking::getInstance().closeWinSock();
 
 	return 0;
 }
