@@ -5,8 +5,8 @@
 #include <chrono>
 
 #include "WinsockInterface.h"
-#include "RobotData.h"
 #include "Utilities.h"
+#include "RobotData.h"
 #include "Handler.h"
 
 
@@ -20,14 +20,9 @@ class Client : public WinsockInterface
 {
 public:
 	/**
-	 * \brief Array of coordinates type.
+	 * \brief Simplify coordinate system enum.
 	 */
-	enum class CoordinateType
-	{
-		JOINT = 0,
-		WORLD = 2
-	};
-
+	typedef Handler::CoordinateSystem CoordinateSystem;
 
 protected:
 	/**
@@ -99,6 +94,21 @@ protected:
 	CirclicState		_circlicState;
 
 	/**
+	 * \brief Logger used to write received data to file.
+	 */
+	logger::Logger      _logger;
+
+	/**
+	 * \brief Default file name for input.
+	 */
+	static constexpr char   _DEFAULT_IN_FILE_NAME[]     = "in.txt";
+
+	/**
+	 * \brief Default file name for output.
+	 */
+	static constexpr char   _DEFAULT_OUT_FILE_NAME[]    = "out.txt";
+
+	/**
 	 * \brief Default value for server IP.
 	 */
 	static constexpr char		_DEFAULT_SERVER_IP[]	= "192.168.0.21";
@@ -135,7 +145,7 @@ protected:
 
 
 	/**
-	 * \brief Function tries to establishe a connection to a specified socket again.
+	 * \brief Try to establishe a connection to a specified socket again.
 	 */
 	void		tryReconnect();
 
@@ -151,7 +161,7 @@ protected:
 	void		checkConnection(const std::atomic_int64_t& time);
 
 	/**
-	 * \brief							Function works with robot in circlic mode.
+	 * \brief							Work with robot in circlic mode.
 	 * \details							Now function works only with 2 points!
 	 * \param[in] firstPoint			First point to send and in which robot should return.
 	 * \param[in] secondPoint			Second point for circlic movement.
@@ -161,7 +171,7 @@ protected:
 								  const std::size_t numberOfIterations = 1u);
 
 	/**
-	 * \brief					Function works with robot in partial mode.
+	 * \brief					Work with robot in partial mode.
 	 * \details					Now function works only with 2 points!
 	 * \param[in] firstPoint	Start point.
 	 * \param[in] secondPoint	End point.
@@ -222,19 +232,19 @@ public:
 
 
 	/**
-	 * \brief	Function returns server IP address.
+	 * \brief	Get server IP address.
 	 * \return	String which contains current server IP address.
 	 */
 	std::string getServerIP() const;
 
 	/**
-	 * \brief					Function sets server IP address.
+	 * \brief					Set server IP address.
 	 * \param[in] newServerIP	New server IP address as string.
 	 */
 	void		setServerIP(const std::string_view newServerIP);
 
 	/**
-	 * \brief	Function returns current duration.
+	 * \brief	Get current duration.
 	 * \return	Measured time between start point and some event.
 	 */
 	std::chrono::duration<double> getDuration() const;
@@ -250,7 +260,7 @@ public:
 	void		launch() override;
 
 	/**
-	 * \brief							Function launches thread for circlic processing and
+	 * \brief							Launch thread for circlic processing and
 	 *									forwards parameters.
 	 * \details							Now function works only with 2 points!
 	 * \param[in] firstPoint			First point to send and in which robot should return.
@@ -264,7 +274,7 @@ public:
 								const std::size_t numberOfIterations);
 
 	/**
-	 * \brief					Function launches thread for partial processing and 
+	 * \brief					Launch thread for partial processing and 
 	 *							forwards parameters.
 	 * \details					Now function works only with 2 points!
 	 * \param[in] firstPoint	Start point.
@@ -283,7 +293,7 @@ public:
 	void		receive();
 
 	/**
-	 * \brief				Function checks if given point is not out of working coordinates.
+	 * \brief				Check if given point is not out of working coordinates.
 	 * \param[in] robotData	Point to check.
 	 * \return				True if point is correct, false otherwise.
 	 */
@@ -291,17 +301,17 @@ public:
 
 
 	/**
-	 * \brief				Function checks coordinates and if it's right sends to robot.
+	 * \brief				Check coordinates and if it's right sends to robot.
 	 * \param[in] robotData Point to send.
 	 * \return				True if coordinates sent, false otherwise.
 	 */
 	bool		sendCoordinates(const RobotData& robotData);
 
 	/**
-	 * \brief						Function sends coordinate system to robot.
+	 * \brief						Send coordinate system to robot.
 	 * \param[in] coordinateType	Coordinate system to send.
 	 */
-	void		sendCoordinateType(const CoordinateType coordinateType) const;
+	void		sendCoordinateType(const CoordinateSystem coordinateType) const;
 
 
 	// Friendly swapping fuction.

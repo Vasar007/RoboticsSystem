@@ -125,7 +125,7 @@ void ModClient::partialMovementMod(const vasily::RobotData& firstPoint,
 		}
 	}
 
-	if (robotData != secondPoint && checkCoordinates(secondPoint) && isRight)
+	if (isRight &&  checkCoordinates(secondPoint) && robotData != secondPoint)
 	{
 		mStorage.push_back(secondPoint.toString());
 	}

@@ -19,7 +19,8 @@ Client::Client(const int serverPort, const std::string_view serverIP)
 	  _duration(),
 	  _waitAnswer(),
 	  _isNeedToWait(false),
-	  _circlicState()
+	  _circlicState(),
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
 {
 }
 
@@ -36,7 +37,8 @@ Client::Client(const int serverPortSending, const int serverReceiving,
 	  _duration(),
 	  _waitAnswer(),
 	  _isNeedToWait(false),
-	  _circlicState()
+	  _circlicState(),
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
 {
 }
 
@@ -49,7 +51,8 @@ Client::Client(Client&& other) noexcept
 	  _start(other._start),
 	  _waitAnswer(other._waitAnswer),
 	  _isNeedToWait(other._isNeedToWait ? true : false),
-	  _circlicState(other._circlicState)
+	  _circlicState(other._circlicState),
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
 {
 	utils::swap(*this, other);
 }
@@ -65,7 +68,9 @@ Client& Client::operator=(Client&& other) noexcept
 
 void Client::receive()
 {
-	utils::println("\n\n\nThread started...\n");
+	utils::println(std::cout, "\n\n\nThread started...\n");
+
+	_logger.write("\n\nClient launched at", utils::getCurrentSystemTime());
 
 	std::string dataBuffer;
 	std::size_t count = 0u;
@@ -81,27 +86,12 @@ void Client::receive()
 
 		if (_isNeedToWait)
 		{
-			RobotData robotData;
-			std::vector<std::string> strStorage;
-			utils::split(dataBuffer, strStorage);
-				
-			std::size_t countForCoords = 0u;
-			for (const auto& str : strStorage)
-			{
-				if (utils::isCorrectNumber(str))
-				{
-					robotData.mCoordinates.at(countForCoords) = utils::stringToInt(str);
-					++countForCoords;
-
-					if (countForCoords > 5u)
-					{
-						break;
-					}
-				}
-			}
-
 			// NEED TO DO AFTER DANILA REFACTORING.
-			///if (robotData == _waitAnswer)
+			//RobotData robotData;
+			//bool flag;
+			//robotData = utils::fromString<RobotData>(dataBuffer, flag);
+
+			///if (flag && robotData == _waitAnswer)
 			{
 				_isNeedToWait = false;
 				switch (_circlicState)
@@ -128,7 +118,10 @@ void Client::receive()
 
 		++count;
 		_duration = std::chrono::steady_clock::now() - _start;
-		utils::println(count, "Duration:", _duration.count(), "seconds");
+		utils::println(std::cout, count, "Duration:", _duration.count(), "seconds");
+
+		_logger.write(_message, '-', dataBuffer);
+		_logger.write(count, "Duration:", _duration.count(), "seconds");
 	}
 }
 
@@ -165,7 +158,7 @@ void Client::waitLoop()
 	///std::thread checkThread(&Client::checkConnection, this, std::cref(time));
 	///checkThread.detach();
 
-	utils::println("\n\n\nWaiting for reply...\n");
+	utils::println(std::cout, "\n\n\nWaiting for reply...\n");
 
 	while (true)
 	{
@@ -174,27 +167,14 @@ void Client::waitLoop()
 		switch (_handler.getCurrentMode())
 		{
 			case Handler::Mode::READING:
-				utils::print("Enter coordinates or to change mode enter '=':");
+				utils::print(std::cout, "Enter coordinates or to change mode enter '=':");
 				std::getline(std::cin, input);
 
 				_handler.parseRawData(input, _robotData);
 
 				if (_handler.getCurrentState() == Handler::State::COORDINATE_TYPE)
 				{
-					switch (_handler.getCoordinateSystem())
-					{
-						case Handler::CoorninateSystem::JOINT:
-							sendData(_socketSend, "1");
-							break;
-
-						case Handler::CoorninateSystem::WORLD:
-							sendData(_socketSend, "2");
-							break;
-
-						default:
-							assert(false);
-							break;
-					}
+					sendCoordinateType(_handler.getCoordinateSystem());
 				}
 				else if (_handler.getCurrentState() == Handler::State::FULL_CONTROL)
 				{
@@ -203,27 +183,14 @@ void Client::waitLoop()
 				break;
 
 			case Handler::Mode::COMMAND:
-				utils::print("Enter command or to change mode enter '=':");
+				utils::print(std::cout, "Enter command or to change mode enter '=':");
 				std::getline(std::cin, input);
 
 				_handler.appendCommand(input, _robotData);
 
 				if (_handler.getCurrentState() == Handler::State::COORDINATE_TYPE)
 				{
-					switch (_handler.getCoordinateSystem())
-					{
-						case Handler::CoorninateSystem::JOINT:
-							sendData(_socketSend, "1");
-							break;
-
-						case Handler::CoorninateSystem::WORLD:
-							sendData(_socketSend, "2");
-							break;
-						
-						default: 
-							assert(false);
-							break;
-					}
+					sendCoordinateType(_handler.getCoordinateSystem());
 				}
 				else if (_handler.getCurrentState() == Handler::State::CIRCLIC)
 				{
@@ -240,6 +207,20 @@ void Client::waitLoop()
 				else if (_handler.getCurrentState() == Handler::State::HOME)
 				{
 					sendCoordinates(_DEFAULT_POSITION);
+				}
+				else if (_handler.getCurrentState() == Handler::State::FROM_FILE)
+				{
+					_robotData = _logger.read<RobotData>();
+					if (!_logger.hasAnyInputErrors())
+					{
+						sendCoordinates(_robotData);
+					}
+					else
+					{
+						utils::println(std::cout, "ERROR 06: Some error occurred in input stream!",
+									   "Input stream will be restarted.");
+						_logger.restartStream(logger::Logger::TypeStream::INPUT_STREAM);
+					}
 				}
 				else if (_handler.getCurrentState() != Handler::State::DEFAULT)
 				{
@@ -376,7 +357,6 @@ void Client::partialProcessing(const RobotData& firstPoint, const RobotData& sec
 	const RobotData directionalVector	= (secondPoint - firstPoint) / numberOfSteps;
 	RobotData robotData					= firstPoint;
 
-
 	if (!sendCoordinates(firstPoint))
 	{
 		return;
@@ -405,12 +385,12 @@ bool Client::checkCoordinates(const RobotData& robotData) const
 {
 	for (std::size_t i = 0u; i < _MAIN_COORDINATES; ++i)
 	{
-		if (robotData.mCoordinates.at(i) < _MIN_COORDS.at(i))
+		if (robotData.coordinates.at(i) < _MIN_COORDS.at(i))
 		{
 			return false;
 		}
 
-		if (robotData.mCoordinates.at(i) > _MAX_COORDS.at(i))
+		if (robotData.coordinates.at(i) > _MAX_COORDS.at(i))
 		{
 			return false;
 		}
@@ -428,24 +408,24 @@ bool Client::sendCoordinates(const RobotData& robotData)
 		return true;
 	}
 	
-	utils::println("ERROR 04: Incorrect coordinates to send!", robotData.toString());
+	utils::println(std::cout, "ERROR 04: Incorrect coordinates to send!", robotData.toString());
 	return false;
 }
 
-void Client::sendCoordinateType(const CoordinateType coordinateType) const
+void Client::sendCoordinateType(const CoordinateSystem coordinateType) const
 {
 	switch (coordinateType)
 	{
-		case CoordinateType::JOINT:
+		case CoordinateSystem::JOINT:
 			sendData(_socketSend, "1");
 			break;
 		
-		case CoordinateType::WORLD:
+		case CoordinateSystem::WORLD:
 			sendData(_socketSend, "2");
 			break;
 		
 		default:
-			utils::println("ERROR 05: Incorrect coordinate system to send!");
+			utils::println(std::cout, "ERROR 05: Incorrect coordinate system to send!");
 			break;
 	}
 }

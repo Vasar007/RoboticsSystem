@@ -57,7 +57,7 @@ public:
 						   const int backlog = 10);
 
 	/**
-	 * \brief					Function receives data from receiving socket.
+	 * \brief					Receiv data from receiving socket.
 	 * \param[in] numberOfTimes Number of times to allow connections.
 	 */
 	void		receiveDataNTimes(const std::size_t numberOfTimes);

@@ -1,8 +1,10 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
-#include "Utility.h"
-#include "Print.h"
-#include "Parsing.h"
+#include "Extension Functions/Utility.h"
+#include "Extension Functions/Print.h"
+#include "Extension Functions/Parsing.h"
+
+#include "Logger/Logger.h"
 
 #endif // UTILITIES_H

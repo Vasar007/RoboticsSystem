@@ -15,38 +15,47 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Utility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Print.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Parsing.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Extension Functions\Parsing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Extension Functions\Print.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Extension Functions\Utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Logger\Logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Source\Utility.inl">
+    <None Include="Source\Extension Functions\Parsing.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="Source\Print.inl">
+    <None Include="Source\Extension Functions\Print.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="Source\Parsing.inl">
+    <None Include="Source\Extension Functions\Utility.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Source\Logger\Logger.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Utility.cpp">
+    <ClCompile Include="Source\Extension Functions\Parsing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Print.cpp">
+    <ClCompile Include="Source\Extension Functions\Print.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Parsing.cpp">
+    <ClCompile Include="Source\Extension Functions\Utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Logger\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

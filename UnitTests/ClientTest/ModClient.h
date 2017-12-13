@@ -30,7 +30,7 @@ public:
 	/**
 	 * \brief Constant number of server IP.
 	 */
-	static constexpr char	SERVER_IP[]				= "192.168.0.105";
+	static constexpr char	SERVER_IP[]				= "192.168.0.100";
 
 	/**
 	 * \brief Mutex to lock thread for safety.
@@ -59,20 +59,20 @@ public:
 						  const std::string_view serverIP = SERVER_IP);
 
 	/**
-	 * \brief					Function receives data from receiving socket.
+	 * \brief					Receive data from receiving socket.
 	 * \details					Create additional thread to receive data from sercer.
 	 * \param[in] numberOfTimes Number of times to allow connections.
 	 */
 	void		receiveDataNTimes(const std::size_t numberOfTimes);
 
 	/**
-	 * \brief				Function checks coordinates and if it's right sends to robot.
+	 * \brief				Check coordinates and if it's right sends to robot.
 	 * \param[in] robotData Point to send.
 	 */
 	void		sendCoordinatesMod(const vasily::RobotData& robotData);
 
 	/**
-	 * \brief							Function launches thread for circlic processing and
+	 * \brief							Launch thread for circlic processing and
 	 *									forwards parameters.
 	 * \details							Now function works only with 2 points!
 	 * \param[in] firstPoint			First point to send and in which robot should return.
@@ -85,7 +85,7 @@ public:
 
 
 	/**
-	 * \brief					Function launches thread for partial processing and
+	 * \brief					Launch thread for partial processing and
 	 *							forwards parameters.
 	 * \details					Now function works only with 2 points!
 	 * \param[in] firstPoint	Start point.

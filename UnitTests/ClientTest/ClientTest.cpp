@@ -7,7 +7,7 @@ namespace clientTests
 {
 
 /**              
- * \brief                   Function initializes server and launches it in detached thread.
+ * \brief                   Initialize server and launches it in detached thread.
  * \param[out] testServer   Thread to launch.
  * \param[in] numberOfTimes Number of times to allow connections.
  */
@@ -20,7 +20,7 @@ void initTestServer(TestServer& testServer, const std::size_t numberOfTimes = 1u
 }
 
 /**
- * \brief                   Function initialized client, sends data to server and launch receiving
+ * \brief                   Initialize client, sends data to server and launch receiving
  *                          thread for client.
  * \tparam Functor          Type of functor object.
  * \param[out] client       Client to launch.
@@ -43,13 +43,13 @@ void ClientTest::testMethod1()
 {
 	TestServer testServer;
 
-	std::thread serverThread(initTestServer, std::ref(testServer), 2u);
+	std::thread serverThread(initTestServer, std::ref(testServer), 1u + 1u);
 	serverThread.detach();
 	
 	ModClient client;
 	initClient(client, [&client]()
 	{	
-		client.sendCoordinateType(ModClient::CoordinateType::WORLD);
+		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
 		constexpr std::atomic_int64_t waitingTime = 10LL;
 		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 
@@ -85,7 +85,7 @@ void ClientTest::testMethod2()
 	ModClient client;
 	initClient(client, [&client]()
 	{
-		client.sendCoordinateType(ModClient::CoordinateType::WORLD);
+		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
 		constexpr std::atomic_int64_t waitingTime = 10LL;
 		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 
@@ -127,7 +127,7 @@ void ClientTest::testMethod3()
 	ModClient client;
 	initClient(client, [&client]()
 	{
-		client.sendCoordinateType(ModClient::CoordinateType::WORLD);
+		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
 		constexpr std::atomic_int64_t waitingTime = 25LL;
 		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 	
@@ -175,7 +175,7 @@ void ClientTest::testMethod4()
 	ModClient client;
 	initClient(client, [&client]()
 	{
-		client.sendCoordinateType(ModClient::CoordinateType::WORLD);
+		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
 		constexpr std::atomic_int64_t waitingTime = 25LL;
 		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 
