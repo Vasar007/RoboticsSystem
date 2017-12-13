@@ -7,7 +7,7 @@
 #include<string>
 #include<algorithm>
 
-//структура общения с Robot FANUC
+// структура общения с Robot FANUC
 struct RobotCoord 
 {
 	int _xr, _yr, _zr, _uw, _up, _uz, _segTime, _typeOfMoving, _control;
@@ -16,7 +16,7 @@ struct RobotCoord
 		_xr = _yr = _zr = _uw = _up = _uz = _segTime = _typeOfMoving = _control = -1;
 	}
 
-	//преобразуют структуру в строку
+	// преобразуют структуру в строку
 	std::string toString() const
 	{
 		char locBuf[128];
@@ -25,7 +25,7 @@ struct RobotCoord
 		return static_cast<std::string>(locBuf);
 	}
 
-	//рассчет модуля вектора между кординатами
+	// рассчет модуля вектора между кординатами
 	double difference(const RobotCoord& rc) const
 	{
 		return sqrt((_xr - rc._xr)*(_xr - rc._xr) +
@@ -57,5 +57,5 @@ inline std::istream& operator >> (std::istream& in, RobotCoord& rc)
 }
 
 
-#endif // !CONTIENERS
+#endif //  !CONTIENERS
 

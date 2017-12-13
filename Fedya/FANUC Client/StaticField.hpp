@@ -1,44 +1,45 @@
-#ifndef MY_STATIC_FIELD
-#define MY_STATIC_FIELD
-#pragma once
+#ifndef STATIC_FIELD_H
+#define STATIC_FIELD_H
 
 #include "Field.hpp"
 
 /**
-* \brief Namespace of thread protected conosole inteface.
+* \brief Namespace of thread protected console interface.
 */
 namespace myInterface
 {
+
+/**
+ * \brief       Class for continuously showing field with changeable information.
+ * \tparam T    Type of information.
+ */
+template<typename T>
+class StaticField:public Field<T>
+{
+private:
+
 	/**
-	 * \brief Class for continuously showing field with changeable information.
-	 * \tparam T Type of infirmation.
+	 * \brief Id of this field.
 	 */
-	template<typename T>
-	class StaticField:public Field<T>
-	{
+	int _id;
 
-		/**
-		 * \brief Position of this field in storage.
-		 */
-		int _pos;
+public:
+	
+    /**
+	 * \brief               Constructor with adding this field to storage
+	 * \param[in] str       Description of this field.
+	 * \param[in] object    Object for showing.
+	 */
+	explicit StaticField(const std::string& str,const T& object);
 
-	public:
-		/**
-		 * \brief Constructor with adding this field to storrage
-		 * \param str Discription of this field.
-		 * \param object Object for showing.
-		 */
-		StaticField(std::string str, T object);
-
-		/**
-		 * \brief Distructor with erasing this field from storrage.
-		 */
-		~StaticField();
-	};
-
+	/**
+	 * \brief Destructor with erasing this field from storage.
+	 */
+	~StaticField();
+};
 	
 }
 
-#include "StaticFieldDifinition.inl"
+#include "StaticField.inl"
 
-#endif
+#endif // STATIC_FIELD_H 

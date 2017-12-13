@@ -1,25 +1,12 @@
-#include "SocketWorking.hpp"
-
 #include<Ws2tcpip.h>
 #include <winsock2.h>
-#include<iostream>
 
+#include "SocketWorking.hpp"
 #include "MyShower.hpp"
 
 SocketWorking::SocketWorking()
 {
-	_isInitialised = false;
-}
-
-inline SocketWorking::SocketWorking(const SocketWorking&)
-{
-	_isInitialised = false;
-}
-
-inline SocketWorking& SocketWorking::operator=(SocketWorking&)
-{
-	_isInitialised = false;
-	return getInstance();
+	_isInitialized = false;
 }
 
 SocketWorking& SocketWorking::getInstance()
@@ -28,31 +15,29 @@ SocketWorking& SocketWorking::getInstance()
 	return instance;
 }
 
-int SocketWorking::initialise()
+int SocketWorking::launchWinSock()
 {
-	if (!_isInitialised)
+	if (!_isInitialized)
 	{
 		char buff[sizeof(WSADATA)];
-		if (WSAStartup(0x202, reinterpret_cast<WSADATA *>(buff)))
-			//вызываем включение библиотеки работы с сокетами, инициализация WinsockAPI
+		if (WSAStartup(0x202, reinterpret_cast<WSADATA*>(buff)))
 		{
 			myInterface::MyShower::getInstance().addLog("WSAStart error: ", WSAGetLastError());
-			//std::cout << "WSAStart error %d" << WSAGetLastError() << std::endl;
 			return 1;
 		}
-		_isInitialised = true;
+		_isInitialized = true;
 		return 0;
 	}
 	return 2;
 }
 
 
-int SocketWorking::deintialise()
+int SocketWorking::closeWinSock()
 {
-	if (_isInitialised)
+	if (_isInitialized)
 	{
 		WSACleanup();
-		_isInitialised = false;
+		_isInitialized = false;
 		return 0;
 	}
 	return 1;
@@ -61,8 +46,10 @@ int SocketWorking::deintialise()
 
 SOCKET SocketWorking::getFreeSocket()
 {
-	if (!_isInitialised)
-		initialise();
+	if (!_isInitialized)
+	{
+		launchWinSock();
+	}
 	const SOCKET ans = socket(AF_INET, SOCK_STREAM, 0);
 	return ans;
 }
@@ -70,62 +57,89 @@ SOCKET SocketWorking::getFreeSocket()
 
 void SocketWorking::deleteSocket(SOCKET& soc)
 {
-	if (!_isInitialised)
-		initialise();
+	if (!_isInitialized)
+	{
+		launchWinSock();
+	}
 	closesocket(soc);
 	soc = INVALID_SOCKET;
 }
 
 
 
-SOCKET SocketWorking::connectToRobotServer(const char* serveraddr, int port, int disconnectTime2)
+SOCKET SocketWorking::getConnectedSocket(const char* serveraddr, int port, int disconnectTime2)
 {
-	if (!_isInitialised)
-		initialise();
-	const SOCKET ans = getFreeSocket();
-	unsigned long value = 1;
-	if (ioctlsocket(ans, FIONBIO, &value) == SOCKET_ERROR)
+    // Initializing.
+	if (!_isInitialized)
+	{
+		launchWinSock();
+	}
+	
+    // New SOCKET.
+    const SOCKET ans = getFreeSocket();
+	
+    // Type of blocking SOCKET.
+    unsigned long value = 1;
+	
+    // Set SOCKET to non-blocking mode.
+    if (ioctlsocket(ans, FIONBIO, &value) == SOCKET_ERROR)
 		return INVALID_SOCKET;
 
+    // Getting address of server.
 	sockaddr_in destAddr;
 	destAddr.sin_family = AF_INET;
 	destAddr.sin_port = htons(static_cast<u_short>(port));
 	inet_pton(AF_INET, serveraddr, &destAddr.sin_addr);
 
-	// адрес сервера получен – пытаемся установить соединение 
+	// Launching connection.
 	if (connect(ans, reinterpret_cast<sockaddr *>(&destAddr), sizeof destAddr) == SOCKET_ERROR)
 	{
-		//std::cout << "Connect error " << WSAGetLastError() << std::endl;
-		//system("pause");
+		// Get previous error.
 		const int result = WSAGetLastError();
-		if (result == WSAEWOULDBLOCK)
+		
+        // If server don't wait connection.
+        if (result == WSAEWOULDBLOCK)
 		{
+            // Collections of SOCKETS.
 			fd_set write, err;
-			TIMEVAL timeout;
-			const int timeoutSec = 2 * disconnectTime2 / 1000; // timeout after 10 seconds
 
-			FD_ZERO(&write);
+            // Struct for setting time.
+			TIMEVAL timeout;
+
+			// Filling sets.
+            FD_ZERO(&write);
 			FD_ZERO(&err);
 			FD_SET(ans, &write);
 			FD_SET(ans, &err);
 
 
-			timeout.tv_sec = timeoutSec;
-			timeout.tv_usec = 0;
+            // Timeout in seconds.
+			timeout.tv_sec = disconnectTime2 / 1000;
+			
+            // Timeout in miliseconds.
+            timeout.tv_usec = disconnectTime2 % 1000;
 
-			const int iResult = select(0, //ignored
-				nullptr, //read
-				&write, //Write Check
-				&err, //Error Check
+            // Checking sets of SOCKETs.
+			const int iResult = select(0, // ignored
+				nullptr, // read
+				&write, // Write Check
+				&err, // Error Check
 				&timeout);
+
+            // If no SOCKETS find.
 			if (iResult == 0)
 			{
 				WSASetLastError(result);
 				return INVALID_SOCKET;
 			}
-			if (FD_ISSET(ans, &write))
-				return ans;
 
+            // If find writable SOCKET.
+			if (FD_ISSET(ans, &write))
+			{
+				return ans;
+			}
+
+            // If find error SOCKET.
 			if (FD_ISSET(ans, &err))
 			{
 				WSASetLastError(result);
@@ -134,9 +148,12 @@ SOCKET SocketWorking::connectToRobotServer(const char* serveraddr, int port, int
 		}
 		else
 		{
+            // If another error -> return it.
 			WSASetLastError(result);
 			return INVALID_SOCKET;
 		}
 	}
+
+    // If we connect successfully.
 	return ans;
 }

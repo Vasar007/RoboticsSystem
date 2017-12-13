@@ -1,12 +1,5 @@
 #include"MyThread.hpp"
 
-template <typename Fn, typename ... Args>
-MyThread::MyThread(Fn&& fn, Args&&... arg)
-{
-	//starting new thread
-	startThread(fn, arg);
-}//не работает
-
 inline void MyThread::swap(std::thread& th)
 {
 	_work.swap(th);
@@ -22,7 +15,7 @@ bool MyThread::joinable() const
 	return _work.joinable();
 }
 
-void MyThread::join()
+void MyThread::closeThread()
 {
 	if (joinable())
 	{
@@ -35,5 +28,5 @@ void MyThread::join()
 
 MyThread::~MyThread()
 {
-	join();
-}//*/
+	closeThread();
+}
