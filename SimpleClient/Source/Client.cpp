@@ -385,12 +385,12 @@ bool Client::checkCoordinates(const RobotData& robotData) const
 {
 	for (std::size_t i = 0u; i < _MAIN_COORDINATES; ++i)
 	{
-		if (robotData.mCoordinates.at(i) < _MIN_COORDS.at(i))
+		if (robotData.coordinates.at(i) < _MIN_COORDS.at(i))
 		{
 			return false;
 		}
 
-		if (robotData.mCoordinates.at(i) > _MAX_COORDS.at(i))
+		if (robotData.coordinates.at(i) > _MAX_COORDS.at(i))
 		{
 			return false;
 		}

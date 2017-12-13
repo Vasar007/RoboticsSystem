@@ -267,51 +267,51 @@ void Handler::appendCommand(const std::string_view command, RobotData& robotData
 			break;
 
 		case State::FORWARD:
-			robotData.mCoordinates.at(X) += _coefficient;
+			robotData.coordinates.at(X) += _coefficient;
 			break;                    
 									  
 		case State::BACK:             
-			robotData.mCoordinates.at(X) -= _coefficient;
+			robotData.coordinates.at(X) -= _coefficient;
 			break;                    
 									  
 		case State::LEFT:             
-			robotData.mCoordinates.at(Y) += _coefficient;
+			robotData.coordinates.at(Y) += _coefficient;
 			break;                    
 									  
 		case State::RIGHT:            
-			robotData.mCoordinates.at(Y) -= _coefficient;
+			robotData.coordinates.at(Y) -= _coefficient;
 			break;                    
 									  
 		case State::UP:               
-			robotData.mCoordinates.at(Z) += _coefficient;
+			robotData.coordinates.at(Z) += _coefficient;
 			break;                    
 									  
 		case State::DOWN:             
-			robotData.mCoordinates.at(Z) -= _coefficient;
+			robotData.coordinates.at(Z) -= _coefficient;
 			break;                        
 									  
 		case State::ROLL_PLUS:        
-			robotData.mCoordinates.at(W) += _coefficient;
+			robotData.coordinates.at(W) += _coefficient;
 			break;                    
 									  
 		case State::ROLL_MINUS:       
-			robotData.mCoordinates.at(W) -= _coefficient;
+			robotData.coordinates.at(W) -= _coefficient;
 			break;                    
 									  
 		case State::PITHCH_PLUS:      
-			robotData.mCoordinates.at(P) += _coefficient;
+			robotData.coordinates.at(P) += _coefficient;
 			break;                    
 									  
 		case State::PITHCH_MINUS:     
-			robotData.mCoordinates.at(P) -= _coefficient;
+			robotData.coordinates.at(P) -= _coefficient;
 			break;                    
 									  
 		case State::YAW_PLUS:         
-			robotData.mCoordinates.at(R) += _coefficient;
+			robotData.coordinates.at(R) += _coefficient;
 			break;                    
 									  
 		case State::YAW_MINUS:        
-			robotData.mCoordinates.at(R) -= _coefficient;
+			robotData.coordinates.at(R) -= _coefficient;
 			break;
 
 		default:

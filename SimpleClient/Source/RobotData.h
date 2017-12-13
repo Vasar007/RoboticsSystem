@@ -25,21 +25,21 @@ struct RobotData
 	/**
 	 * \brief Array which contains only coordinates or degrees.
 	 */
-	std::array<int, NUMBER_OF_COORDINATES>	mCoordinates;
+	std::array<int, NUMBER_OF_COORDINATES>	coordinates;
 
 	/**
 	 * \brief	Array which contains some parameters.
 	 * \details	Segtime (!= 0), type of moving(0 - FINE/ 2 - NOVAR+NODECEL), start/stop (0/1)
 	 */
-	std::array<int, NUMBER_OF_PARAMETERS>	mParameters;
+	std::array<int, NUMBER_OF_PARAMETERS>	parameters;
 
 
 	/**
 	 * \brief Default constructor.
 	 */
 	constexpr	RobotData() noexcept
-					: mCoordinates{ 0, 0, 0, 0, 0, 0 },
-					  mParameters{ 0, 0, 0 }
+					: coordinates{ 0, 0, 0, 0, 0, 0 },
+					  parameters{ 0, 0, 0 }
 				{
 				}
 
@@ -58,8 +58,8 @@ struct RobotData
 	constexpr	RobotData(const int x, const int y, const int z, const int w, const int p, 
 						  const int r, const int segtime, const int movingType, 
 						  const int lastCommand) noexcept
-					: mCoordinates{ x, y, z, w, p, r },
-					  mParameters{ segtime, movingType, lastCommand }
+					: coordinates{ x, y, z, w, p, r },
+					  parameters{ segtime, movingType, lastCommand }
 				{
 				}
 
