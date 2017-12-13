@@ -5,7 +5,7 @@
 void myInterface::MyShower::parallelShower(std::mutex* mt, bool* flag, MyShower* instance)
 {
     //  Nummber of shown logs.
-    auto logsShown = 0;
+    int logsShown = 0;
 
     // Struct for setting new cursor position.
 	COORD coord;
@@ -24,7 +24,7 @@ void myInterface::MyShower::parallelShower(std::mutex* mt, bool* flag, MyShower*
 		instance->_mt.lock();
 
         // Current outputting line.
-	    auto curLine = 0;
+	    int curLine = 0;
 		
 	    if (instance->_needFullUpdate)
 		{

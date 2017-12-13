@@ -55,7 +55,7 @@ int ConnectionTCP<T>::recvCoord()
 				for (; i < _stringBuffer.size() && ((_stringBuffer[i] >= '0' && _stringBuffer[i] <= '9') || _stringBuffer[i] == '-'); ++i);
 				if (i < _stringBuffer.size() && _stringBuffer[i] != ' ')
 					return _stringBuffer[i];
-				tmp++;
+				++tmp;
 			}
 			if (tmp == 9)
 			{

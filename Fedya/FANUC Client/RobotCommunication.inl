@@ -74,7 +74,7 @@ void RobotConnect<T>::receivingStream(std::mutex* mt, bool* f, RobotConnect* ins
 					sleepBonus = static_cast<int>(ins->_robotReceive->_prevCoord.difference(
                         ins->_cloneQueue.front()) / ins->_robotAssumingSpeed);
 				}
-				was++;
+				++was;
 			}
 		}
 		else

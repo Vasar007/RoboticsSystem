@@ -34,12 +34,12 @@ int RobotReceieve<T>::receiveCoord()
         // Pasing.
 		_stringBuffer += recvbuf;
 		int coordsNumber = 0;
-		for (int i = 0; i < _stringBuffer.size(); i++)
+		for (int i = 0; i < _stringBuffer.size(); ++i)
 		{
 			if (_stringBuffer[i] != ' ')
 			{
 				while (i < _stringBuffer.size() && _stringBuffer[i] != ' ')
-					i++;
+					++i;
 				if (i < _stringBuffer.size() && _stringBuffer[i] == ' ')
 					++coordsNumber;
 			}
