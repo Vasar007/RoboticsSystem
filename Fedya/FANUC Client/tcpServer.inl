@@ -1,49 +1,49 @@
-#ifndef TCP_SERVER_DIFINTION
-#define TCP_SERVER_DIFINTION
-#pragma once
+#ifndef TCP_SERVER_INL
+#define TCP_SERVER_INL
 
 #include<Ws2tcpip.h>
+
 #include "SocketWorking.hpp"
 
-static addrinfo* serverAddr22;
+static addrinfo* SERVER_ADDR22;
 
 template <typename T>
 int ServerTCP<T>::initialise(int port)
 {
+    // Luanching main SOCKET.
 	_statusField.setObject("intialising");
 	_sockMain = SocketWorking::getInstance().getFreeSocket();
 	if (_sockMain == INVALID_SOCKET)
 	{
-		//freeaddrinfo(server_addr);
 		return WSAGetLastError();
 	}
-	//creating socket
 
+    // Creating address.
 	sockaddr_in destAddr;
 	destAddr.sin_family = AF_INET;
 	destAddr.sin_port = htons(static_cast<u_short>(port));
 	destAddr.sin_addr.s_addr = INADDR_ANY;
 
+    // binding socket
 	if (bind(_sockMain, reinterpret_cast<sockaddr *>(&destAddr), sizeof(destAddr)) < 0)
 	{
 		closesocket(_sockMain);
 		_sockMain = INVALID_SOCKET;
-		std::cout << WSAGetLastError();
 		return WSAGetLastError();
 	}
-	//binding socket
 
+	// let socket be connetable
 	if (listen(_sockMain, SOMAXCONN) < 0)
 	{
 		closesocket(_sockMain);
 		_sockMain = INVALID_SOCKET;
 		return WSAGetLastError();
 	}
-	//let socket be connetable
 
-	freeaddrinfo(serverAddr22);
-	//cleaning addres
-	return 0;
+	// cleaning addres
+	freeaddrinfo(SERVER_ADDR22);
+	
+    return 0;
 }
 
 template <typename T>
@@ -68,7 +68,7 @@ void ServerTCP<T>::recieveThread(std::mutex* mt, bool* f, ServerTCP* ins)
 template <typename T>
 void ServerTCP<T>::sendThread(std::mutex* mt, bool* f, ServerTCP* ins)
 {
-	ins->_prevRecieve = clock();
+	ins->_prevRecieveTime = clock();
 	while (true)
 	{
 		mt->lock();
@@ -80,18 +80,22 @@ void ServerTCP<T>::sendThread(std::mutex* mt, bool* f, ServerTCP* ins)
 		mt->unlock();
 
 		if (ins->_curConnectedClient->recvCoord() == 0)
-			ins->_prevRecieve = clock();
+		{
+			ins->_prevRecieveTime = clock();
+		}
 
-		if (clock() - ins->_prevRecieve > ins->_timeOut)
+		if (clock() - ins->_prevRecieveTime > ins->_timeOut)
+		{
 			ins->_connected = false;
+		}
 
 		Sleep(10);
 	}
 }
 
 template <typename T>
-void ServerTCP<T>::oneConnectionThread(std::mutex* mt, bool* f, ServerTCP* instance, MyQueue<T>* sendQueue,
-	MyQueue<T>* recieveQueue)
+void ServerTCP<T>::oneConnectionSupportThread(std::mutex* mt, bool* f, ServerTCP* instance,
+    MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 {
 	while (true)
 	{
@@ -102,24 +106,30 @@ void ServerTCP<T>::oneConnectionThread(std::mutex* mt, bool* f, ServerTCP* insta
 			break;
 		}
 		mt->unlock();
-		if (!instance->_socketConnectionsQueue.empty())
+	
+	    if (!instance->_socketConnectionsQueue.isEmpty())
 		{
 			instance->stopServer();
 			instance->forceAccept(sendQueue, recieveQueue);
 			instance->_connected = true;
 		}
-		Sleep(10);
+		
+	    Sleep(10);
 	}
 }
 
 template <typename T>
 void ServerTCP<T>::paralelAcceptThread(std::mutex* mt, bool* f, ServerTCP* instance)
 {
+    // Set SOCKET in non-blocking mode.
 	unsigned long value = 1;
 	ioctlsocket(instance->_sockMain, FIONBIO, &value);
 
+    // Collection of SSOCKETs.
 	fd_set sSet = { 1,{ instance->_sockMain } };
-	timeval timeout = { instance->_timeOut / 500, 0 };
+	
+    // Time structure.
+    timeval timeout = { instance->_timeOut / 500, 0 };
 	while (true)
 	{
 		mt->lock();
@@ -129,22 +139,31 @@ void ServerTCP<T>::paralelAcceptThread(std::mutex* mt, bool* f, ServerTCP* insta
 			break;
 		}
 		mt->unlock();
+
+        // Set SOCKET.
 		sSet.fd_count = 1;
-		const int selectRes = select(0, &sSet, nullptr, nullptr, &timeout);
+		
+	    // Check select.
+	    const int selectRes = select(0, &sSet, nullptr, nullptr, &timeout);
 		if (selectRes == SOCKET_ERROR)
 		{
 			return;
 		}
-		if (selectRes)
+		
+        // If there is read SOCKET.
+	    if (selectRes)
 		{
 			SOCKADDR_IN nsa;
 			int sizeofNsa = sizeof(nsa);
 
 			const SOCKET connectedSocket = accept(instance->_sockMain, reinterpret_cast<SOCKADDR *>(&nsa), &sizeofNsa);
 			if (connectedSocket == INVALID_SOCKET)
+			{
 				continue;
+			}
 			instance->_socketConnectionsQueue.push(connectedSocket);
 		}
+
 		Sleep(10);
 	}
 }
@@ -153,7 +172,11 @@ template <typename T>
 ServerTCP<T>::ServerTCP(int port, int timeOut)
 :_timeOut(timeOut), _statusField("Clients status: ", "no connection")
 {
-	initialise(port);
+    const int res = initialise(port);
+	if(res)
+	{
+        throw "WinSock error: " + std::to_string(res);
+	}
 	_curConnectedClient = nullptr;
 	_parallelAccept.startThread(paralelAcceptThread, this);
 }
@@ -162,7 +185,7 @@ template <typename T>
 int ServerTCP<T>::tryAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 {
 	_statusField.setObject("trying accept");
-	if (!_socketConnectionsQueue.empty())
+	if (!_socketConnectionsQueue.isEmpty())
 	{
 		SOCKET connectedSocket = _socketConnectionsQueue.front();
 		_socketConnectionsQueue.pop();
@@ -178,9 +201,9 @@ template <typename T>
 int ServerTCP<T>::forceAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 {
 	_statusField.setObject("waitingconnection");
-	while (_socketConnectionsQueue.empty())
+	while (_socketConnectionsQueue.isEmpty())
 	{
-		Sleep(100);
+		Sleep(_timeOut);
 	}
 	SOCKET connectedSocket = _socketConnectionsQueue.front();
 	_socketConnectionsQueue.pop();
@@ -194,14 +217,14 @@ int ServerTCP<T>::forceAccept(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 template <typename T>
 void ServerTCP<T>::supportOneConnection(MyQueue<T>* sendQueue, MyQueue<T>* recieveQueue)
 {
-	_supportOneConnection.startThread(oneConnectionThread, this, sendQueue, recieveQueue);
+	_supportOneConnection.startThread(oneConnectionSupportThread, this, sendQueue, recieveQueue);
 }
 
 template <typename T>
 void ServerTCP<T>::stopServer()
 {
-	_coordsInputStream.stopThread();
-	_coordsOuputStream.stopThread();
+	_coordsInputStream.closeThread();
+	_coordsOuputStream.closeThread();
 	if (_curConnectedClient != nullptr)
 	{
 		delete _curConnectedClient;
@@ -212,8 +235,8 @@ void ServerTCP<T>::stopServer()
 template <typename T>
 ServerTCP<T>::~ServerTCP()
 {
-	_parallelAccept.stopThread();
-	_supportOneConnection.stopThread();
+	_parallelAccept.closeThread();
+	_supportOneConnection.closeThread();
 	stopServer();
 }
-#endif
+#endif // TCP_SERVER_INL

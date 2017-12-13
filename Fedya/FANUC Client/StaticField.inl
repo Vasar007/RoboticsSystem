@@ -1,12 +1,11 @@
-#ifndef STATIC_FIELD_DIFINITION
-#define STATIC_FIELD_DIFINITION
-#pragma once
+#ifndef STATIC_FIELD_INL
+#define STATIC_FIELD_INL
 
 #include "MyShower.hpp"
 
 template <typename T>
-myInterface::StaticField<T>::StaticField(std::string str, T object)
-:Field<T>(str,object)
+myInterface::StaticField<T>::StaticField(const std::string& str,const T& object)
+    : Field<T>(str,object)
 {
 	_id = MyShower::getInstance().addField(this);
 }
@@ -17,4 +16,4 @@ myInterface::StaticField<T>::~StaticField()
 	MyShower::getInstance().deleteField(_id);
 }
 
-#endif
+#endif // STATIC_FIELD_INL

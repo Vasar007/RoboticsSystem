@@ -1,6 +1,5 @@
-#ifndef MY_STATIC_FIELD
-#define MY_STATIC_FIELD
-#pragma once
+#ifndef STATIC_FIELD_H
+#define STATIC_FIELD_H
 
 #include "Field.hpp"
 
@@ -9,36 +8,38 @@
 */
 namespace myInterface
 {
+
+/**
+ * \brief       Class for continuously showing field with changeable information.
+ * \tparam T    Type of information.
+ */
+template<typename T>
+class StaticField:public Field<T>
+{
+private:
+
 	/**
-	 * \brief Class for continuously showing field with changeable information.
-	 * \tparam T Type of information.
+	 * \brief Id of this field.
 	 */
-	template<typename T>
-	class StaticField:public Field<T>
-	{
+	int _id;
 
-		/**
-		 * \brief Id of this field.
-		 */
-		int _id;
+public:
+	
+    /**
+	 * \brief               Constructor with adding this field to storage
+	 * \param[in] str       Description of this field.
+	 * \param[in] object    Object for showing.
+	 */
+	explicit StaticField(const std::string& str,const T& object);
 
-	public:
-		/**
-		 * \brief Constructor with adding this field to storage
-		 * \param str Description of this field.
-		 * \param object Object for showing.
-		 */
-		StaticField(std::string str, T object);
-
-		/**
-		 * \brief Destructor with erasing this field from storage.
-		 */
-		~StaticField();
-	};
-
+	/**
+	 * \brief Destructor with erasing this field from storage.
+	 */
+	~StaticField();
+};
 	
 }
 
-#include "StaticFieldDefinition.inl"
+#include "StaticField.inl"
 
-#endif
+#endif // STATIC_FIELD_H 

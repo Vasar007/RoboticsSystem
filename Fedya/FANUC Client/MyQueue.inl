@@ -1,26 +1,32 @@
-#ifndef MY_QUEUE_DIFINITION
-#define MY_QUEUE_DIFINITION
-#pragma once
+#ifndef MY_QUEUE_INL
+#define MY_QUEUE_INL
 
 #include "MyShower.hpp"
 
 template <typename T>
-MyQueue<T>::MyQueue(std::string comment):_sizeOfQueue("Size of \"" + comment + "\": ",0),_timeDifference("Time delay in \"" + comment + "\": ",0)
+MyQueue<T>::MyQueue(const std::string& comment)
+    : _sizeOfQueue("Size of \"" + comment + "\": ",0),
+      _timeDifference("Time delay in \"" + comment + "\": ",0)
 {
 }
 
 template <typename T>
-void MyQueue<T>::push(T elem)
+void MyQueue<T>::push(const T elem)
 {
+    // Get current time.
 	clock_t t = clock();
-	_mt.lock();
+	
+    // Adding new elment.
+    _mt.lock();
 	_q.push(std::make_pair(t, elem));
 	_mt.unlock();
+
+    // Changing information in field.
 	_sizeOfQueue.setObject(_sizeOfQueue.getObject()+1);
 }
 
 template <typename T>
-bool MyQueue<T>::empty()
+bool MyQueue<T>::isEmpty()
 {
 	_mt.lock();
 	const bool ans = _q.empty();
@@ -81,7 +87,9 @@ std::pair<bool, T> MyQueue<T>::tryPull()
 	std::pair<bool, T> ans;
 	_mt.lock();
 	if (_q.empty())
+	{
 		ans.first = false;
+	}
 	else
 	{
 		ans.first = true;
@@ -93,11 +101,4 @@ std::pair<bool, T> MyQueue<T>::tryPull()
 	return ans;
 }
 
-template <typename T>
-MyQueue<T>::~MyQueue()
-{
-	while (!_q.empty())
-		_q.pop();
-}
-
-#endif
+#endif // MY_QUEUE_INL
