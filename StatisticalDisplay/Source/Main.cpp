@@ -6,6 +6,10 @@
 #include "Transmitter.h"
 
 
+/**
+ * \brief               Initialize client and launch it.
+ * \param[out] client   Client to work.
+ */
 void init(vasily::Client& client)
 {
 	utils::println(std::cout, "Console client for connecting to Fanuc M-20iA v 0.1\n");
@@ -35,11 +39,15 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Fanuc Diagram Interface");
 	window.setFramerateLimit(60u);
 
-	Transmitter transmitter(WIDTH, HEIGHT);
+	statistic::Transmitter transmitter(WIDTH, HEIGHT);
 
 	while (window.isOpen())
 	{
-		transmitter.updateVertices(client.getDuration().count());
+		if (client.isNeedToUpdate)
+		{
+			transmitter.updateVertices(client.getDuration().count(), client.getRobotData());
+			client.isNeedToUpdate = false;
+		}
 
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -47,6 +55,11 @@ int main()
 			if (event.type == sf::Event::Closed)
 			{
 				window.close();
+			}
+			else if (event.type == sf::Event::KeyPressed 
+					 && sf::Keyboard::isKeyPressed(sf::Keyboard::Delete))
+			{
+				transmitter.clear();
 			}
 		}
 

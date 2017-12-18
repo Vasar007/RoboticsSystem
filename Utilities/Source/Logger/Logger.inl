@@ -55,5 +55,4 @@ T Logger::read()
     return t;
 }
 
-
 #endif // LOGGER_INL

@@ -50,19 +50,17 @@ void ClientTest::testMethod1()
 	initClient(client, [&client]()
 	{	
 		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
-		constexpr std::atomic_int64_t waitingTime = 10LL;
-		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+		std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
 
 		client.sendCoordinatesMod({ 985'000, 0, 940'000, -180'000, 0, 0, 10, 2, 0 });
 	}, 0u);
 
 
-	constexpr std::atomic_int64_t waitingTime = 500LL;
-	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+	std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 
 	while (!testServer.mHasFinished && !client.mHasFinished)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 	}
 
 	Assert::IsTrue(testServer.mHasConnected, L"Bad connection!");
@@ -71,8 +69,6 @@ void ClientTest::testMethod1()
 	Assert::IsFalse(client.mStorage.empty(), L"There are not sent coordinates on client!");
 	
 	Assert::AreEqual(client.mStorage.at(0u), testServer.mStorage.at(0u), L"Incorrect sent data!");
-
-	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 }
 
 void ClientTest::testMethod2()
@@ -86,8 +82,7 @@ void ClientTest::testMethod2()
 	initClient(client, [&client]()
 	{
 		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
-		constexpr std::atomic_int64_t waitingTime = 10LL;
-		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+		std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
 
 		client.sendCoordinatesMod({ 829'000,	0,			940'000, -180'000, 0, 0, 10, 2, 0 });
 		client.sendCoordinatesMod({ 985'000,   -401'000,	940'000, -180'000, 0, 0, 10, 2, 0 });
@@ -101,20 +96,17 @@ void ClientTest::testMethod2()
 	}, 0u);
 
 
-	constexpr std::atomic_int64_t waitingTime = 500LL;
-	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+	std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 
 	while (!testServer.mHasFinished && !client.mHasFinished)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 	}
 
 	Assert::IsTrue(testServer.mHasConnected, L"Bad connection!");
 
 	Assert::IsTrue(testServer.mStorage.empty(), L"There are not accepted coordinates on server!");
 	Assert::IsTrue(client.mStorage.empty(), L"There are not accepted coordinates on client!");
-
-	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 }
 
 void ClientTest::testMethod3()
@@ -128,26 +120,24 @@ void ClientTest::testMethod3()
 	initClient(client, [&client]()
 	{
 		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
-		constexpr std::atomic_int64_t waitingTime = 25LL;
-		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+		std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
 	
-		constexpr std::atomic_uint NUMBER_OF_TIMES = 2u;
+		constexpr std::size_t numberOfTimes = 2u;
 		client.circlicMovementMod({ 985'000, 0,			940'000, -180'000, 0,	0, 10, 2, 0 },
 								  { 900'000, 100'000,	800'000, -150'000, 10,	0, 10, 2, 0 }, 
-								  NUMBER_OF_TIMES);
+								  numberOfTimes);
 
 		client.circlicMovementMod({ 985'000, 0,			940'000, -180'000, 0,	0, 10, 2, 0 },
 								  { 800'000, 100'000,	800'000, -150'000, 10,	0, 10, 2, 0 },
-								  NUMBER_OF_TIMES);
+								  numberOfTimes);
 	}, 5u + 1u);
 	
 	
-	constexpr std::atomic_int64_t waitingTime = 500LL;
-	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+	std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 
 	while (!testServer.mHasFinished && !client.mHasFinished)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 	}
 	
 	Assert::IsTrue(testServer.mHasConnected, L"Bad connection!");
@@ -161,8 +151,6 @@ void ClientTest::testMethod3()
 		message.replace(18u, 1u, std::to_wstring(i + 1u));
 		Assert::AreEqual(client.mStorage.at(i), testServer.mStorage.at(i), message.c_str());
 	}
-	
-	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 }
 
 void ClientTest::testMethod4()
@@ -176,26 +164,24 @@ void ClientTest::testMethod4()
 	initClient(client, [&client]()
 	{
 		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
-		constexpr std::atomic_int64_t waitingTime = 25LL;
-		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+		std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
 
-		constexpr std::atomic_uint NUMBER_OF_STEPS = 5u;
+		constexpr std::size_t numberOfSteps = 5u;
 		client.partialMovementMod({ 985'000, 0,			940'000, -180'000, 0,	0, 10, 2, 0 },
 								  { 900'000, 100'000,	800'000, -150'000, 10,	0, 10, 2, 0 },
-								  NUMBER_OF_STEPS);
+								  numberOfSteps);
 
 		client.partialMovementMod({ 985'000, 0,			940'000, -180'000, 0,	0, 10, 2, 0 },
 								  { 800'000, 100'000,	800'000, -150'000, 10,	0, 10, 2, 0 },
-								  NUMBER_OF_STEPS);
+								  numberOfSteps);
 	}, 6u + 5u);
 
 
-	constexpr std::atomic_int64_t waitingTime = 500LL;
-	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+	std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 
 	while (!testServer.mHasFinished && !client.mHasFinished)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 	}
 
 	Assert::IsTrue(testServer.mHasConnected, L"Bad connection!");
@@ -209,8 +195,6 @@ void ClientTest::testMethod4()
 		message.replace(18u, 1u, std::to_wstring(i + 1u));
 		Assert::AreEqual(client.mStorage.at(i), testServer.mStorage.at(i), message.c_str());
 	}
-
-	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 }
 
 }

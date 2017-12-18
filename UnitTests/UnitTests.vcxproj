@@ -77,6 +77,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -94,7 +95,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\Users\gusef\source\repos\FANUC\Utilities\Source;C:\Users\gusef\source\repos\FANUC\SimpleWinsockInterface\Source;C:\Users\gusef\source\repos\FANUC\SimpleServer\Source;C:\Users\gusef\source\repos\FANUC\SimpleClient\Source;$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(SolutionDir)Utilities\Source;$(SolutionDir)SimpleWinsockInterface\Source;$(SolutionDir)SimpleClient\Source;$(SolutionDir)SimpleServer\Source</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(SolutionDir)Utilities\Source;$(SolutionDir)SimpleWinsockInterface\Source;$(SolutionDir)SimpleClient\Source;$(SolutionDir)SimpleServer\Source</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -126,7 +127,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>C:\Users\gusef\source\repos\FANUC\Utilities\Source;C:\Users\gusef\source\repos\FANUC\SimpleWinsockInterface\Source;C:\Users\gusef\source\repos\FANUC\SimpleServer\Source;C:\Users\gusef\source\repos\FANUC\SimpleClient\Source;$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(SolutionDir)Utilities\Source;$(SolutionDir)SimpleWinsockInterface\Source;$(SolutionDir)SimpleClient\Source;$(SolutionDir)SimpleServer\Source</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(SolutionDir)Utilities\Source;$(SolutionDir)SimpleWinsockInterface\Source;$(SolutionDir)SimpleClient\Source;$(SolutionDir)SimpleServer\Source</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -164,7 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientTest\ClientTest.cpp" />
-    <ClCompile Include="ClientTest\ModClientcpp.cpp" />
+    <ClCompile Include="ClientTest\ModClient.cpp" />
     <ClCompile Include="ClientTest\TestServer.cpp" />
   </ItemGroup>
   <ItemGroup>

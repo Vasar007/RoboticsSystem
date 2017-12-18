@@ -1,7 +1,5 @@
-#include <iostream>
 #include <cassert>
 #include <thread>
-#include <string>
 
 #include "Utilities.h"
 #include "WinsockInterface.h"
@@ -71,13 +69,13 @@ const std::unordered_map<int, std::string> WinsockInterface::_TABLE_OF_ERRORS =
 
 WinsockInterface::WinsockInterface()
 	: _wsaData(),
-	  _socketSend(),
-	  _socketReceive(),
-	  _socketSendAddress(),
-	  _socketReceiveAddress(),
+	  _sendingSocket(),
+	  _receivingSocket(),
+	  _sendingSocketAddress(),
+	  _receivingSocketAddress(),
 	  _addressInfo(nullptr),
 	  _isRunning(false),
-	  _isInitialized(false),
+	  _wasInitialized(false),
 	  _buffer(),
 	  _message()
 {
@@ -85,34 +83,34 @@ WinsockInterface::WinsockInterface()
 
 WinsockInterface::~WinsockInterface() noexcept
 {
-	if (_isInitialized)
+	if (_wasInitialized)
 	{
 		// The closing of the socket and Winsock.
-		closesocket(_socketSend);
-		closesocket(_socketReceive);
+		closesocket(_sendingSocket);
+		closesocket(_receivingSocket);
 		WSACleanup();
 	}
 }
 
 void WinsockInterface::init()
 {
-	_isInitialized = true;
+	_wasInitialized = true;
 
 	initWinsock(_wsaData);
-	initSocket(_socketSend);
-	initSocket(_socketReceive);
+	initSocket(_sendingSocket);
+	initSocket(_receivingSocket);
 }
 
 void WinsockInterface::close()
 {
-	_isInitialized = false;
+	_wasInitialized = false;
 
-	closesocket(_socketSend);
-	closesocket(_socketReceive);
+	closesocket(_sendingSocket);
+	closesocket(_receivingSocket);
 	WSACleanup();
 
-	_socketSend		= 0;
-	_socketReceive	= 0;
+	_sendingSocket		= 0;
+	_receivingSocket	= 0;
 }
 
 void WinsockInterface::initWinsock(WSADATA& wsaData) const
@@ -193,6 +191,33 @@ void WinsockInterface::listenOn(const SOCKET& socketToList, const int backlog) c
 	freeaddrinfo(_addressInfo.get());
 }
 
+SOCKET WinsockInterface::acceptSocket(const SOCKET& listeningSocket)
+{
+	int addrLen = sizeof(SOCKADDR_IN);
+	SOCKADDR_IN address;
+
+	memset(_message, 0, _MAXRECV);
+
+	const SOCKET socket = accept(listeningSocket, reinterpret_cast<SOCKADDR*>(&address),
+								 static_cast<int*>(&addrLen));
+	if (socket == SOCKET_ERROR)
+	{
+		perror("Accept failed.");
+		std::cin.get();
+		assert(false);
+		exit(static_cast<int>(ErrorType::FAILED_ACCEPT_NEW_CLIENT));
+	}
+
+	// Get IP address back and print it.
+	inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
+
+	// Inform user of socket number — used in send and receive commands.
+	utils::println(std::cout, "New connection, socket FD is", socket, ", ip is:",
+				   _message, ", PORT:", ntohs(address.sin_port));
+
+	return socket;
+}
+
 bool WinsockInterface::tryConnect(const int port, const std::string& ip, 
 								  const SOCKET& socketToConnect, SOCKADDR_IN& socketAddress) const
 {
@@ -223,12 +248,12 @@ bool WinsockInterface::isRun() const
 	return _isRunning;
 }
 
-void WinsockInterface::sendData(const SOCKET& socketToSend, const std::string& data) const
+void WinsockInterface::sendData(const SOCKET& socketForSending, const std::string& data) const
 {
 	const char* dataChar = data.c_str();
 
 	// Sending data on socket.
-	if (send(socketToSend, dataChar, strlen(dataChar), 0) == SOCKET_ERROR)
+	if (send(socketForSending, dataChar, strlen(dataChar), 0) == SOCKET_ERROR)
 	{
 		utils::println(std::cout, "SEND FAILED.");
 		return;
@@ -237,7 +262,7 @@ void WinsockInterface::sendData(const SOCKET& socketToSend, const std::string& d
 	utils::println(std::cout, "Sent data:", data, "successfully.\n");
 }
 
-std::string WinsockInterface::receiveData(const SOCKET socketToReceive)
+std::string WinsockInterface::receiveData(const SOCKET socketForReceiving)
 {
 	std::string result;
 
@@ -249,10 +274,10 @@ std::string WinsockInterface::receiveData(const SOCKET socketToReceive)
 	memset(_buffer, 0, _MAXRECV);
 
 	// Get details of the client.
-	getpeername(socketToReceive, reinterpret_cast<SOCKADDR*>(&address),
+	getpeername(socketForReceiving, reinterpret_cast<SOCKADDR*>(&address),
 				static_cast<int*>(&addrlen));
 
-	const int valRead	= recv(socketToReceive, _buffer, _MAXRECV, 0);
+	const int valRead	= recv(socketForReceiving, _buffer, _MAXRECV, 0);
 	const u_short port	= ntohs(address.sin_port);
 
 	// Get IP address back and print it.
@@ -285,7 +310,7 @@ std::string WinsockInterface::receiveData(const SOCKET socketToReceive)
 		result		= "";
 	}
 	// Process message that came in.
-	else if (valRead > 0)
+	else if (valRead > 0 && valRead < _MAXRECV)
 	{
 		// Add null character, if you want to use with printf/puts or other string 
 		// handling functions.
@@ -299,13 +324,13 @@ std::string WinsockInterface::receiveData(const SOCKET socketToReceive)
 	return result;
 }
 
-void WinsockInterface::setTimeout(const SOCKET& socketForSetting, const long seconds,
+void WinsockInterface::setTimeout(const SOCKET& socketToChange, const long seconds,
 								  const long microseconds) const
 {
 	TIMEVAL timeout;
 	timeout.tv_sec  = seconds;
 	timeout.tv_usec = microseconds;
-	setsockopt(socketForSetting, SOL_SOCKET, SO_RCVTIMEO,
+	setsockopt(socketToChange, SOL_SOCKET, SO_RCVTIMEO,
 			   reinterpret_cast<char*>(&timeout), sizeof timeout);
 }
 

@@ -2,6 +2,7 @@
 #include <algorithm>
 
 #include "Utility.h"
+#include "Print.h"
 #include "Parsing.h"
 
 
@@ -9,33 +10,45 @@ namespace utils
 {
 
 [[nodiscard]]
-std::string parseFullData(const std::string& data) noexcept
+std::string parseFullData(const std::string& data, const std::size_t numberOfCoords,
+						  const std::size_t excludeNumber) noexcept
 {
+	if (numberOfCoords <= excludeNumber || data.empty())
+	{
+		return { "" };
+	}
+
 	std::string result;
 	std::vector<std::string> strStorage = utils::split<std::vector<std::string>>(data);
 
 	strStorage.erase(std::remove(strStorage.begin(), strStorage.end(), ""), strStorage.end());
 
-	constexpr std::size_t NUMBER_OF_COORDINATES_IN_ONE_STRUCTURE = 9u;
-
-	if (strStorage.size() % NUMBER_OF_COORDINATES_IN_ONE_STRUCTURE != 0u)
+	if (strStorage.size() % numberOfCoords != 0u)
 	{
 		return { "" };
 	}
 
 	std::size_t count = 0u;
-
-	for (const auto& strDatum : strStorage)
+	for (const auto& str : strStorage)
 	{
-		if (!utils::isCorrectNumber(strDatum))
+		if (!utils::isCorrectNumber(str))
 		{
 			result.clear();
 			break;
 		}
 
-		if (count % 9u != 8u && count % 9u != 7u)
+		bool flag = true;
+		for (std::size_t i = 0u; i < excludeNumber; ++i)
 		{
-			result += strDatum + " ";
+			if (count % numberOfCoords == numberOfCoords - i - 1u)
+			{
+				flag = false;
+				break;
+			}
+		}
+		if (flag)
+		{
+			result += str + " ";
 		}
 
 		++count;

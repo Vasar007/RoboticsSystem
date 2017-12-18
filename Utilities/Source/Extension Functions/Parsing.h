@@ -8,13 +8,16 @@ namespace utils
 {
 
 /**
- * \brief			Parse input data and skips every 8 and 9 number.
- * \details         Data contain one or more RobotData structure transfered into string.
- * \param[in] data	Data for parsing.
- * \return			Deserialized data if parsed successful, empty string otherwise.
+ * \brief			            Parse input data and skips every 8 and 9 number.
+ * \details                     Data contain one or more RobotData structure transfered into string.
+ * \param[in] data	            Data for parsing.
+ * \param[in] numberOfCoords	Number of coordinates in one structure.
+ * \param[in] excludeNumber	    Number of exclude coordintes.
+ * \return			            Deserialized data if parsed successful, empty string otherwise.
  */
 [[nodiscard]]
-std::string parseFullData(const std::string& data) noexcept;
+std::string parseFullData(const std::string& data, const std::size_t numberOfCoords = 9u,
+                          const std::size_t excludeNumber = 2u) noexcept;
 
 
 /**

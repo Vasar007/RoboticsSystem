@@ -76,6 +76,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\gusef\source\repos\FANUC\Utilities\Source;C:\Users\gusef\source\repos\FANUC\SimpleWinsockInterface\Source;C:\Users\gusef\source\repos\FANUC\SimpleClient\Source;C:\Users\gusef\source\repos\FANUC\Dependencies\SFML-2.4.2\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>

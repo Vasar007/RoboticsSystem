@@ -7,4 +7,6 @@
 
 #include "Logger/Logger.h"
 
+#include "RobotData/RobotData.h"
+
 #endif // UTILITIES_H

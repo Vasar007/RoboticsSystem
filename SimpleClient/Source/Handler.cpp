@@ -82,11 +82,10 @@ Handler::State Handler::parseCommand(const std::string_view command)
 {
 	_data = command;
 	std::transform(_data.begin(), _data.end(), _data.begin(),
-		[](char c) { return static_cast<char>(::tolower(c)); });
+				   [](char c) { return static_cast<char>(::tolower(c)); });
 
 	const std::string letter = _data.substr(0u, 1u);
 
-	const bool flag = checkChangingMode(letter);
 	if (checkChangingCoordinateSysytem(letter))
 	{
 		return State::COORDINATE_TYPE;
@@ -97,7 +96,7 @@ Handler::State Handler::parseCommand(const std::string_view command)
 		return iter->second;
 	}
 
-	if (!flag)
+	if (!checkChangingMode(letter))
 	{
 		utils::println(std::cout, "ERROR 03: Incorrect input data!");
 	}
@@ -131,15 +130,18 @@ ParsedResult Handler::parseDataAfterCommand()
 		case State::CIRCLIC:
 			[[fallthrough]];
 		case State::PARTIAL:
-			if (_data.size() > 1u && std::count(_data.begin(), _data.end(), '|') == 2)
+			if (_data.size() > 1u && std::count(_data.begin(), _data.end(), '|') == 3)
 			{
-				const std::size_t foundPosFirst = _data.find('|');
-				std::string strToParse = _data.substr(1u, foundPosFirst - 1u);
+				const std::size_t findPosZero = _data.find('|');
+
+				const std::size_t foundPosFirst = _data.find('|', findPosZero + 1u);
+				std::string strToParse = _data.substr(findPosZero + 1u, 
+													  foundPosFirst - findPosZero - 1u);
 				bool flag1;
 				result.mFirstPoint = utils::fromString<RobotData>(strToParse, flag1);
 
 				const std::size_t foundPosSecond = _data.find('|', foundPosFirst + 1u);
-				strToParse = _data.substr(foundPosFirst + 1u, foundPosSecond - 1u);
+				strToParse = _data.substr(foundPosFirst + 1u, foundPosSecond - foundPosFirst - 1u);
 				bool flag2;
 				result.mSecondPoint = utils::fromString<RobotData>(strToParse, flag2);
 
