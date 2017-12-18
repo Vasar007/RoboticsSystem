@@ -17,16 +17,14 @@ void TestServer::receiveDataNTimes(const std::size_t numberOfTimes)
 	std::lock_guard<std::mutex> lockGuard(mMutex);
 
 	waitingForConnections();
-	if (_clientSocketReceive != 0 && _clientSocketSend != 0)
+	if (_clientReceivingSocket != 0 && _clientSendingSocket != 0)
 	{
 		mHasConnected = true;
 	}
 
-	std::string dataBuffer;
-	std::string toSending;
 	for (std::size_t step = 0u; step < numberOfTimes; ++step)
 	{
-		dataBuffer = receiveData(_clientSocketReceive);
+		std::string dataBuffer = receiveData(_clientReceivingSocket);
 
 		if (!_isRunning)
 		{
@@ -46,7 +44,7 @@ void TestServer::receiveDataNTimes(const std::size_t numberOfTimes)
 
 		if (std::count(dataBuffer.begin(), dataBuffer.end(), ' ') > 9)
 		{
-			mStorage= utils::fsplit<std::vector<std::string>>(dataBuffer, " 10 2 0 ");
+			mStorage = utils::fsplit<std::vector<std::string>>(dataBuffer, " 10 2 0 ");
 		}
 		else
 		{
@@ -54,10 +52,10 @@ void TestServer::receiveDataNTimes(const std::size_t numberOfTimes)
 		}
 
 
-		toSending = utils::parseFullData(dataBuffer);
+		std::string toSending = utils::parseFullData(dataBuffer);
 		if (!toSending.empty())
 		{
-			sendData(_clientSocketSend, toSending);
+			sendData(_clientSendingSocket, toSending);
 		}
 
 	}

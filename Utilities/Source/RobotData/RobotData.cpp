@@ -3,7 +3,6 @@
 #include <cassert>
 #include <iterator>
 
-#include "Utilities.h"
 #include "RobotData.h"
 
 
@@ -25,10 +24,14 @@ std::string RobotData::toString() const
 
 double RobotData::length() const
 {
-	long long result = 0;
-	for (const auto& coordinate : coordinates)
+	double result = 0;
+
+	for (std::size_t i = 0u; i < 3u; ++i)
 	{
-		result += coordinate * coordinate;
+		double temp = coordinates.at(i) / 10'000;
+		temp *= coordinates.at(i) / 10'000;
+		result += temp;
+
 	}
 
 	return std::sqrt(result);
@@ -37,6 +40,12 @@ double RobotData::length() const
 bool RobotData::isEqual(const RobotData& other) const
 {
 	return this->coordinates == other.coordinates && this->parameters == other.parameters;
+}
+
+void RobotData::returnToDefault()
+{
+	coordinates = DEFAULT_CORDINATES;
+	parameters  = DEFAULT_PARAMETERS;
 }
 
 bool operator ==(const RobotData& lhs, const RobotData& rhs)

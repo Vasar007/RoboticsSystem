@@ -1,5 +1,5 @@
-#include <iostream>
 #include <cassert>
+#include <thread>
 
 #include "Client.h"
 
@@ -12,15 +12,16 @@ Client::Client(const int serverPort, const std::string_view serverIP)
 	  _robotData(),
 	  _serverIP(serverIP),
 	  _serverPort(serverPort),
-	  _serverPortSending(0),
-	  _serverPortReceiving(0),
+	  _serverSendingPort(0),
+	  _serverReceivingPort(0),
 	  _handler(),
 	  _start(std::chrono::steady_clock::now()),
 	  _duration(),
 	  _waitAnswer(),
 	  _isNeedToWait(false),
 	  _circlicState(),
-	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
+	  isNeedToUpdate(false)
 {
 }
 
@@ -30,15 +31,16 @@ Client::Client(const int serverPortSending, const int serverReceiving,
 	  _robotData(),
 	  _serverIP(serverIP),
 	  _serverPort(0),
-	  _serverPortSending(serverPortSending),
-	  _serverPortReceiving(serverReceiving),
+	  _serverSendingPort(serverPortSending),
+	  _serverReceivingPort(serverReceiving),
 	  _handler(),
 	  _start(std::chrono::steady_clock::now()),
 	  _duration(),
 	  _waitAnswer(),
 	  _isNeedToWait(false),
 	  _circlicState(),
-	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
+	  isNeedToUpdate(false)
 {
 }
 
@@ -52,7 +54,8 @@ Client::Client(Client&& other) noexcept
 	  _waitAnswer(other._waitAnswer),
 	  _isNeedToWait(other._isNeedToWait ? true : false),
 	  _circlicState(other._circlicState),
-	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
+	  isNeedToUpdate(false)
 {
 	utils::swap(*this, other);
 }
@@ -69,27 +72,25 @@ Client& Client::operator=(Client&& other) noexcept
 void Client::receive()
 {
 	utils::println(std::cout, "\n\n\nThread started...\n");
-
 	_logger.write("\n\nClient launched at", utils::getCurrentSystemTime());
 
-	std::string dataBuffer;
 	std::size_t count = 0u;
-
 	while (true)
 	{
-		dataBuffer = receiveData(_socketReceive);
+		std::string dataBuffer = receiveData(_receivingSocket);
 
 		if (!_isRunning)
 		{
 			tryReconnect();
+			continue;
 		}
 
 		if (_isNeedToWait)
 		{
 			// NEED TO DO AFTER DANILA REFACTORING.
-			//RobotData robotData;
-			//bool flag;
-			//robotData = utils::fromString<RobotData>(dataBuffer, flag);
+			///RobotData robotData;
+			///bool flag;
+			///robotData = utils::fromString<RobotData>(dataBuffer, flag);
 
 			///if (flag && robotData == _waitAnswer)
 			{
@@ -116,6 +117,8 @@ void Client::receive()
 			}
 		}
 
+		isNeedToUpdate = true;
+
 		++count;
 		_duration = std::chrono::steady_clock::now() - _start;
 		utils::println(std::cout, count, "Duration:", _duration.count(), "seconds");
@@ -127,8 +130,7 @@ void Client::receive()
 
 void Client::checkConnection(const std::atomic_int64_t& time)
 {
-	constexpr std::atomic_int64_t waitingTime = 1000LL;
-	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000LL));
 
 	while (true)
 	{
@@ -140,18 +142,15 @@ void Client::checkConnection(const std::atomic_int64_t& time)
 
 void Client::waitLoop()
 {
-	std::string input;
-
 	// Create data for robot.
 	_robotData = _DEFAULT_POSITION;
 
-	sendData(_socketSend, "2");
+	sendData(_sendingSocket, "2");
 
 	std::thread reciveThread(&Client::receive, this);
 	reciveThread.detach();
 
-	constexpr std::atomic_int64_t waitingTime = 25LL;
-	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+	std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
 
 	// NEED TO DO AFTER DANILA REFACTORING.
 	///constexpr std::atomic_int64_t time = 2000LL;
@@ -160,6 +159,7 @@ void Client::waitLoop()
 
 	utils::println(std::cout, "\n\n\nWaiting for reply...\n");
 
+	std::string input;
 	while (true)
 	{
 		memset(_message, 0, _MAXRECV);
@@ -226,6 +226,27 @@ void Client::waitLoop()
 				{
 					sendCoordinates(_robotData);
 				}
+				else if (input == "test")
+				{
+					_robotData = _DEFAULT_POSITION;
+					_robotData.coordinates.at(Handler::Y) = -400'000;
+					std::string toSending = _robotData.toString();
+
+					_robotData.coordinates.at(Handler::Y) = 100'000;
+					toSending += _robotData.toString();
+					for (std::size_t i = 0u; i < 10u; ++i)
+					{
+						_robotData.coordinates.at(Handler::Y) += 20'000;
+						if (checkCoordinates(_robotData))
+						{
+							toSending += _robotData.toString();
+						}
+					}
+
+					_logger.write(toSending);
+					_start = std::chrono::steady_clock::now();
+					sendData(_sendingSocket, toSending);
+				}
 				break;
 			
 			default:
@@ -250,24 +271,28 @@ std::chrono::duration<double> Client::getDuration() const
 	return _duration;
 }
 
+RobotData Client::getRobotData() const
+{
+	return _robotData;
+}
+
 // NEED TO CHANGE THIS FUNCTION AFTER DANILA REFACTORING.
 void Client::tryReconnect()
 {
 	while (!_isRunning)
 	{
-		closesocket(_socketSend);
-		closesocket(_socketReceive);
+		closesocket(_sendingSocket);
+		closesocket(_receivingSocket);
 
-		initSocket(_socketSend);
-		initSocket(_socketReceive);
+		initSocket(_sendingSocket);
+		initSocket(_receivingSocket);
 
 		///_isRunning = tryConnect(_serverPort, _serverIP, _socketSend, _socketSendAddress);
-		_isRunning = tryConnect(_serverPortSending, _serverIP, _socketSend, _socketSendAddress)
-					&& tryConnect(_serverPortReceiving, _serverIP, _socketReceive,
-								  _socketReceiveAddress);
+		_isRunning = tryConnect(_serverSendingPort, _serverIP, _sendingSocket, _sendingSocketAddress)
+					&& tryConnect(_serverReceivingPort, _serverIP, _receivingSocket,
+								  _receivingSocketAddress);
 
-		constexpr std::atomic_int64_t waitingTime = 1000LL;
-		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000LL));
 	}
 }
 
@@ -282,8 +307,8 @@ void Client::launch()
 	// NEED TO SWAP THIS CODE AFTER DANILA REFACTORING.
 	///tryConnect(_serverPort, _serverIP, _socketSend, _socketSendAddress);
 	///setTimeout(_socketSend, 1000, 0);
-	tryConnect(_serverPortSending, _serverIP, _socketSend, _socketSendAddress);
-	tryConnect(_serverPortReceiving, _serverIP, _socketReceive, _socketReceiveAddress);
+	tryConnect(_serverSendingPort, _serverIP, _sendingSocket, _sendingSocketAddress);
+	tryConnect(_serverReceivingPort, _serverIP, _receivingSocket, _receivingSocketAddress);
 }
 
 void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& secondPoint, 
@@ -319,8 +344,7 @@ void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& sec
 
 			case CirclicState::WAIT_FIRST_ANSWER:
 			{
-				constexpr std::atomic_int64_t waitingTime = 10LL;
-				std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+				std::this_thread::sleep_for(std::chrono::milliseconds(10LL));
 				break;
 			}
 
@@ -337,8 +361,7 @@ void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& sec
 
 			case CirclicState::WAIT_SECOND_ANSWER:
 			{
-				constexpr std::atomic_int64_t waitingTime = 10LL;
-				std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+				std::this_thread::sleep_for(std::chrono::milliseconds(10LL));
 				break;
 			}
 
@@ -366,8 +389,7 @@ void Client::partialProcessing(const RobotData& firstPoint, const RobotData& sec
 	{
 		robotData += directionalVector;
 
-		constexpr std::atomic_int64_t waitingTime = 25LL;
-		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
+		std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
 
 		if (!sendCoordinates(robotData))
 		{
@@ -403,8 +425,10 @@ bool Client::sendCoordinates(const RobotData& robotData)
 {
 	if (checkCoordinates(robotData))
 	{
+		_robotData = robotData;
+		_logger.write(robotData.toString());
 		_start = std::chrono::steady_clock::now();
-		sendData(_socketSend, robotData.toString());
+		sendData(_sendingSocket, robotData.toString());
 		return true;
 	}
 	
@@ -417,11 +441,11 @@ void Client::sendCoordinateType(const CoordinateSystem coordinateType) const
 	switch (coordinateType)
 	{
 		case CoordinateSystem::JOINT:
-			sendData(_socketSend, "1");
+			sendData(_sendingSocket, "1");
 			break;
 		
 		case CoordinateSystem::WORLD:
-			sendData(_socketSend, "2");
+			sendData(_sendingSocket, "2");
 			break;
 		
 		default:

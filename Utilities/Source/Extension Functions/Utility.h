@@ -114,7 +114,7 @@ int					stringToInt(const std::string& str) noexcept;
  * \param[in] flag  Additional flag to perfom some actions.
  * \return          String that cintains current readable time.
  */
-std::string         getCurrentSystemTime(const int flag = 0);
+std::string         getCurrentSystemTime(const int flag = 0) noexcept;
 
 
 #include "Utility.inl"

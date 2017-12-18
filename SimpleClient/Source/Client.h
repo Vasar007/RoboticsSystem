@@ -1,12 +1,10 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include <thread>
 #include <chrono>
 
 #include "WinsockInterface.h"
 #include "Utilities.h"
-#include "RobotData.h"
 #include "Handler.h"
 
 
@@ -56,12 +54,12 @@ protected:
 	/**
 	 * \brief Variable used to keep server port to send.
 	 */
-	int			_serverPortSending;
+	int			_serverSendingPort;
 
 	/**
 	 * \brief Variable used to keep server port to recieve.
 	 */
-	int			_serverPortReceiving;
+	int			_serverReceivingPort;
 
 	/**
 	 * \brief User data handler.
@@ -101,37 +99,38 @@ protected:
 	/**
 	 * \brief Default file name for input.
 	 */
-	static constexpr char   _DEFAULT_IN_FILE_NAME[]     = "in.txt";
+	static constexpr char       _DEFAULT_IN_FILE_NAME[]     = "in.txt";
 
 	/**
 	 * \brief Default file name for output.
 	 */
-	static constexpr char   _DEFAULT_OUT_FILE_NAME[]    = "out.txt";
+	static constexpr char       _DEFAULT_OUT_FILE_NAME[]    = "out.txt";
 
 	/**
 	 * \brief Default value for server IP.
 	 */
-	static constexpr char		_DEFAULT_SERVER_IP[]	= "192.168.0.21";
+	static constexpr char		_DEFAULT_SERVER_IP[]	    = "192.168.0.21";
 
 	/**
 	 * \brief Default value for sending port.
 	 */
-	static constexpr int		_DEFAULT_SENDING_PORT	= 59002;
+	static constexpr int		_DEFAULT_SENDING_PORT	    = 59002;
 													
 	/**                                             
 	 * \brief Default value for receiving port.     
 	 */                                             
-	static constexpr int		_DEFAULT_RECEIVING_PORT	= 59003;
-
-	/**
-	 * \brief Default (beginning) robot position.
-	 */
-	static constexpr RobotData	_DEFAULT_POSITION{ 985'000, 0, 940'000, -180'000, 0, 0, 10, 2, 0 };
+	static constexpr int		_DEFAULT_RECEIVING_PORT	    = 59003;
 
 	/**
 	 * \brief Constant number of coordinates to check to avoid "magic number".
 	 */
-	static constexpr std::size_t _MAIN_COORDINATES							= 3u;
+	static constexpr std::size_t _MAIN_COORDINATES		    = 3u;
+
+	/**
+	 * \brief Default (beginning) robot position.
+	 */
+	static constexpr RobotData	_DEFAULT_POSITION{ { RobotData::DEFAULT_CORDINATES },
+												   { RobotData::DEFAULT_PARAMETERS } };
 
 	/**
 	 * \brief Array contains minimum value for first 3 coordinates (x, y, z).
@@ -183,6 +182,12 @@ protected:
 
 public:
 	/**
+	 * \brief Used to define break point for transmitter.
+	 */
+	std::atomic_bool isNeedToUpdate;
+
+
+	/**
 	 * \brief					Constructor that initializes sockets and connects to server.
 	 * \param[in] serverPort	Server port for connection.
 	 * \param[in] serverIP		Server IP address for connection.
@@ -190,13 +195,13 @@ public:
 	explicit	Client(const int serverPort, const std::string_view serverIP);
 
 	/**
-	 * \brief						Constructor that initializes sockets and connects to server.
-	 * \param[in] serverPortSending	Server port to send.
-	 * \param[in] serverReceiving	Server port to recieve.
-	 * \param[in] serverIP			Server IP address for connection.
+	 * \brief						    Constructor that initializes sockets and connects to server.
+	 * \param[in] serverSendingPort	    Server port to send.
+	 * \param[in] serverReceivingPort	Server port to recieve.
+	 * \param[in] serverIP			    Server IP address for connection.
 	 */
-	explicit	Client(const int serverPortSending = _DEFAULT_SENDING_PORT, 
-					   const int serverReceiving = _DEFAULT_RECEIVING_PORT,
+	explicit	Client(const int serverSendingPort = _DEFAULT_SENDING_PORT, 
+					   const int serverReceivingPort = _DEFAULT_RECEIVING_PORT,
 					   const std::string_view serverIP = _DEFAULT_SERVER_IP);
 
 	/**	
@@ -250,6 +255,12 @@ public:
 	std::chrono::duration<double> getDuration() const;
 
 	/**
+	 * \brief   Get actual point to interact.
+	 * \return  RobotData structure.
+	 */
+	RobotData   getRobotData() const;
+
+	/**
 	 * \brief Main method which starts infinite working loop.
 	 */
 	void		run() override;
@@ -267,7 +278,7 @@ public:
 	 * \param[in] secondPoint			Second point for circlic movement.
 	 * \param[in] numberOfIterations	Number of iterations in circlic movement.
 	 * \code
-	 * Enter command: c 1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|5
+	 * Enter command: c|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|5
 	 * \endcode
 	 */
 	void		circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
@@ -281,7 +292,7 @@ public:
 	 * \param[in] secondPoint	End point.
 	 * \param[in] numberOfSteps	Number of steps for which robot should move from start to end point.
 	 * \code
-	 * Enter command: p 1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|3
+	 * Enter command: p|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|3
 	 * \endcode
 	*/
 	void		partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,

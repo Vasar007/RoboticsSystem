@@ -23,6 +23,18 @@ struct RobotData
 	static constexpr std::size_t NUMBER_OF_PARAMETERS	= 3u;
 
 	/**
+	 * \brief Default coordinates.
+	 */
+	static constexpr std::array<int, NUMBER_OF_COORDINATES>	DEFAULT_CORDINATES
+															{ 985'000, 0, 940'000, -180'000, 0, 0 };
+
+	/**
+	 * \brief Default robot parameters.
+	 */
+	static constexpr std::array<int, NUMBER_OF_PARAMETERS>	DEFAULT_PARAMETERS
+															{ 1, 2, 0 };
+
+	/**
 	 * \brief Array which contains only coordinates or degrees.
 	 */
 	std::array<int, NUMBER_OF_COORDINATES>	coordinates;
@@ -35,16 +47,16 @@ struct RobotData
 
 
 	/**
-	 * \brief Default constructor.
+	 * \brief Default constructor for default position.
 	 */
 	constexpr	RobotData() noexcept
-					: coordinates{ 0, 0, 0, 0, 0, 0 },
-					  parameters{ 0, 0, 0 }
+					: coordinates(DEFAULT_CORDINATES),
+					  parameters(DEFAULT_PARAMETERS)
 				{
 				}
 
 	/**
-	 * \brief					Constructor with parameters.
+	 * \brief					Constructor for creating structure from 9 numbers.
 	 * \param[in] x				1st coordinate.
 	 * \param[in] y				2nd coordinate.
 	 * \param[in] z				3rd coordinate.
@@ -64,13 +76,58 @@ struct RobotData
 				}
 
 	/**
+	 * \brief                       Constructor for creating structure from two arrays.
+	 * \param[in] initCoordinates   Array that contains coordinates.
+	 * \param[in] initParameters    Array that contains parameters.
+	 */
+	constexpr	RobotData(const std::array<int, NUMBER_OF_COORDINATES>& initCoordinates,
+						  const std::array<int, NUMBER_OF_PARAMETERS>& initParameters) noexcept
+					: coordinates(initCoordinates),
+					  parameters(initParameters)
+	{
+	}
+
+	/**
+	 * \brief Default destructor.
+	 */
+				~RobotData() noexcept                           = default;
+
+	/**
+	 * \brief			Default copy constructor.
+	 * \param[in] other Other object.
+	 */
+	constexpr   RobotData(const RobotData& other)               = default;
+
+	/**
+	 * \brief			Default copy assignment operator.
+	 * \param[in] other Other object.
+	 * \return			Return copied structure.
+	 */
+	constexpr RobotData& operator=(const RobotData& other)      = default;
+
+	/**
+	 * \brief				Default move constructor.
+	 * \param[out] other	Other object.
+	 */
+	constexpr   RobotData(RobotData&& other) noexcept           = default;
+
+	/**
+	 * \brief				Default move assignment operator.
+	 * \param[out] other	Other object.
+	 * \return				Return moved structure.
+	 */
+	constexpr RobotData& operator=(RobotData&& other) noexcept  = default;
+
+
+	/**
 	 * \brief	Convert object to string.
 	 * \return	String which contains all data of this object.
 	 */
 	std::string toString() const;
 
 	/**
-	 * \brief	Calculate length of vector which comtains 6 coordinates.
+	 * \brief	Calculate length of vector which contains 6 coordinates.
+	 * \detail  Fucntion uses only first 3 coordinates!
 	 * \return	Square root of sum of coordinates squares.
 	 */
 	double		length() const;
@@ -81,6 +138,11 @@ struct RobotData
 	 * \return			True if structures are equal, false otherwise.
 	 */
 	bool		isEqual(const RobotData& other) const;
+
+	/**
+	 * \brief Reset coordinates and parameters values to default.
+	 */
+	void        returnToDefault();
 
 
 	/**

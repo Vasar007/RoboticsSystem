@@ -4,8 +4,8 @@
 namespace clientTests
 {
 
-	ModClient::ModClient(const int serverPortSending, const int serverReceiving, 
-						 const std::string_view serverIP)
+ModClient::ModClient(const int serverPortSending, const int serverReceiving, 
+					 const std::string_view serverIP)
 	: Client(serverPortSending, serverReceiving, serverIP),
 	  mHasFinished(),
 	  mStorage()
@@ -18,7 +18,7 @@ void ModClient::receiveDataNTimes(const std::size_t numberOfTimes)
 
 	for (std::size_t step = 0u; step < numberOfTimes; ++step)
 	{
-		receiveData(_socketReceive);
+		receiveData(_receivingSocket);
 
 		if (_isNeedToWait)
 		{

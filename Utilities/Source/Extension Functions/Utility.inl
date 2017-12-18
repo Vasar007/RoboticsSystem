@@ -52,13 +52,13 @@ void swap(T& first, T& second) noexcept
 	if constexpr (isSame<T, Client>() || isSame<T, ServerImitator>())
 	{
 		swap(first._wsaData,				second._wsaData);
-		swap(first._socketSend,				second._socketSend);
-		swap(first._socketReceive,			second._socketReceive);
-		swap(first._socketSendAddress,		second._socketSendAddress);
-		swap(first._socketReceiveAddress,	second._socketReceiveAddress);
+		swap(first._sendingSocket,			second._sendingSocket);
+		swap(first._receivingSocket,		second._receivingSocket);
+		swap(first._sendingSocketAddress,	second._sendingSocketAddress);
+		swap(first._receivingSocketAddress,	second._receivingSocketAddress);
 		swap(first._addressInfo,			second._addressInfo);
 		swap(first._isRunning,				second._isRunning);
-		swap(first._isInitialized,			second._isInitialized);
+		swap(first._wasInitialized,			second._wasInitialized);
 		swap(first._buffer,					second._buffer);
 		swap(first._message,				second._message);
 	}

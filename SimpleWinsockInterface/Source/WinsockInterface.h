@@ -67,22 +67,22 @@ protected:
 	/**
 	 * \brief Socket used to send coordinates.
 	 */
-	SOCKET							_socketSend;
+	SOCKET							_sendingSocket;
 
 	/**
 	 * \brief Socket used to receive coordinates.
 	 */
-	SOCKET							_socketReceive;
+	SOCKET							_receivingSocket;
 
 	/**
 	 * \brief Structure used to keep socket address to send.
 	 */
-	SOCKADDR_IN						_socketSendAddress;
+	SOCKADDR_IN						_sendingSocketAddress;
 
 	/**
 	 * \brief Structure used to keep socket address to receive.
 	 */
-	SOCKADDR_IN						_socketReceiveAddress;
+	SOCKADDR_IN						_receivingSocketAddress;
 
 	/**
 	 * \brief All information about socket and type of connection.
@@ -97,7 +97,7 @@ protected:
 	/**
 	 * \brief Flag used to check whether winsocket had been initialized.
 	 */
-	bool							_isInitialized;
+	bool							_wasInitialized;
 
 	/**
 	 * \brief Size of receive buffer, this is string length.
@@ -156,6 +156,19 @@ protected:
 	void			listenOn(const SOCKET& socketToList, const int backlog = 10) const;
 
 	/**
+	 * \brief                       Permit an incoming connection attempt on a socket.
+	 * \param[in] listeningSocket   A descriptor that identifies a socket that has been placed in
+	 *                              a listening state with the listen function. The connection is
+	 *                              actually made with the socket that is returned by accept.
+	 * \return                      If no error occurs, accept returns a value of type SOCKET 
+	 *                              that is a descriptor for the new socket. This returned value is
+	 *                              a handle for the socket on which the actual connection is made. 
+	 *                              Otherwise, a value of INVALID_SOCKET is returned, and a specific
+	 *                              error code can be retrieved by calling WSAGetLastError.
+	 */
+	SOCKET          acceptSocket(const SOCKET& listeningSocket);
+
+	/**
 	 * \brief						Establishe a connection to a specified socket.
 	 * \param[in] port				Port for connection.
 	 * \param[in] ip				IP address for connection.
@@ -170,26 +183,26 @@ protected:
 							   const SOCKET& socketToConnect, SOCKADDR_IN& socketAddress) const;
 	
 	/**
-	 * \brief					Send data on a connected socket.
-	 * \param[out] socketToSend	A descriptor identifying a connected socket.
-	 * \param[out] data			A buffer containing the data to be transmitted.
+	 * \brief					    Send data on a connected socket.
+	 * \param[out] socketForSending	A descriptor identifying a connected socket.
+	 * \param[out] data			    A buffer containing the data to be transmitted.
 	 */
-	void			sendData(const SOCKET& socketToSend, const std::string& data) const;
+	void			sendData(const SOCKET& socketForSending, const std::string& data) const;
 
 	/**
-	 * \brief						Receive data from receiving socket.
-	 * \param[in] socketToReceive	A descriptor identifying a receiving socket.
-	 * \return						Received data from receiving socket.
+	 * \brief						    Receive data from receiving socket.
+	 * \param[in] socketForReceiving	A descriptor identifying a receiving socket.
+	 * \return						    Received data from receiving socket.
 	 */
-	std::string		receiveData(const SOCKET socketToReceive);
+	std::string		receiveData(const SOCKET socketForReceiving);
 
 	/**
-	 * \brief						Set timeout for socket.
-	 * \param[in] socketForSetting	A descriptor identifying a socket.
-	 * \param[in] seconds			Time interval, in seconds.
-	 * \param[in] microseconds		Time interval, in microseconds.
+	 * \brief					    Set timeout for socket.
+	 * \param[in] socketToChange	A descriptor identifying a socket.
+	 * \param[in] seconds		    Time interval, in seconds.
+	 * \param[in] microseconds	    Time interval, in microseconds.
 	 */
-	void			setTimeout(const SOCKET& socketForSetting,
+	void			setTimeout(const SOCKET& socketToChange,
 							   const long seconds, const long microseconds) const;
 
 	/**
@@ -205,7 +218,7 @@ public:
 						WinsockInterface();
 
 	/**
-	 * \brief Default destructor (delete buffers and close all sockets and WinSock data).
+	 * \brief Default destructor (close all sockets and WinSock data).
 	 */
 	virtual				~WinsockInterface() noexcept;
 
@@ -218,7 +231,7 @@ public:
 	/**
 	 * \brief			Deleted copy assignment operator.
 	 * \param[in] other Other object.
-	 * \return			Returns nothing because it's deleted.
+	 * \return			Return nothing because it's deleted.
 	 */
 	WinsockInterface&	operator=(const WinsockInterface& other)			= delete;
 
@@ -231,7 +244,7 @@ public:
 	/**
 	 * \brief				Deleted move assignment operator.
 	 * \param[out] other	Other object.
-	 * \return				Returns nothing because it's deleted.
+	 * \return				Return nothing because it's deleted.
 	 */
 	WinsockInterface&	operator=(WinsockInterface&& other) noexcept		= delete;
 
