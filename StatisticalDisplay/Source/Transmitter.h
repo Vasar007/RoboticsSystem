@@ -60,8 +60,14 @@ private:
 	 */
 	vasily::RobotData   _lastReachedPoint;
 
+	/**
+	 * \brief Circles graphically represent the dependence on the chart.
+	 */
 	std::vector<sf::CircleShape> _circles;
 
+	/**
+	 * \brief The marks on the coordinate axes.
+	 */
 	sf::VertexArray _shapes;
 
 

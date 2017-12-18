@@ -126,7 +126,8 @@ struct RobotData
 	std::string toString() const;
 
 	/**
-	 * \brief	Calculate length of vector which comtains 6 coordinates.
+	 * \brief	Calculate length of vector which contains 6 coordinates.
+	 * \detail  Fucntion uses only first 3 coordinates!
 	 * \return	Square root of sum of coordinates squares.
 	 */
 	double		length() const;
