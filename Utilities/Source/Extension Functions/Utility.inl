@@ -68,4 +68,18 @@ void swap(T& first, T& second) noexcept
 	}
 }
 
+template <class InputIt1, class InputIt2, typename T>
+T distance(InputIt1 first1, InputIt1 last1, InputIt2 first2, T value)
+{
+	auto squareOfSumsOfDifferences = [](int a, int b)
+	{
+		return std::pow(static_cast<double>(a - b) / 10'000., 2);
+	};
+	const double result = std::inner_product(first1, last1, first2, value, std::plus<>(),
+											 squareOfSumsOfDifferences);
+	value = std::sqrt(result);
+
+	return value;
+}
+
 #endif // UTILITY_INL

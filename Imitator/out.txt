@@ -127,3 +127,135 @@ Server started to receive at Mon Dec 18 21:18:58 2017
 192.168.0.100 - 1222000 173600 875800 -900000 0 0 1 2 0 
 192.168.0.100 - 1320000 317000 960000 -1080000 0 0 1 2 0 
 192.168.0.100 - 1320000 317000 960000 -180000 0 0 1 2 0 
+
+
+Server waiting for connections at Tue Dec 19 21:09:02 2017
+
+Server started to receive at Tue Dec 19 21:09:02 2017
+
+192.168.0.100 - 2
+192.168.0.100 - 1235000 0 940000 -180000 0 0 1 2 0 
+
+
+Server waiting for connections at Tue Dec 19 21:11:26 2017
+
+Server started to receive at Tue Dec 19 21:11:26 2017
+
+192.168.0.100 - 2
+192.168.0.100 - 1235000 0 940000 -180000 0 0 1 2 0 
+
+
+Server waiting for connections at Tue Dec 19 21:12:36 2017
+
+Server started to receive at Tue Dec 19 21:12:36 2017
+
+192.168.0.100 - 2
+192.168.0.100 - 1010000 0 940000 -180000 0 0 1 2 0 
+192.168.0.100 - 1260000 0 940000 -180000 0 0 1 2 0 
+192.168.0.100 - 1285000 0 940000 -180000 0 0 1 2 0 
+
+
+Server waiting for connections at Tue Dec 19 21:16:22 2017
+
+
+
+Server waiting for connections at Tue Dec 19 21:27:19 2017
+
+Server started to receive at Tue Dec 19 21:27:19 2017
+
+192.168.0.100 - 2
+192.168.0.100 - 987500 0 940000 -180000 0 0 1 2 0 
+192.168.0.100 - 1012500 0 940000 -180000 0 0 1 2 0 
+192.168.0.100 - 1262500 0 940000 -180000 0 0 1 2 0 
+192.168.0.100 - 985000 0 940000 -180000 0 0 1 2 0 
+192.168.0.100 - 985000 -400000 940000 -180000 0 0 1 2 0 
+
+
+Server waiting for connections at Tue Dec 19 22:28:58 2017
+
+Server started to receive at Tue Dec 19 22:28:58 2017
+
+192.168.0.100 - 2
+192.168.0.100 - 1235000 0 940000 -180000 0 0 1 2 0 
+
+
+Server waiting for connections at Tue Dec 19 22:29:23 2017
+
+
+
+Server waiting for connections at Tue Dec 19 22:29:37 2017
+
+Server started to receive at Tue Dec 19 22:29:37 2017
+
+192.168.0.100 - 2
+192.168.0.100 - 1235000 0 940000 -180000 0 0 1 2 0 
+
+
+Server waiting for connections at Tue Dec 19 22:29:46 2017
+
+
+
+Server waiting for connections at Tue Dec 19 22:35:53 2017
+
+Server started to receive at Tue Dec 19 22:35:54 2017
+
+192.168.0.100 - 2
+192.168.0.100 - 1235000 0 940000 -180000 0 0 1 2 0 
+
+
+Server waiting for connections at Tue Dec 19 22:36:16 2017
+
+Server started to receive at Tue Dec 19 22:36:16 2017
+
+192.168.0.100 - 2
+192.168.0.100 - 1235000 0 940000 -180000 0 0 1 2 0 
+
+
+Server waiting for connections at Tue Dec 19 22:36:24 2017
+
+
+
+Server waiting for connections at Tue Dec 19 22:36:37 2017
+
+Server started to receive at Tue Dec 19 22:36:37 2017
+
+192.168.0.100 - 2
+192.168.0.100 - 1235000 0 940000 -180000 0 0 1 2 0 
+192.168.0.100 - 985000 0 940000 -180000 0 0 1 2 0 
+
+
+Server waiting for connections at Tue Dec 19 22:39:09 2017
+
+Server started to receive at Tue Dec 19 22:39:09 2017
+
+192.168.0.100 - 2
+192.168.0.100 - 1235000 0 940000 -180000 0 0 1 2 0 
+192.168.0.100 - 985000 0 940000 -180000 0 0 1 2 0 
+192.168.0.100 - 985000 -400000 940000 -180000 0 0 1 2 0 
+192.168.0.100 - 985000 300000 940000 -180000 0 0 1 2 0 
+192.168.0.100 - 985000 0 940000 -180000 0 0 1 2 0 
+192.168.0.100 - 830000 -400000 539000 -180000 0 0 1 2 0 
+192.168.0.100 - 1320000 317000 960000 -180000 0 0 1 2 0 
+
+
+Server waiting for connections at Tue Dec 19 22:41:33 2017
+
+
+
+Server waiting for connections at Tue Dec 19 22:51:36 2017
+
+Server started to receive at Tue Dec 19 22:51:36 2017
+
+192.168.0.100 - 2
+
+
+Server waiting for connections at Tue Dec 19 23:20:42 2017
+
+Server started to receive at Tue Dec 19 23:20:43 2017
+
+192.168.0.100 - 2
+192.168.0.100 - 1235000 0 940000 -180000 0 0 1 2 0 
+
+
+Server waiting for connections at Tue Dec 19 23:20:52 2017
+

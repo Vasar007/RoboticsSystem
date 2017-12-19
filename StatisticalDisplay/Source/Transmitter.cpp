@@ -39,7 +39,12 @@ Transmitter::Transmitter(const int maxX, const int maxY)
 
 void Transmitter::updateVertices(const double time, const vasily::RobotData& robotData)
 {
-	_distance.emplace_back(std::abs(_lastReachedPoint.length() - robotData.length()));
+	{
+		const double distance = utils::distance(_lastReachedPoint.coordinates.begin(),
+												_lastReachedPoint.coordinates.begin() + 2,
+												robotData.coordinates.begin(), 0.);
+		_distance.emplace_back(distance);
+	}
 
 	if (_velocity.empty())
 	{
@@ -63,8 +68,8 @@ void Transmitter::updateVertices(const double time, const vasily::RobotData& rob
 		// Two types of velocity and distance placement.
 		//const float coordX = static_cast<float>(_velocity.at(i));
 		//const float coordY = static_cast<float>(_limitY - _distance.at(i)) - 1.f;
-		const float coordX = static_cast<float>(_distance.at(i));
-		const float coordY = static_cast<float>(_limitY - _velocity.at(i)) - 1.f;
+		const float coordX = static_cast<float>(_distance.at(i) * 1);
+		const float coordY = static_cast<float>(_limitY - _velocity.at(i) * 1) - 1.f;
 		_deltaTime.append({ sf::Vector2f(coordX, coordY), sf::Color::Blue });
 
 		sf::CircleShape circle;

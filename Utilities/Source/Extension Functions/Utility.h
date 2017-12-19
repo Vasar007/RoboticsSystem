@@ -6,6 +6,7 @@
 #include <memory>
 #include <utility>
 #include <string_view>
+#include <numeric>
 
 
 // Forward declaration.
@@ -115,6 +116,22 @@ int					stringToInt(const std::string& str) noexcept;
  * \return          String that cintains current readable time.
  */
 std::string         getCurrentSystemTime(const int flag = 0) noexcept;
+
+
+/**
+ * \brief               Calculate distance as square root from scalar product of the vector
+ *                      difference.
+ * \tparam InputIt1     First iterator type.
+ * \tparam InputIt2     Second iterator type.
+ * \tparam T            Type of returned value.
+ * \param[in] first1    The beginning of range of elements.
+ * \param[in] last1     The ending of range of elements.
+ * \param[in] first2    The beginning of the second range of elements.
+ * \param[in] value     Initial value of the sum of the products.
+ * \return              Distance between two points.
+ */
+template <class InputIt1, class InputIt2, typename T>
+T                   distance(InputIt1 first1, InputIt1 last1, InputIt2 first2, T value);
 
 
 #include "Utility.inl"

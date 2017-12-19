@@ -90,7 +90,7 @@ void ServerImitator::waitLoop()
 		_logger.write(_message, '-', dataBuffer);
 		std::string toSending = utils::parseFullData(dataBuffer);
 
-	    bool flag;
+		bool flag;
 		const RobotData robotData = utils::fromString<RobotData>(dataBuffer, flag);
 		if (flag)
 		{
@@ -136,10 +136,12 @@ void ServerImitator::waitingForConnections()
 
 std::chrono::milliseconds ServerImitator::calculateDuration(const RobotData& robotData)
 {
-	const double distance   = std::abs(_lastReceivedData.length() - robotData.length());
+	const double distance   = utils::distance(_lastReceivedData.coordinates.begin(),
+											  _lastReceivedData.coordinates.begin() + 2,
+											  robotData.coordinates.begin(), 0.);
 	_lastReceivedData       = robotData;
 
-	constexpr long long multiplier  = 30LL;
+	constexpr long long multiplier  = 65LL;
 	const long long result          = static_cast<long long>(distance * multiplier);
 
 	return std::chrono::milliseconds(result);
