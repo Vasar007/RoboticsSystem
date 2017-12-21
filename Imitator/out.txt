@@ -127,3 +127,14 @@ Server started to receive at Mon Dec 18 21:18:58 2017
 192.168.0.100 - 1222000 173600 875800 -900000 0 0 1 2 0 
 192.168.0.100 - 1320000 317000 960000 -1080000 0 0 1 2 0 
 192.168.0.100 - 1320000 317000 960000 -180000 0 0 1 2 0 
+
+
+Server waiting for connections at Thu Dec 21 20:47:01 2017
+
+Server started to receive at Thu Dec 21 20:47:02 2017
+
+127.0.0.1 - 2
+
+
+Server waiting for connections at Thu Dec 21 20:47:11 2017
+
