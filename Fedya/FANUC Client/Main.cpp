@@ -29,7 +29,7 @@ int main()
 	fanuc.startMainLoop();
 
     // Initialize server.
-	ServerTCP<RobotCoord> serv(9997, 1000);
+	ServerTCP<RobotCoord> serv(9997, 500);
 
 	serv.supportOneConnection(&fromFanucToOtherProces, &fromOtherProcesToFanuc);
 

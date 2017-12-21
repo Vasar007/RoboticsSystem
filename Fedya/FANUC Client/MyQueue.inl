@@ -1,8 +1,6 @@
 #ifndef MY_QUEUE_INL
 #define MY_QUEUE_INL
 
-#include "MyShower.hpp"
-
 template <typename T>
 MyQueue<T>::MyQueue(const std::string& comment)
     : _sizeOfQueue("Size of \"" + comment + "\": ",0),
@@ -14,7 +12,9 @@ template <typename T>
 void MyQueue<T>::push(const T elem)
 {
     // Get current time.
-	clock_t t = clock();
+	//clock_t t = clock();
+
+    const auto t = std::chrono::high_resolution_clock().now();
 	
     // Adding new elment.
     _mt.lock();
@@ -44,12 +44,13 @@ size_t MyQueue<T>::size()
 }
 
 template <typename T>
-clock_t MyQueue<T>::frontTime()
+long long MyQueue<T>::frontTime()
 {
 	_mt.lock();
-	const int ans = _q.front().first;
+	const auto ans = _q.front().first;
 	_mt.unlock();
-	return ans;
+	return std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::high_resolution_clock::now() - ans).count();
 }
 
 template <typename T>
@@ -65,7 +66,8 @@ template <typename T>
 void MyQueue<T>::pop()
 {
 	_mt.lock();
-	_timeDifference.setObject(static_cast<int>(clock()) - static_cast<int>(_q.front().first));
+	_timeDifference.setObject(std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::high_resolution_clock::now() - _q.front().first).count());
 	_q.pop();
 	_sizeOfQueue.setObject(_sizeOfQueue.getObject()-1);
 	_mt.unlock();

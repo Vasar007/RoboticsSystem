@@ -161,9 +161,9 @@ void Client::waitLoop()
 	std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
 
 	// NEED TO DO AFTER DANILA REFACTORING.
-	///constexpr std::atomic_int64_t time = 2000LL;
-	///std::thread checkThread(&Client::checkConnection, this, std::cref(time));
-	///checkThread.detach();
+	constexpr std::atomic_int64_t time = 2000LL;
+	std::thread checkThread(&Client::checkConnection, this, std::cref(time));
+	checkThread.detach();
 
 	utils::println("\n\n\nWaiting for reply...\n");
 
@@ -280,10 +280,10 @@ void Client::tryReconnect()
 		initSocket(_socketSend);
 		initSocket(_socketReceive);
 
-		///_isRunning = tryConnect(_serverPort, _serverIP, _socketSend, _socketSendAddress);
-		_isRunning = tryConnect(_serverPortSending, _serverIP, _socketSend, _socketSendAddress)
-					&& tryConnect(_serverPortReceiving, _serverIP, _socketReceive,
-								  _socketReceiveAddress);
+		_isRunning = tryConnect(_serverPort, _serverIP, _socketSend, _socketSendAddress);
+		///_isRunning = tryConnect(_serverPortSending, _serverIP, _socketSend, _socketSendAddress)
+		/// 		&& tryConnect(_serverPortReceiving, _serverIP, _socketReceive,
+		///						  _socketReceiveAddress);
 
 		constexpr std::atomic_int64_t waitingTime = 1000LL;
 		std::this_thread::sleep_for(std::chrono::milliseconds(waitingTime));
@@ -299,10 +299,10 @@ void Client::run()
 void Client::launch()
 {
 	// NEED TO SWAP THIS CODE AFTER DANILA REFACTORING.
-	///tryConnect(_serverPort, _serverIP, _socketSend, _socketSendAddress);
-	///setTimeout(_socketSend, 1000, 0);
-	tryConnect(_serverPortSending, _serverIP, _socketSend, _socketSendAddress);
-	tryConnect(_serverPortReceiving, _serverIP, _socketReceive, _socketReceiveAddress);
+	tryConnect(_serverPort, _serverIP, _socketSend, _socketSendAddress);
+	setTimeout(_socketSend, 1000, 0);
+	///tryConnect(_serverPortSending, _serverIP, _socketSend, _socketSendAddress);
+	///tryConnect(_serverPortReceiving, _serverIP, _socketReceive, _socketReceiveAddress);
 }
 
 void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& secondPoint, 

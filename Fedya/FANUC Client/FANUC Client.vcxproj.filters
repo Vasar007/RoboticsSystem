@@ -20,21 +20,6 @@
     <Filter Include="Header Files\ConsoleInteface">
       <UniqueIdentifier>{33db4b7e-70f1-4081-9d88-433746b5bb6c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\template difinitions">
-      <UniqueIdentifier>{439ebc74-e491-443d-8a34-b927221c1f45}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\template difinitions\ModificatedClasses">
-      <UniqueIdentifier>{ffe7d613-5078-480f-bd88-6f14c25f0073}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\template difinitions\winSock">
-      <UniqueIdentifier>{f4335fa8-709e-4018-8602-85e77f420825}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\template difinitions\RobotConnection">
-      <UniqueIdentifier>{891e73d0-5621-46e8-9116-9020b9dd591c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\template difinitions\ConsoleInterface">
-      <UniqueIdentifier>{02f3ccb7-4094-4251-9129-05ae5c360bab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resources Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -51,6 +36,21 @@
     </Filter>
     <Filter Include="Source Files\ConsoleInterface">
       <UniqueIdentifier>{2a30c8b9-7a09-418e-a5a1-d9a310481c54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\template definitions">
+      <UniqueIdentifier>{439ebc74-e491-443d-8a34-b927221c1f45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\template definitions\ModificatedClasses">
+      <UniqueIdentifier>{ffe7d613-5078-480f-bd88-6f14c25f0073}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\template definitions\winSock">
+      <UniqueIdentifier>{f4335fa8-709e-4018-8602-85e77f420825}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\template definitions\RobotConnection">
+      <UniqueIdentifier>{891e73d0-5621-46e8-9116-9020b9dd591c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\template definitions\ConsoleInterface">
+      <UniqueIdentifier>{02f3ccb7-4094-4251-9129-05ae5c360bab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -105,37 +105,37 @@
       <Filter>Header Files\ConsoleInteface</Filter>
     </ClInclude>
     <ClInclude Include="Field.inl">
-      <Filter>Header Files\template difinitions\ConsoleInterface</Filter>
+      <Filter>Header Files\template definitions\ConsoleInterface</Filter>
     </ClInclude>
     <ClInclude Include="MyShower.inl">
-      <Filter>Header Files\template difinitions\ConsoleInterface</Filter>
+      <Filter>Header Files\template definitions\ConsoleInterface</Filter>
     </ClInclude>
     <ClInclude Include="MyQueue.inl">
-      <Filter>Header Files\template difinitions\ModificatedClasses</Filter>
+      <Filter>Header Files\template definitions\ModificatedClasses</Filter>
     </ClInclude>
     <ClInclude Include="MyThread.inl">
-      <Filter>Header Files\template difinitions\ModificatedClasses</Filter>
+      <Filter>Header Files\template definitions\ModificatedClasses</Filter>
     </ClInclude>
     <ClInclude Include="RobotCommunication.hpp">
       <Filter>Header Files\RobotConnection</Filter>
     </ClInclude>
     <ClInclude Include="RobotCommunication.inl">
-      <Filter>Header Files\template difinitions\RobotConnection</Filter>
+      <Filter>Header Files\template definitions\RobotConnection</Filter>
     </ClInclude>
     <ClInclude Include="RobotReceive.hpp">
       <Filter>Header Files\RobotConnection</Filter>
     </ClInclude>
     <ClInclude Include="RobotReceive.inl">
-      <Filter>Header Files\template difinitions\RobotConnection</Filter>
+      <Filter>Header Files\template definitions\RobotConnection</Filter>
     </ClInclude>
     <ClInclude Include="RobotSend.inl">
-      <Filter>Header Files\template difinitions\RobotConnection</Filter>
+      <Filter>Header Files\template definitions\RobotConnection</Filter>
     </ClInclude>
     <ClInclude Include="tcpConnection.inl">
-      <Filter>Header Files\template difinitions\winSock</Filter>
+      <Filter>Header Files\template definitions\winSock</Filter>
     </ClInclude>
     <ClInclude Include="tcpServer.inl">
-      <Filter>Header Files\template difinitions\winSock</Filter>
+      <Filter>Header Files\template definitions\winSock</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -146,7 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="StaticField.inl">
-      <Filter>Header Files\template difinitions\ConsoleInterface</Filter>
+      <Filter>Header Files\template definitions\ConsoleInterface</Filter>
     </None>
   </ItemGroup>
 </Project>

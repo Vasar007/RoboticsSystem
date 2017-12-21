@@ -20,10 +20,11 @@ int main()
 	constexpr int	SERVER_PORT				= 9997;
 	constexpr int	SERVER_PORT_SENDING		= 9999;
 	constexpr int	SERVER_PORT_RECEIVING	= 9998;
-	constexpr char	SERVER_IP[]				= "192.168.0.105";
+	constexpr char	SERVER_IP[]				= "127.0.0.1";
 
 	// MAKE SURE THAT YOU USE RIGHT CLIENT TO WORK WITH ROBOT: 1 - DEBUG, 2 - WORKING WITH ROBOT.
-	vasily::Client client(SERVER_PORT_SENDING, SERVER_PORT_RECEIVING, SERVER_IP);
+	//vasily::Client client(SERVER_PORT_SENDING, SERVER_PORT_RECEIVING, SERVER_IP);
+    vasily::Client client(SERVER_PORT, SERVER_IP);
 	///vasily::Client client;
 
 	std::thread clientThread(init, std::ref(client));

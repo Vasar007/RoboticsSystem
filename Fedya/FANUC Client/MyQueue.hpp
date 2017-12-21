@@ -3,6 +3,7 @@
 
 #include<queue>
 #include<mutex>
+#include <chrono>
 
 #include"StaticField.hpp"
 
@@ -18,7 +19,7 @@ private:
 	/**
 	 * \brief Basic queue with elements.
 	 */
-	std::queue<std::pair<clock_t,T>> _q;
+	std::queue<std::pair<std::chrono::high_resolution_clock::time_point,T>> _q;
 	
 	/**
 	 * \brief Mutex for locking threads.
@@ -71,7 +72,7 @@ public:
 	 * \brief   Method for getting time, when front element was added.
 	 * \return  Return time of adding front element.
 	 */
-	clock_t frontTime();
+    long long frontTime();
 
 	/**
 	 * \brief   Method for getting front element.
