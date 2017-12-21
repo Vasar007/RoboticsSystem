@@ -1,11 +1,9 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include <thread>
 #include <chrono>
 
 #include "WinsockInterface.h"
-#include "RobotData.h"
 #include "Utilities.h"
 #include "Handler.h"
 
@@ -20,14 +18,9 @@ class Client : public WinsockInterface
 {
 public:
 	/**
-	 * \brief Array of coordinates type.
+	 * \brief Simplify coordinate system enum.
 	 */
-	enum class CoordinateType
-	{
-		JOINT = 0,
-		WORLD = 2
-	};
-
+	typedef Handler::CoordinateSystem CoordinateSystem;
 
 protected:
 	/**
@@ -61,12 +54,12 @@ protected:
 	/**
 	 * \brief Variable used to keep server port to send.
 	 */
-	int			_serverPortSending;
+	int			_serverSendingPort;
 
 	/**
 	 * \brief Variable used to keep server port to recieve.
 	 */
-	int			_serverPortReceiving;
+	int			_serverReceivingPort;
 
 	/**
 	 * \brief User data handler.
@@ -99,29 +92,45 @@ protected:
 	CirclicState		_circlicState;
 
 	/**
+	 * \brief Logger used to write received data to file.
+	 */
+	logger::Logger      _logger;
+
+	/**
+	 * \brief Default file name for input.
+	 */
+	static constexpr char       _DEFAULT_IN_FILE_NAME[]     = "in.txt";
+
+	/**
+	 * \brief Default file name for output.
+	 */
+	static constexpr char       _DEFAULT_OUT_FILE_NAME[]    = "out.txt";
+
+	/**
 	 * \brief Default value for server IP.
 	 */
-	static constexpr char		_DEFAULT_SERVER_IP[]	= "192.168.0.21";
+	static constexpr char		_DEFAULT_SERVER_IP[]	    = "192.168.0.21";
 
 	/**
 	 * \brief Default value for sending port.
 	 */
-	static constexpr int		_DEFAULT_SENDING_PORT	= 59002;
+	static constexpr int		_DEFAULT_SENDING_PORT	    = 59002;
 													
 	/**                                             
 	 * \brief Default value for receiving port.     
 	 */                                             
-	static constexpr int		_DEFAULT_RECEIVING_PORT	= 59003;
-
-	/**
-	 * \brief Default (beginning) robot position.
-	 */
-	static constexpr RobotData	_DEFAULT_POSITION{ 985'000, 0, 940'000, -180'000, 0, 0, 10, 2, 0 };
+	static constexpr int		_DEFAULT_RECEIVING_PORT	    = 59003;
 
 	/**
 	 * \brief Constant number of coordinates to check to avoid "magic number".
 	 */
-	static constexpr std::size_t _MAIN_COORDINATES							= 3u;
+	static constexpr std::size_t _MAIN_COORDINATES		    = 3u;
+
+	/**
+	 * \brief Default (beginning) robot position.
+	 */
+	static constexpr RobotData	_DEFAULT_POSITION{ { RobotData::DEFAULT_CORDINATES },
+												   { RobotData::DEFAULT_PARAMETERS } };
 
 	/**
 	 * \brief Array contains minimum value for first 3 coordinates (x, y, z).
@@ -135,7 +144,7 @@ protected:
 
 
 	/**
-	 * \brief Function tries to establishe a connection to a specified socket again.
+	 * \brief Try to establishe a connection to a specified socket again.
 	 */
 	void		tryReconnect();
 
@@ -151,7 +160,7 @@ protected:
 	void		checkConnection(const std::atomic_int64_t& time);
 
 	/**
-	 * \brief							Function works with robot in circlic mode.
+	 * \brief							Work with robot in circlic mode.
 	 * \details							Now function works only with 2 points!
 	 * \param[in] firstPoint			First point to send and in which robot should return.
 	 * \param[in] secondPoint			Second point for circlic movement.
@@ -161,7 +170,7 @@ protected:
 								  const std::size_t numberOfIterations = 1u);
 
 	/**
-	 * \brief					Function works with robot in partial mode.
+	 * \brief					Work with robot in partial mode.
 	 * \details					Now function works only with 2 points!
 	 * \param[in] firstPoint	Start point.
 	 * \param[in] secondPoint	End point.
@@ -173,6 +182,12 @@ protected:
 
 public:
 	/**
+	 * \brief Used to define break point for transmitter.
+	 */
+	std::atomic_bool isNeedToUpdate;
+
+
+	/**
 	 * \brief					Constructor that initializes sockets and connects to server.
 	 * \param[in] serverPort	Server port for connection.
 	 * \param[in] serverIP		Server IP address for connection.
@@ -180,13 +195,13 @@ public:
 	explicit	Client(const int serverPort, const std::string_view serverIP);
 
 	/**
-	 * \brief						Constructor that initializes sockets and connects to server.
-	 * \param[in] serverPortSending	Server port to send.
-	 * \param[in] serverReceiving	Server port to recieve.
-	 * \param[in] serverIP			Server IP address for connection.
+	 * \brief						    Constructor that initializes sockets and connects to server.
+	 * \param[in] serverSendingPort	    Server port to send.
+	 * \param[in] serverReceivingPort	Server port to recieve.
+	 * \param[in] serverIP			    Server IP address for connection.
 	 */
-	explicit	Client(const int serverPortSending = _DEFAULT_SENDING_PORT, 
-					   const int serverReceiving = _DEFAULT_RECEIVING_PORT,
+	explicit	Client(const int serverSendingPort = _DEFAULT_SENDING_PORT, 
+					   const int serverReceivingPort = _DEFAULT_RECEIVING_PORT,
 					   const std::string_view serverIP = _DEFAULT_SERVER_IP);
 
 	/**	
@@ -222,22 +237,28 @@ public:
 
 
 	/**
-	 * \brief	Function returns server IP address.
+	 * \brief	Get server IP address.
 	 * \return	String which contains current server IP address.
 	 */
 	std::string getServerIP() const;
 
 	/**
-	 * \brief					Function sets server IP address.
+	 * \brief					Set server IP address.
 	 * \param[in] newServerIP	New server IP address as string.
 	 */
 	void		setServerIP(const std::string_view newServerIP);
 
 	/**
-	 * \brief	Function returns current duration.
+	 * \brief	Get current duration.
 	 * \return	Measured time between start point and some event.
 	 */
 	std::chrono::duration<double> getDuration() const;
+
+	/**
+	 * \brief   Get actual point to interact.
+	 * \return  RobotData structure.
+	 */
+	RobotData   getRobotData() const;
 
 	/**
 	 * \brief Main method which starts infinite working loop.
@@ -250,28 +271,28 @@ public:
 	void		launch() override;
 
 	/**
-	 * \brief							Function launches thread for circlic processing and
+	 * \brief							Launch thread for circlic processing and
 	 *									forwards parameters.
 	 * \details							Now function works only with 2 points!
 	 * \param[in] firstPoint			First point to send and in which robot should return.
 	 * \param[in] secondPoint			Second point for circlic movement.
 	 * \param[in] numberOfIterations	Number of iterations in circlic movement.
 	 * \code
-	 * Enter command: c 1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|5
+	 * Enter command: c|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|5
 	 * \endcode
 	 */
 	void		circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
 								const std::size_t numberOfIterations);
 
 	/**
-	 * \brief					Function launches thread for partial processing and 
+	 * \brief					Launch thread for partial processing and 
 	 *							forwards parameters.
 	 * \details					Now function works only with 2 points!
 	 * \param[in] firstPoint	Start point.
 	 * \param[in] secondPoint	End point.
 	 * \param[in] numberOfSteps	Number of steps for which robot should move from start to end point.
 	 * \code
-	 * Enter command: p 1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|3
+	 * Enter command: p|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|3
 	 * \endcode
 	*/
 	void		partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
@@ -283,7 +304,7 @@ public:
 	void		receive();
 
 	/**
-	 * \brief				Function checks if given point is not out of working coordinates.
+	 * \brief				Check if given point is not out of working coordinates.
 	 * \param[in] robotData	Point to check.
 	 * \return				True if point is correct, false otherwise.
 	 */
@@ -291,17 +312,17 @@ public:
 
 
 	/**
-	 * \brief				Function checks coordinates and if it's right sends to robot.
+	 * \brief				Check coordinates and if it's right sends to robot.
 	 * \param[in] robotData Point to send.
 	 * \return				True if coordinates sent, false otherwise.
 	 */
 	bool		sendCoordinates(const RobotData& robotData);
 
 	/**
-	 * \brief						Function sends coordinate system to robot.
+	 * \brief						Send coordinate system to robot.
 	 * \param[in] coordinateType	Coordinate system to send.
 	 */
-	void		sendCoordinateType(const CoordinateType coordinateType) const;
+	void		sendCoordinateType(const CoordinateSystem coordinateType) const;
 
 
 	// Friendly swapping fuction.

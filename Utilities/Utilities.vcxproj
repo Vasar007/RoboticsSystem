@@ -69,13 +69,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -94,6 +97,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -115,20 +119,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Parsing.h" />
-    <ClInclude Include="Source\Print.h" />
+    <ClInclude Include="Source\Extension Functions\Parsing.h" />
+    <ClInclude Include="Source\Extension Functions\Print.h" />
+    <ClInclude Include="Source\Logger\Logger.h" />
+    <ClInclude Include="Source\RobotData\RobotData.h" />
     <ClInclude Include="Source\Utilities.h" />
-    <ClInclude Include="Source\Utility.h" />
+    <ClInclude Include="Source\Extension Functions\Utility.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Source\Parsing.inl" />
-    <None Include="Source\Print.inl" />
-    <None Include="Source\Utility.inl" />
+    <None Include="Source\Extension Functions\Parsing.inl" />
+    <None Include="Source\Extension Functions\Print.inl" />
+    <None Include="Source\Extension Functions\Utility.inl" />
+    <None Include="Source\Logger\Logger.inl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Parsing.cpp" />
-    <ClCompile Include="Source\Print.cpp" />
-    <ClCompile Include="Source\Utility.cpp" />
+    <ClCompile Include="Source\Extension Functions\Parsing.cpp" />
+    <ClCompile Include="Source\Extension Functions\Print.cpp" />
+    <ClCompile Include="Source\Extension Functions\Utility.cpp" />
+    <ClCompile Include="Source\Logger\Logger.cpp" />
+    <ClCompile Include="Source\RobotData\RobotData.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

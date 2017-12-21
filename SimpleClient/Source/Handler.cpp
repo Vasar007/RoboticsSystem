@@ -11,20 +11,20 @@ namespace vasily
 Handler::Handler()
 	: _state(State::DEFAULT),
 	  _mode(Mode::COMMAND),
-	  _coorninateSystem(CoorninateSystem::WORLD),
+	  _coorninateSystem(CoordinateSystem::WORLD),
 	  _data(),
 	  _coefficient(10'000),
 	  _numberOfIterations(0u),
 	  _parsedResult(),
 	  _mapping({
-	  	{ "q", State::FORWARD },		{ "a", State::BACK },
+		{ "q", State::FORWARD },		{ "a", State::BACK },
 		{ "w", State::LEFT },			{ "s", State::RIGHT },
 		{ "e", State::UP },				{ "d", State::DOWN },
 		{ "r", State::ROLL_PLUS },		{ "f", State::ROLL_MINUS },
 		{ "t", State::PITHCH_PLUS },	{ "g", State::PITHCH_MINUS },
 		{ "y", State::YAW_PLUS },		{ "h", State::YAW_MINUS },
 		{ "c", State::CIRCLIC },		{ "p", State::PARTIAL },
-		{ "z", State::HOME } })
+		{ "z", State::HOME },           { "x", State::FROM_FILE } })
 {
 }
 
@@ -60,15 +60,15 @@ bool Handler::checkChangingCoordinateSysytem(const std::string& letter)
 		switch (type)
 		{
 			case 1:
-				setCoordinateSystem(CoorninateSystem::JOINT);
+				setCoordinateSystem(CoordinateSystem::JOINT);
 				break;
 
 			case 2:
-				setCoordinateSystem(CoorninateSystem::WORLD);
+				setCoordinateSystem(CoordinateSystem::WORLD);
 				break;
 
 			default:
-				utils::println("ERROR 01: Incorrect coordinate system!");
+				utils::println(std::cout, "ERROR 01: Incorrect coordinate system!");
 				return false;
 		}
 
@@ -82,11 +82,10 @@ Handler::State Handler::parseCommand(const std::string_view command)
 {
 	_data = command;
 	std::transform(_data.begin(), _data.end(), _data.begin(),
-		[](char c) { return static_cast<char>(::tolower(c)); });
+				   [](char c) { return static_cast<char>(::tolower(c)); });
 
 	const std::string letter = _data.substr(0u, 1u);
 
-	const bool flag = checkChangingMode(letter);
 	if (checkChangingCoordinateSysytem(letter))
 	{
 		return State::COORDINATE_TYPE;
@@ -97,9 +96,9 @@ Handler::State Handler::parseCommand(const std::string_view command)
 		return iter->second;
 	}
 
-	if (!flag)
+	if (!checkChangingMode(letter))
 	{
-		utils::println("ERROR 03: Incorrect input data!");
+		utils::println(std::cout, "ERROR 03: Incorrect input data!");
 	}
 
 	return State::DEFAULT;
@@ -131,15 +130,18 @@ ParsedResult Handler::parseDataAfterCommand()
 		case State::CIRCLIC:
 			[[fallthrough]];
 		case State::PARTIAL:
-			if (_data.size() > 1u && std::count(_data.begin(), _data.end(), '|') == 2)
+			if (_data.size() > 1u && std::count(_data.begin(), _data.end(), '|') == 3)
 			{
-				const std::size_t foundPosFirst = _data.find('|');
-				std::string strToParse = _data.substr(1u, foundPosFirst - 1u);
+				const std::size_t findPosZero = _data.find('|');
+
+				const std::size_t foundPosFirst = _data.find('|', findPosZero + 1u);
+				std::string strToParse = _data.substr(findPosZero + 1u, 
+													  foundPosFirst - findPosZero - 1u);
 				bool flag1;
 				result.mFirstPoint = utils::fromString<RobotData>(strToParse, flag1);
 
 				const std::size_t foundPosSecond = _data.find('|', foundPosFirst + 1u);
-				strToParse = _data.substr(foundPosFirst + 1u, foundPosSecond - 1u);
+				strToParse = _data.substr(foundPosFirst + 1u, foundPosSecond - foundPosFirst - 1u);
 				bool flag2;
 				result.mSecondPoint = utils::fromString<RobotData>(strToParse, flag2);
 
@@ -155,6 +157,8 @@ ParsedResult Handler::parseDataAfterCommand()
 			break;
 
 		case State::HOME:
+			[[fallthrough]];
+		case State::FROM_FILE:
 			if (_data.size() == 1u)
 			{
 				return result;
@@ -206,7 +210,7 @@ ParsedResult Handler::parseDataAfterCommand()
 			break;
 	}
 
-	utils::println("ERROR 02: Incorrect input data after literal!");
+	utils::println(std::cout, "ERROR 02: Incorrect input data after literal!");
 	result.mIsCorrect = false;
 	return result;
 }
@@ -260,53 +264,56 @@ void Handler::appendCommand(const std::string_view command, RobotData& robotData
 
 		case State::HOME:
 			break;
+		
+		case State::FROM_FILE:
+			break;
 
 		case State::FORWARD:
-			robotData.mCoordinates.at(X) += _coefficient;
+			robotData.coordinates.at(X) += _coefficient;
 			break;                    
 									  
 		case State::BACK:             
-			robotData.mCoordinates.at(X) -= _coefficient;
+			robotData.coordinates.at(X) -= _coefficient;
 			break;                    
 									  
 		case State::LEFT:             
-			robotData.mCoordinates.at(Y) += _coefficient;
+			robotData.coordinates.at(Y) += _coefficient;
 			break;                    
 									  
 		case State::RIGHT:            
-			robotData.mCoordinates.at(Y) -= _coefficient;
+			robotData.coordinates.at(Y) -= _coefficient;
 			break;                    
 									  
 		case State::UP:               
-			robotData.mCoordinates.at(Z) += _coefficient;
+			robotData.coordinates.at(Z) += _coefficient;
 			break;                    
 									  
 		case State::DOWN:             
-			robotData.mCoordinates.at(Z) -= _coefficient;
+			robotData.coordinates.at(Z) -= _coefficient;
 			break;                        
 									  
 		case State::ROLL_PLUS:        
-			robotData.mCoordinates.at(W) += _coefficient;
+			robotData.coordinates.at(W) += _coefficient;
 			break;                    
 									  
 		case State::ROLL_MINUS:       
-			robotData.mCoordinates.at(W) -= _coefficient;
+			robotData.coordinates.at(W) -= _coefficient;
 			break;                    
 									  
 		case State::PITHCH_PLUS:      
-			robotData.mCoordinates.at(P) += _coefficient;
+			robotData.coordinates.at(P) += _coefficient;
 			break;                    
 									  
 		case State::PITHCH_MINUS:     
-			robotData.mCoordinates.at(P) -= _coefficient;
+			robotData.coordinates.at(P) -= _coefficient;
 			break;                    
 									  
 		case State::YAW_PLUS:         
-			robotData.mCoordinates.at(R) += _coefficient;
+			robotData.coordinates.at(R) += _coefficient;
 			break;                    
 									  
 		case State::YAW_MINUS:        
-			robotData.mCoordinates.at(R) -= _coefficient;
+			robotData.coordinates.at(R) -= _coefficient;
 			break;
 
 		default:
@@ -340,12 +347,12 @@ void Handler::setMode(const Mode mode)
 	_mode = mode;
 }
 
-Handler::CoorninateSystem Handler::getCoordinateSystem() const
+Handler::CoordinateSystem Handler::getCoordinateSystem() const
 {
 	return _coorninateSystem;
 }
 
-void Handler::setCoordinateSystem(const CoorninateSystem coorninateType)
+void Handler::setCoordinateSystem(const CoordinateSystem coorninateType)
 {
 	_coorninateSystem = coorninateType;
 }

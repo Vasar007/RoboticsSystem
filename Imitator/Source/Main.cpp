@@ -6,7 +6,7 @@
 
 int main()
 {
-	utils::println("Simulator server Fanuc M-20iA v 0.1\n");
+	utils::println(std::cout, "Simulator server Fanuc M-20iA v 0.1\n");
 
 	constexpr int PORT_SENDING		= 9998;
 	constexpr int PORT_RECEIVING	= 9999;

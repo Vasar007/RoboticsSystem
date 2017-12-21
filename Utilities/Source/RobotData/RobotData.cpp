@@ -3,7 +3,6 @@
 #include <cassert>
 #include <iterator>
 
-#include "Utility.h"
 #include "RobotData.h"
 
 
@@ -14,10 +13,10 @@ std::string RobotData::toString() const
 {
 	std::stringstream stringStream;
 
-	std::copy(mCoordinates.begin(), mCoordinates.end(), 
+	std::copy(coordinates.begin(), coordinates.end(), 
 			  std::ostream_iterator<int>(stringStream, " "));
 
-	std::copy(mParameters.begin(), mParameters.end(),
+	std::copy(parameters.begin(), parameters.end(),
 			  std::ostream_iterator<int>(stringStream, " "));
 	
 	return stringStream.str();
@@ -25,10 +24,14 @@ std::string RobotData::toString() const
 
 double RobotData::length() const
 {
-	long long result = 0;
-	for (const auto& coordinate : mCoordinates)
+	double result = 0;
+
+	for (std::size_t i = 0u; i < 3u; ++i)
 	{
-		result += coordinate * coordinate;
+		double temp = coordinates.at(i) / 10'000;
+		temp *= coordinates.at(i) / 10'000;
+		result += temp;
+
 	}
 
 	return std::sqrt(result);
@@ -36,27 +39,33 @@ double RobotData::length() const
 
 bool RobotData::isEqual(const RobotData& other) const
 {
-	return this->mCoordinates == other.mCoordinates && this->mParameters == other.mParameters;
+	return this->coordinates == other.coordinates && this->parameters == other.parameters;
+}
+
+void RobotData::returnToDefault()
+{
+	coordinates = DEFAULT_CORDINATES;
+	parameters  = DEFAULT_PARAMETERS;
 }
 
 bool operator ==(const RobotData& lhs, const RobotData& rhs)
 {
-	return lhs.mCoordinates == rhs.mCoordinates;
+	return lhs.coordinates == rhs.coordinates;
 }
 
 bool operator !=(const RobotData& lhs, const RobotData& rhs)
 {
-	return lhs.mCoordinates != rhs.mCoordinates;
+	return lhs.coordinates != rhs.coordinates;
 }
 
 bool operator <(const RobotData& lhs, const RobotData& rhs)
 {
-	return lhs.mCoordinates < rhs.mCoordinates;
+	return lhs.coordinates < rhs.coordinates;
 }
 
 bool operator >(const RobotData& lhs, const RobotData& rhs)
 {
-	return lhs.mCoordinates > rhs.mCoordinates;
+	return lhs.coordinates > rhs.coordinates;
 }
 
 RobotData operator -(const RobotData& lhs, const RobotData& rhs)
@@ -64,7 +73,7 @@ RobotData operator -(const RobotData& lhs, const RobotData& rhs)
 	RobotData result;
 	for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
 	{
-		result.mCoordinates.at(i) = lhs.mCoordinates.at(i) - rhs.mCoordinates.at(i);
+		result.coordinates.at(i) = lhs.coordinates.at(i) - rhs.coordinates.at(i);
 	}
 
 	return result;
@@ -75,7 +84,7 @@ RobotData operator +(const RobotData& lhs, const RobotData& rhs)
 	RobotData result;
 	for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
 	{
-		result.mCoordinates.at(i) = lhs.mCoordinates.at(i) + rhs.mCoordinates.at(i);
+		result.coordinates.at(i) = lhs.coordinates.at(i) + rhs.coordinates.at(i);
 	}
 
 	return result;
@@ -85,7 +94,7 @@ RobotData& operator +=(RobotData& lhs, const RobotData& rhs)
 {
 	for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
 	{
-		lhs.mCoordinates.at(i) += rhs.mCoordinates.at(i);
+		lhs.coordinates.at(i) += rhs.coordinates.at(i);
 	}
 
 	return lhs;
@@ -98,15 +107,15 @@ RobotData operator /(const RobotData& lhs, const int& rhs)
 	RobotData result;
 	for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
 	{
-		if (lhs.mCoordinates.at(i) == 0)
+		if (lhs.coordinates.at(i) == 0)
 		{
 			continue;
 		}
 
-		result.mCoordinates.at(i) = lhs.mCoordinates.at(i) / rhs;
-		if (result.mCoordinates.at(i) == 0)
+		result.coordinates.at(i) = lhs.coordinates.at(i) / rhs;
+		if (result.coordinates.at(i) == 0)
 		{
-			result.mCoordinates.at(i) = 1;
+			result.coordinates.at(i) = 1;
 		}
 	}
 
@@ -119,15 +128,15 @@ RobotData& operator /=(RobotData& lhs, const int& rhs)
 
 	for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
 	{
-		if (lhs.mCoordinates.at(i) == 0)
+		if (lhs.coordinates.at(i) == 0)
 		{
 			continue;
 		}
 
-		lhs.mCoordinates.at(i) = lhs.mCoordinates.at(i) / rhs;
-		if (lhs.mCoordinates.at(i) == 0)
+		lhs.coordinates.at(i) = lhs.coordinates.at(i) / rhs;
+		if (lhs.coordinates.at(i) == 0)
 		{
-			lhs.mCoordinates.at(i) = 1;
+			lhs.coordinates.at(i) = 1;
 		}
 	}
 
@@ -136,12 +145,12 @@ RobotData& operator /=(RobotData& lhs, const int& rhs)
 
 std::istream& operator >>(std::istream& cin, RobotData& robotData)
 {
-	for (auto& coordinate : robotData.mCoordinates)
+	for (auto& coordinate : robotData.coordinates)
 	{
 		cin >> coordinate;
 	}
 
-	for (auto& parameter : robotData.mParameters)
+	for (auto& parameter : robotData.parameters)
 	{
 		cin >> parameter;
 	}

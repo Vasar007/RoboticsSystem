@@ -69,7 +69,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
@@ -84,8 +86,9 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\gusef\source\repos\FANUC\Utilities\Source;C:\Users\gusef\source\repos\FANUC\SimpleWinsockInterface\Source;$(SolutionDir)Dependencies\SFML-2.4.2\include;$(SolutionDir)Utilities\Source;$(SolutionDir)SimpleWinsockInterface\Source</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\SFML-2.4.2\include;$(SolutionDir)Utilities\Source;$(SolutionDir)SimpleWinsockInterface\Source</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SFML-2.4.2\lib</AdditionalLibraryDirectories>
@@ -98,8 +101,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\gusef\source\repos\FANUC\Utilities\Source;C:\Users\gusef\source\repos\FANUC\SimpleWinsockInterface\Source;$(SolutionDir)Dependencies\SFML-2.4.2\include;$(SolutionDir)Utilities\Source;$(SolutionDir)SimpleWinsockInterface\Source</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\SFML-2.4.2\include;$(SolutionDir)Utilities\Source;$(SolutionDir)SimpleWinsockInterface\Source</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -124,12 +128,10 @@
   <ItemGroup>
     <ClCompile Include="Source\Handler.cpp" />
     <ClCompile Include="Source\Client.cpp" />
-    <ClCompile Include="Source\RobotData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Handler.h" />
     <ClInclude Include="Source\Client.h" />
-    <ClInclude Include="Source\RobotData.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleWinsockInterface\SimpleWinsockInterface.vcxproj">

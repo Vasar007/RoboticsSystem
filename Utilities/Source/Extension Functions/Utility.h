@@ -13,13 +13,13 @@ class Client;
 class ServerImitator;
 
 /**
- * \brief Unique namespace for utilities function.
+ * \brief Unique namespace for utilities functions.
  */
 namespace utils
 {
 
 /**
- * \brief		Function checks whether the templates are same datatype at compile time.
+ * \brief		Check whether the templates are same datatype at compile time.
  * \tparam T	Datatype to check.
  * \return		True — current data types are same, false — otherwise.
  */
@@ -40,7 +40,7 @@ std::string			toString(const T& value) noexcept;
 
 
 /**
- * \brief			Function tries convert string to any data.
+ * \brief			Try convert string to any data.
  * \details			Type of data which used to convert must have default constructor.
  * \tparam T		Type of data in which we try convert string.
  * \param[in] str	String to convert.
@@ -82,7 +82,7 @@ void				swap(T& first, T& second) noexcept;
 
 
 /**
- * \brief			Fuction checks if input string is correct number at all 
+ * \brief			Check if input string is correct number at all 
  *					(heximal, decimal, binary).
  * \param[in] str	String to check.
  * \param[in] flag	Additional flag to perfom some actions.
@@ -101,12 +101,20 @@ int					randomInt(const int exclusiveMax) noexcept;
 
 
 /**
- * \brief			Function parses string to integer.
+ * \brief			Parse string to integer.
  * \param[in] str	String for parsing to integer.
  * \return			Parsed integer from string.
  */
 [[nodiscard]]
 int					stringToInt(const std::string& str) noexcept;
+
+
+/**
+ * \brief           Get current system time.
+ * \param[in] flag  Additional flag to perfom some actions.
+ * \return          String that cintains current readable time.
+ */
+std::string         getCurrentSystemTime(const int flag = 0) noexcept;
 
 
 #include "Utility.inl"

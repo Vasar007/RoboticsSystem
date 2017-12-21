@@ -18,7 +18,7 @@ namespace
 		return std::default_random_engine(seed);
 	}
 	
-	auto randomEngine = createRandomEngine();
+	auto RANDOM_ENGINE = createRandomEngine();
 
 }
 
@@ -31,7 +31,7 @@ int randomInt(const int exclusiveMax) noexcept
 	}
 
 	const std::uniform_int_distribution<> distr(0, exclusiveMax - 1);
-	return distr(randomEngine);
+	return distr(RANDOM_ENGINE);
 }
 
 bool isCorrectNumber(const std::string& str, const int flag) noexcept
@@ -42,7 +42,7 @@ bool isCorrectNumber(const std::string& str, const int flag) noexcept
 
 	if (flag == 1)
 	{
-		utils::println('\n', out);
+		utils::println(std::cout, '\n', out);
 	}
 
 	return *ptr == 0;
@@ -57,6 +57,28 @@ int stringToInt(const std::string& str) noexcept
 	}
 
 	return 0;
+}
+
+std::string getCurrentSystemTime(const int flag) noexcept
+{
+	// Get current time.
+	const auto timeNow = std::chrono::system_clock::now();
+
+	// Convert time to ctime.
+	std::time_t timeNowT = std::chrono::system_clock::to_time_t(timeNow);
+
+	// Parse time in readable format.
+	tm timeInfo;
+	localtime_s(&timeInfo, &timeNowT);
+	char timebuf[26];
+	const errno_t err = asctime_s(timebuf, 26, &timeInfo);
+
+	if (flag == 1)
+	{
+		utils::println(std::cout, '\n', err);
+	}
+
+	return timebuf;
 }
 
 }
