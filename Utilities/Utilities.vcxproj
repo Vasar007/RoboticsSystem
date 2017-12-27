@@ -119,23 +119,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Extension Functions\Parsing.h" />
-    <ClInclude Include="Source\Extension Functions\Print.h" />
+    <ClInclude Include="Source\Print\Print.hpp" />
+    <ClInclude Include="Source\Utility\ValidExpression.hpp" />
+    <ClInclude Include="Source\Printer\Printer.h" />
+    <ClInclude Include="Source\Parsing\Parsing.h" />
+    <ClInclude Include="Source\Print\Print.h" />
     <ClInclude Include="Source\Logger\Logger.h" />
     <ClInclude Include="Source\RobotData\RobotData.h" />
     <ClInclude Include="Source\Utilities.h" />
-    <ClInclude Include="Source\Extension Functions\Utility.h" />
+    <ClInclude Include="Source\Utility\Utility.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Source\Extension Functions\Parsing.inl" />
-    <None Include="Source\Extension Functions\Print.inl" />
-    <None Include="Source\Extension Functions\Utility.inl" />
+    <None Include="Source\Parsing\Parsing.inl" />
+    <None Include="Source\Print\Print.inl" />
+    <None Include="Source\Utility\Utility.inl" />
     <None Include="Source\Logger\Logger.inl" />
+    <None Include="Source\Printer\Printer.inl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Extension Functions\Parsing.cpp" />
-    <ClCompile Include="Source\Extension Functions\Print.cpp" />
-    <ClCompile Include="Source\Extension Functions\Utility.cpp" />
+    <ClCompile Include="Source\Printer\Printer.cpp" />
+    <ClCompile Include="Source\Parsing\Parsing.cpp" />
+    <ClCompile Include="Source\Print\Print.cpp" />
+    <ClCompile Include="Source\Utility\Utility.cpp" />
     <ClCompile Include="Source\Logger\Logger.cpp" />
     <ClCompile Include="Source\RobotData\RobotData.cpp" />
   </ItemGroup>

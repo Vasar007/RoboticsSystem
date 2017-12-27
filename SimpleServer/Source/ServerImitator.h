@@ -123,7 +123,7 @@ public:
 	 * \param[in] other Other client object.
 	 * \return			Returns nothing because it's deleted.
 	 */
-	ServerImitator&	operator=(const ServerImitator& other)		= delete;
+	ServerImitator&	operator =(const ServerImitator& other)		= delete;
 
 	/**
 	 * \brief				Move constructor.
@@ -136,7 +136,7 @@ public:
 	 * \param[out] other	Other client object.
 	 * \return				Returns an object with all moved data.
 	 */
-	ServerImitator&	operator=(ServerImitator&& other) noexcept;
+	ServerImitator&	operator =(ServerImitator&& other) noexcept;
 
 	/**
 	 * \brief Main method which starts infinite working loop.
@@ -154,6 +154,6 @@ public:
 	friend void utils::swap(T& first, T& second) noexcept;
 };
 
-}
+} // namespace vasily
 
 #endif // SERVER_H

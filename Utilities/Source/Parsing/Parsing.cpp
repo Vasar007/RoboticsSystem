@@ -1,8 +1,8 @@
 #include <vector>
 #include <algorithm>
 
-#include "Utility.h"
-#include "Print.h"
+#include "../Utility/Utility.h"
+#include "../Print/Print.h"
 #include "Parsing.h"
 
 
@@ -10,8 +10,8 @@ namespace utils
 {
 
 [[nodiscard]]
-std::string parseFullData(const std::string& data, const std::size_t numberOfCoords,
-						  const std::size_t excludeNumber) noexcept
+std::string parseFullData(const std::string& data, const int numberOfCoords,
+						  const int excludeNumber) noexcept
 {
 	if (numberOfCoords <= excludeNumber || data.empty())
 	{
@@ -28,7 +28,7 @@ std::string parseFullData(const std::string& data, const std::size_t numberOfCoo
 		return { "" };
 	}
 
-	std::size_t count = 0u;
+	int count = 0;
 	for (const auto& str : strStorage)
 	{
 		if (!utils::isCorrectNumber(str))
@@ -38,9 +38,9 @@ std::string parseFullData(const std::string& data, const std::size_t numberOfCoo
 		}
 
 		bool flag = true;
-		for (std::size_t i = 0u; i < excludeNumber; ++i)
+		for (int i = 0; i < excludeNumber; ++i)
 		{
-			if (count % numberOfCoords == numberOfCoords - i - 1u)
+			if (count % numberOfCoords == numberOfCoords - i - 1)
 			{
 				flag = false;
 				break;
@@ -62,7 +62,7 @@ std::string parseData(const std::string& data) noexcept
 {
 	std::vector<std::string> strStorage = utils::split<std::vector<std::string>>(data);
 
-	std::size_t count = 0u;
+	int count = 0;
 	for (const auto& str : strStorage)
 	{
 		if (utils::isCorrectNumber(str))
@@ -74,4 +74,4 @@ std::string parseData(const std::string& data) noexcept
 	return "";
 }
 
-}
+} // namespace utils

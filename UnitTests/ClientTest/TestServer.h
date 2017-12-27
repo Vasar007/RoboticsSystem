@@ -12,7 +12,7 @@ namespace clientTests
 /**
  * \brief Simple test server for client.
  */
-class TestServer : public vasily::ServerImitator
+class TestServer final : public vasily::ServerImitator
 {
 public:
 	/**
@@ -60,8 +60,9 @@ public:
 	 * \brief					Receiv data from receiving socket.
 	 * \param[in] numberOfTimes Number of times to allow connections.
 	 */
-	void		receiveDataNTimes(const std::size_t numberOfTimes);
+	void		receiveDataNTimes(const int numberOfTimes);
 };
 
-}
+} // namespace clientTests
+
 #endif // TEST_SERVER_H

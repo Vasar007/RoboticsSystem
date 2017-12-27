@@ -21,7 +21,9 @@ Client::Client(const int serverPort, const std::string_view serverIP)
 	  _isNeedToWait(false),
 	  _circlicState(),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
-	  isNeedToUpdate(false)
+	  isNeedToUpdate(false),
+	  lastSentPoint{ { vasily::RobotData::DEFAULT_CORDINATES },
+					 { vasily::RobotData::DEFAULT_PARAMETERS } }
 {
 }
 
@@ -40,7 +42,9 @@ Client::Client(const int serverPortSending, const int serverReceiving,
 	  _isNeedToWait(false),
 	  _circlicState(),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
-	  isNeedToUpdate(false)
+	  isNeedToUpdate(false),
+	  lastSentPoint{ { vasily::RobotData::DEFAULT_CORDINATES },
+					 { vasily::RobotData::DEFAULT_PARAMETERS } }
 {
 }
 
@@ -71,13 +75,14 @@ Client& Client::operator=(Client&& other) noexcept
 
 void Client::receive()
 {
-	utils::println(std::cout, "\n\n\nThread started...\n");
-	_logger.write("\n\nClient launched at", utils::getCurrentSystemTime());
+	_printer.writeLine(std::cout, "\n\n\nThread started...\n");
+	_logger.writeLine("\n\nClient launched at", utils::getCurrentSystemTime());
 
-	std::size_t count = 0u;
+	int count = 0;
 	while (true)
 	{
-		std::string dataBuffer = receiveData(_receivingSocket);
+		const std::string dataBuffer = receiveData(_receivingSocket);
+		_duration = std::chrono::steady_clock::now() - _start;
 
 		if (!_isRunning)
 		{
@@ -120,11 +125,11 @@ void Client::receive()
 		isNeedToUpdate = true;
 
 		++count;
-		_duration = std::chrono::steady_clock::now() - _start;
-		utils::println(std::cout, count, "Duration:", _duration.count(), "seconds");
+   
+		_printer.writeLine(std::cout, count, "Duration:", _duration.count(), "seconds");
 
-		_logger.write(_message, '-', dataBuffer);
-		_logger.write(count, "Duration:", _duration.count(), "seconds");
+		_logger.writeLine(_message, '-', dataBuffer);
+		_logger.writeLine(count, "Duration:", _duration.count(), "seconds");
 	}
 }
 
@@ -145,7 +150,7 @@ void Client::waitLoop()
 	// Create data for robot.
 	_robotData = _DEFAULT_POSITION;
 
-	sendData(_sendingSocket, "2");
+	sendCoordinateType(CoordinateSystem::WORLD);
 
 	std::thread reciveThread(&Client::receive, this);
 	reciveThread.detach();
@@ -157,7 +162,7 @@ void Client::waitLoop()
 	///std::thread checkThread(&Client::checkConnection, this, std::cref(time));
 	///checkThread.detach();
 
-	utils::println(std::cout, "\n\n\nWaiting for reply...\n");
+	_printer.writeLine(std::cout, "\n\n\nWaiting for reply...\n");
 
 	std::string input;
 	while (true)
@@ -167,7 +172,7 @@ void Client::waitLoop()
 		switch (_handler.getCurrentMode())
 		{
 			case Handler::Mode::READING:
-				utils::print(std::cout, "Enter coordinates or to change mode enter '=':");
+				_printer.write(std::cout, "Enter coordinates or to change mode enter '=':");
 				std::getline(std::cin, input);
 
 				_handler.parseRawData(input, _robotData);
@@ -183,7 +188,7 @@ void Client::waitLoop()
 				break;
 
 			case Handler::Mode::COMMAND:
-				utils::print(std::cout, "Enter command or to change mode enter '=':");
+				_printer.write(std::cout, "Enter command or to change mode enter '=':");
 				std::getline(std::cin, input);
 
 				_handler.appendCommand(input, _robotData);
@@ -217,8 +222,8 @@ void Client::waitLoop()
 					}
 					else
 					{
-						utils::println(std::cout, "ERROR 06: Some error occurred in input stream!",
-									   "Input stream will be restarted.");
+						_printer.writeLine(std::cout, "ERROR 06: Some error occurred in input "
+										   "stream! Input stream will be restarted.");
 						_logger.restartStream(logger::Logger::TypeStream::INPUT_STREAM);
 					}
 				}
@@ -229,23 +234,16 @@ void Client::waitLoop()
 				else if (input == "test")
 				{
 					_robotData = _DEFAULT_POSITION;
-					_robotData.coordinates.at(Handler::Y) = -400'000;
-					std::string toSending = _robotData.toString();
-
-					_robotData.coordinates.at(Handler::Y) = 100'000;
-					toSending += _robotData.toString();
-					for (std::size_t i = 0u; i < 10u; ++i)
+					for (int i = 1; i <= 1'000; ++i)
 					{
-						_robotData.coordinates.at(Handler::Y) += 20'000;
-						if (checkCoordinates(_robotData))
+						_robotData.coordinates.at(Handler::Y) += 100 * i * (i & 1 ? 1 : -1);
+						sendCoordinates(_robotData);
+						_isNeedToWait = true;
+						while (_isNeedToWait)
 						{
-							toSending += _robotData.toString();
+							std::this_thread::sleep_for(std::chrono::milliseconds(1LL));
 						}
 					}
-
-					_logger.write(toSending);
-					_start = std::chrono::steady_clock::now();
-					sendData(_sendingSocket, toSending);
 				}
 				break;
 			
@@ -312,11 +310,13 @@ void Client::launch()
 }
 
 void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& secondPoint, 
-							   const std::size_t numberOfIterations)
+							   const int numberOfIterations)
 {
+	assert(numberOfIterations > 0);
+
 	_circlicState = CirclicState::SEND_FIRST;
 
-	std::size_t counterIterations = 0u;
+	int counterIterations = 0;
 
 	bool flag = true;
 
@@ -375,8 +375,10 @@ void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& sec
 }
 
 void Client::partialProcessing(const RobotData& firstPoint, const RobotData& secondPoint,
-							   const std::size_t numberOfSteps)
+							   const int numberOfSteps)
 {
+	assert(numberOfSteps > 0);
+
 	const RobotData directionalVector	= (secondPoint - firstPoint) / numberOfSteps;
 	RobotData robotData					= firstPoint;
 
@@ -385,7 +387,7 @@ void Client::partialProcessing(const RobotData& firstPoint, const RobotData& sec
 		return;
 	}
 
-	for (std::size_t i = 0u; i < numberOfSteps; ++i)
+	for (int i = 0; i < numberOfSteps; ++i)
 	{
 		robotData += directionalVector;
 
@@ -425,14 +427,16 @@ bool Client::sendCoordinates(const RobotData& robotData)
 {
 	if (checkCoordinates(robotData))
 	{
+		lastSentPoint = robotData;
 		_robotData = robotData;
-		_logger.write(robotData.toString());
+		_logger.writeLine(robotData);
 		_start = std::chrono::steady_clock::now();
 		sendData(_sendingSocket, robotData.toString());
 		return true;
 	}
 	
-	utils::println(std::cout, "ERROR 04: Incorrect coordinates to send!", robotData.toString());
+	_robotData = lastSentPoint;
+	_printer.writeLine(std::cout, "ERROR 04: Incorrect coordinates to send!", robotData);
 	return false;
 }
 
@@ -449,13 +453,13 @@ void Client::sendCoordinateType(const CoordinateSystem coordinateType) const
 			break;
 		
 		default:
-			utils::println(std::cout, "ERROR 05: Incorrect coordinate system to send!");
+			_printer.writeLine(std::cout, "ERROR 05: Incorrect coordinate system to send!");
 			break;
 	}
 }
 
 void Client::circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
-							 const std::size_t numberOfIterations)
+							 const int numberOfIterations)
 {
 	std::thread circlicThread(&Client::circlicProcessing, this, std::cref(firstPoint), 
 							  std::cref(secondPoint), numberOfIterations);
@@ -463,7 +467,7 @@ void Client::circlicMovement(const RobotData& firstPoint, const RobotData& secon
 }
 
 void Client::partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
-							 const std::size_t numberOfSteps)
+							 const int numberOfSteps)
 {
 	std::thread partialThread(&Client::partialProcessing, this, std::cref(firstPoint), 
 							  std::cref(secondPoint), numberOfSteps);

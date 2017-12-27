@@ -1,3 +1,6 @@
+#include <iostream>
+#include <iomanip>
+
 #include "Transmitter.h"
 
 
@@ -42,7 +45,7 @@ void Transmitter::updateVertices(const double time, const vasily::RobotData& rob
 	{
 		const double distance = utils::distance(_lastReachedPoint.coordinates.begin(),
 												_lastReachedPoint.coordinates.begin() + 2,
-												robotData.coordinates.begin(), 0.);
+												robotData.coordinates.begin(), 0., 10'000.);
 		_distance.emplace_back(distance);
 	}
 
@@ -55,8 +58,9 @@ void Transmitter::updateVertices(const double time, const vasily::RobotData& rob
 		_velocity.emplace_back(_distance.back() / time);
 	}
 
-	utils::println(std::cout, "1st ===> ", _lastReachedPoint.toString(), " <=== END");
-	utils::println(std::cout, "2nd ===> ", robotData.toString(), " <=== END");
+	auto& printer = printer::Printer::getInstance();
+	printer.writeLine(std::cout, std::setw(5), "1st ===> ", _lastReachedPoint, " <=== END");
+	printer.writeLine(std::cout, std::setw(5), "2nd ===> ", robotData, " <=== END");
 
 	_time.emplace_back(time);
 	_lastReachedPoint = robotData;
@@ -68,8 +72,8 @@ void Transmitter::updateVertices(const double time, const vasily::RobotData& rob
 		// Two types of velocity and distance placement.
 		//const float coordX = static_cast<float>(_velocity.at(i));
 		//const float coordY = static_cast<float>(_limitY - _distance.at(i)) - 1.f;
-		const float coordX = static_cast<float>(_distance.at(i) * 1);
-		const float coordY = static_cast<float>(_limitY - _velocity.at(i) * 1) - 1.f;
+		const float coordX = static_cast<float>(_distance.at(i) * 10);
+		const float coordY = static_cast<float>(_limitY - _velocity.at(i) * 10) - 1.f;
 		_deltaTime.append({ sf::Vector2f(coordX, coordY), sf::Color::Blue });
 
 		sf::CircleShape circle;
@@ -81,9 +85,11 @@ void Transmitter::updateVertices(const double time, const vasily::RobotData& rob
 		_circles.push_back(std::move(circle));
 	}
 	/// Command pack for tests:
-	/// p|830000 -400000 539000 -180000 0 0 1 2 0|1320000 317000 960000 -180000 0 0 1 2 0|5
+	/// p|830000 -400000 539000 -180000 0 0 1 2 0|1320000 400000 960000 -180000 0 0 1 2 0|5
 	/// 830000 -400000 539000 -180000 0 0 1 2 0
-	/// 1320000 317000 960000 -180000 0 0 1 2 0
+	/// 1320000 400000 960000 -180000 0 0 1 2 0
+	/// p|985000 -400000 940000 -180000 0 0 1 2 0|985000 400000 940000 -180000 0 0 1 2 0|800
+	/// p|985000 -400000 940000 -180000 0 0 1 2 0|985000 400000 940000 -180000 0 0 1 2 0|10
 }
 
 void Transmitter::clear()

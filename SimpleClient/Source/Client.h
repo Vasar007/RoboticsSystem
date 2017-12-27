@@ -138,9 +138,9 @@ protected:
 	static constexpr std::array<int, _MAIN_COORDINATES> _MIN_COORDS{ 830'000, -400'000, 539'000 };
 
 	/**
-	 * \brief Array contains maximum value for first 3 coordinates (x, y, z).
+	 * \brief Array contains maximum value for first 3 coordinates (x, y, z). 317'000
 	 */
-	static constexpr std::array<int, _MAIN_COORDINATES> _MAX_COORDS{ 1'320'000, 317'000, 960'000 };
+	static constexpr std::array<int, _MAIN_COORDINATES> _MAX_COORDS{ 1'320'000, 400'000, 960'000 };
 
 
 	/**
@@ -167,7 +167,7 @@ protected:
 	 * \param[in] numberOfIterations	Number of iterations in circlic movement.
 	 */
 	void		circlicProcessing(const RobotData& firstPoint, const RobotData& secondPoint, 
-								  const std::size_t numberOfIterations = 1u);
+								  const int numberOfIterations = 1);
 
 	/**
 	 * \brief					Work with robot in partial mode.
@@ -177,14 +177,19 @@ protected:
 	 * \param[in] numberOfSteps Number of steps for which robot should move from start to end point.
 	 */
 	void		partialProcessing(const RobotData& firstPoint, const RobotData& secondPoint,
-								  const std::size_t numberOfSteps = 1u);
+								  const int numberOfSteps = 1);
 
 
 public:
 	/**
 	 * \brief Used to define break point for transmitter.
 	 */
-	std::atomic_bool isNeedToUpdate;
+	std::atomic_bool    isNeedToUpdate;
+
+	/**
+	 * \brief Keep last sent robot's point.
+	 */
+	RobotData           lastSentPoint;
 
 
 	/**
@@ -220,7 +225,7 @@ public:
 	 * \param[in] other Other client object.
 	 * \return			Returns nothing because it's deleted.
 	 */
-	Client&		operator=(const Client& other)	= delete;
+	Client&		operator =(const Client& other)	= delete;
 
 	/**
 	 * \brief				Move constructor.
@@ -233,7 +238,7 @@ public:
 	 * \param[out] other	Other client object.
 	 * \return				Returns an object with all moved data.
 	 */
-	Client&		operator=(Client&& other) noexcept;
+	Client&		operator =(Client&& other) noexcept;
 
 
 	/**
@@ -282,7 +287,7 @@ public:
 	 * \endcode
 	 */
 	void		circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
-								const std::size_t numberOfIterations);
+								const int numberOfIterations = 1);
 
 	/**
 	 * \brief					Launch thread for partial processing and 
@@ -296,7 +301,7 @@ public:
 	 * \endcode
 	*/
 	void		partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
-								const std::size_t numberOfSteps);
+								const int numberOfSteps = 1);
 
 	/**
 	 * \brief Additional fuction that receives data from server.
@@ -330,6 +335,6 @@ public:
 	friend void utils::swap(T& first, T& second) noexcept;
 };
 
-}
+} // namespace vasily
 
 #endif // CLIENT_H

@@ -15,7 +15,7 @@ ServerImitator::ServerImitator(const int sendingPort, const int recivingPort, co
 	  _clientReceivingSocket(0),
 	  _hasGotCoordSystem(false),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
-	  _lastReceivedData({ RobotData::DEFAULT_CORDINATES }, { RobotData::DEFAULT_PARAMETERS })
+	  _lastReceivedData{ { RobotData::DEFAULT_CORDINATES }, { RobotData::DEFAULT_PARAMETERS } }
 {
 }
 
@@ -44,8 +44,8 @@ ServerImitator& ServerImitator::operator=(ServerImitator&& other) noexcept
 
 void ServerImitator::process()
 {
-	utils::println(std::cout, "\n\n\nWaiting for connections...\n");
-	_logger.write("\n\nServer waiting for connections at", utils::getCurrentSystemTime());
+	_printer.writeLine(std::cout, "\n\n\nWaiting for connections...\n");
+	_logger.writeLine("\n\nServer waiting for connections at", utils::getCurrentSystemTime());
 
 	while (!_isRunning)
 	{
@@ -64,11 +64,11 @@ void ServerImitator::process()
 
 void ServerImitator::waitLoop()
 {
-	utils::println(std::cout, "\n\n\nWaiting for reply...\n");
+	_printer.writeLine(std::cout, "\n\n\nWaiting for reply...\n");
 
 	waitingForConnections();
 
-	_logger.write("Server started to receive at", utils::getCurrentSystemTime());
+	_logger.writeLine("Server started to receive at", utils::getCurrentSystemTime());
 
 	while (true)
 	{
@@ -83,11 +83,11 @@ void ServerImitator::waitLoop()
 		if (!_hasGotCoordSystem && !dataBuffer.empty())
 		{
 			const std::string coordSystemStr = dataBuffer.substr(0u, 1u);
-			utils::println(std::cout, coordSystemStr);
+			_printer.writeLine(std::cout, coordSystemStr);
 			_hasGotCoordSystem = true;
 		}
 
-		_logger.write(_message, '-', dataBuffer);
+		_logger.writeLine(_message, '-', dataBuffer);
 		std::string toSending = utils::parseFullData(dataBuffer);
 
 		bool flag;
@@ -136,9 +136,10 @@ void ServerImitator::waitingForConnections()
 
 std::chrono::milliseconds ServerImitator::calculateDuration(const RobotData& robotData)
 {
+	// Calculate distance between two points, which contains only first 3 coordinates.
 	const double distance   = utils::distance(_lastReceivedData.coordinates.begin(),
 											  _lastReceivedData.coordinates.begin() + 2,
-											  robotData.coordinates.begin(), 0.);
+											  robotData.coordinates.begin(), 0., 10'000.);
 	_lastReceivedData       = robotData;
 
 	constexpr long long multiplier  = 65LL;

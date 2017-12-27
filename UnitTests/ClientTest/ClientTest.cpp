@@ -11,7 +11,7 @@ namespace clientTests
  * \param[out] testServer   Thread to launch.
  * \param[in] numberOfTimes Number of times to allow connections.
  */
-void initTestServer(TestServer& testServer, const std::size_t numberOfTimes = 1u)
+void initTestServer(TestServer& testServer, const int numberOfTimes = 1)
 {
 	testServer.init();
 	testServer.launch();
@@ -28,7 +28,7 @@ void initTestServer(TestServer& testServer, const std::size_t numberOfTimes = 1u
  * \param[in] numberOfTimes Number of times to allow connections.
  */
 template <typename Functor>
-void initClient(ModClient& client, Functor&& funcToCall, const std::size_t numberOfTimes = 1u)
+void initClient(ModClient& client, Functor&& funcToCall, const int numberOfTimes = 1)
 {
 	client.init();
 	client.launch();
@@ -39,11 +39,12 @@ void initClient(ModClient& client, Functor&& funcToCall, const std::size_t numbe
 	funcToCall();
 }
 
+
 void ClientTest::testMethod1()
 {
 	TestServer testServer;
 
-	std::thread serverThread(initTestServer, std::ref(testServer), 1u + 1u);
+	std::thread serverThread(initTestServer, std::ref(testServer), 1 + 1);
 	serverThread.detach();
 	
 	ModClient client;
@@ -53,7 +54,7 @@ void ClientTest::testMethod1()
 		std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
 
 		client.sendCoordinatesMod({ 985'000, 0, 940'000, -180'000, 0, 0, 10, 2, 0 });
-	}, 0u);
+	}, 0);
 
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
@@ -75,7 +76,7 @@ void ClientTest::testMethod2()
 {
 	TestServer testServer;
 
-	std::thread serverThread(initTestServer, std::ref(testServer), 1u);
+	std::thread serverThread(initTestServer, std::ref(testServer), 1);
 	serverThread.detach();
 
 	ModClient client;
@@ -93,7 +94,7 @@ void ClientTest::testMethod2()
 		client.sendCoordinatesMod({ 829'999,	0,			940'000, -180'000, 0, 0, 10, 2, 0 });
 		client.sendCoordinatesMod({ 1'320'001,  0,			940'000, -180'000, 0, 0, 10, 2, 0 });
 		client.sendCoordinatesMod({ 830'000,   -400'001,	538'999, -180'000, 0, 0, 10, 2, 0 });
-	}, 0u);
+	}, 0);
 
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
@@ -113,7 +114,7 @@ void ClientTest::testMethod3()
 {
 	TestServer testServer;
 	
-	std::thread serverThread(initTestServer, std::ref(testServer), 1u + 5u + 1u);
+	std::thread serverThread(initTestServer, std::ref(testServer), 1 + 5 + 1);
 	serverThread.detach();
 	
 	ModClient client;
@@ -122,7 +123,7 @@ void ClientTest::testMethod3()
 		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
 		std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
 	
-		constexpr std::size_t numberOfTimes = 2u;
+		constexpr int numberOfTimes = 2;
 		client.circlicMovementMod({ 985'000, 0,			940'000, -180'000, 0,	0, 10, 2, 0 },
 								  { 900'000, 100'000,	800'000, -150'000, 10,	0, 10, 2, 0 }, 
 								  numberOfTimes);
@@ -130,7 +131,7 @@ void ClientTest::testMethod3()
 		client.circlicMovementMod({ 985'000, 0,			940'000, -180'000, 0,	0, 10, 2, 0 },
 								  { 800'000, 100'000,	800'000, -150'000, 10,	0, 10, 2, 0 },
 								  numberOfTimes);
-	}, 5u + 1u);
+	}, 5 + 1);
 	
 	
 	std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
@@ -157,7 +158,7 @@ void ClientTest::testMethod4()
 {
 	TestServer testServer;
 
-	std::thread serverThread(initTestServer, std::ref(testServer), 1u + 6u + 5u);
+	std::thread serverThread(initTestServer, std::ref(testServer), 1 + 6 + 5);
 	serverThread.detach();
 
 	ModClient client;
@@ -166,7 +167,7 @@ void ClientTest::testMethod4()
 		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
 		std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
 
-		constexpr std::size_t numberOfSteps = 5u;
+		constexpr int numberOfSteps = 5;
 		client.partialMovementMod({ 985'000, 0,			940'000, -180'000, 0,	0, 10, 2, 0 },
 								  { 900'000, 100'000,	800'000, -150'000, 10,	0, 10, 2, 0 },
 								  numberOfSteps);
@@ -174,7 +175,7 @@ void ClientTest::testMethod4()
 		client.partialMovementMod({ 985'000, 0,			940'000, -180'000, 0,	0, 10, 2, 0 },
 								  { 800'000, 100'000,	800'000, -150'000, 10,	0, 10, 2, 0 },
 								  numberOfSteps);
-	}, 6u + 5u);
+	}, 6 + 5);
 
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
@@ -197,4 +198,4 @@ void ClientTest::testMethod4()
 	}
 }
 
-}
+} // namespace clientTests

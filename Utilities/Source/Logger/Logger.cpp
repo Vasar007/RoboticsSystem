@@ -14,28 +14,28 @@ Logger::Logger(const std::string& inputFile, const std::string& outputFile)
 {
 }
 
-Logger::~Logger()
+Logger::~Logger() noexcept
 {
     inFile.close();
     outFile.close();
 }
 
-bool Logger::hasAnyInputErrors() const
+bool Logger::hasAnyInputErrors() const noexcept
 {
     return !_hasNotAnyInputErrors;
 }
 
-bool Logger::hasAnyOutputErrors() const
+bool Logger::hasAnyOutputErrors() const noexcept
 {
     return !_hasNotAnyOutputErrors;
 }
 
-bool Logger::hasAnyErrors() const
+bool Logger::hasAnyErrors() const noexcept
 {
     return !_hasNotAnyInputErrors && !_hasNotAnyOutputErrors;
 }
 
-void Logger::restartStream(const TypeStream ioStream)
+void Logger::restartStream(const TypeStream ioStream) noexcept
 {
     switch (ioStream)
     {
@@ -53,4 +53,4 @@ void Logger::restartStream(const TypeStream ioStream)
     }
 }
 
-}
+} // namespace logger

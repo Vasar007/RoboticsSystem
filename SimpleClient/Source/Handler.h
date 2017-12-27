@@ -23,7 +23,7 @@ struct ParsedResult
 	/**
 	 * \brief Number of iterations for circlic movement.
 	 */
-	std::size_t	mNumberOfIterations	= 1u;
+	int	        mNumberOfIterations	= 1;
 
 	/**
 	 * \brief Additional flag to check correctness of coordinates.
@@ -159,7 +159,7 @@ private:
 	/**
 	 * \brief Number of iterations for circlic movement.
 	 */
-	std::size_t								_numberOfIterations;
+	int								        _numberOfIterations;
 
 	/**
 	 * \brief Parsed data structure which build from input data after command literal.
@@ -170,6 +170,11 @@ private:
 	 * \brief Associative array which contains keyboard button and move state command.
 	 */
 	std::unordered_map<std::string, State>	_mapping;
+
+	/**
+	* \brief Implementation of type-safe output printer.
+	*/
+	printer::Printer&                       _printer = printer::Printer::getInstance();
 
 
 	/**

@@ -20,15 +20,6 @@ namespace utils
 {
 
 /**
- * \brief		Check whether the templates are same datatype at compile time.
- * \tparam T	Datatype to check.
- * \return		True — current data types are same, false — otherwise.
- */
-template <class T, class U>
-constexpr bool		isSame() noexcept;
-
-
-/**
  * \brief			Since std::to_string doesn't work on MinGW we have to implement our own
  *					to support all platforms.
  * \details			Function doesn't work with user's objects.
@@ -112,10 +103,9 @@ int					stringToInt(const std::string& str) noexcept;
 
 /**
  * \brief           Get current system time.
- * \param[in] flag  Additional flag to perfom some actions.
  * \return          String that cintains current readable time.
  */
-std::string         getCurrentSystemTime(const int flag = 0) noexcept;
+std::string         getCurrentSystemTime() noexcept;
 
 
 /**
@@ -128,14 +118,27 @@ std::string         getCurrentSystemTime(const int flag = 0) noexcept;
  * \param[in] last1     The ending of range of elements.
  * \param[in] first2    The beginning of the second range of elements.
  * \param[in] value     Initial value of the sum of the products.
+ * \param[in] divisor   Value used to divide initial product.
  * \return              Distance between two points.
  */
 template <class InputIt1, class InputIt2, typename T>
-T                   distance(InputIt1 first1, InputIt1 last1, InputIt2 first2, T value);
+[[nodiscard]]
+T                   distance(InputIt1 first1, InputIt1 last1, InputIt2 first2, T value, T divisor);
+
+/**
+ * \brief           Compare two not integral numbers.
+ * \param[in] a     First number to compare.
+ * \param[in] b     Second number to compare.
+ * \param maxUlps   The number of binary bits (starting with youngest) to compare the numbers
+ *                  allowed to miss.
+ * \return          True if numbers almost equal, false — otherwise.
+ */
+[[nodiscard]]
+bool                almostEqual2Complement(float a, float b, int maxUlps) noexcept;
 
 
 #include "Utility.inl"
 
-}
+} // namespace utils
 
 #endif // UTILITY_H

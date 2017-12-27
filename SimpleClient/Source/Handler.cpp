@@ -14,7 +14,7 @@ Handler::Handler()
 	  _coorninateSystem(CoordinateSystem::WORLD),
 	  _data(),
 	  _coefficient(10'000),
-	  _numberOfIterations(0u),
+	  _numberOfIterations(0),
 	  _parsedResult(),
 	  _mapping({
 		{ "q", State::FORWARD },		{ "a", State::BACK },
@@ -68,7 +68,7 @@ bool Handler::checkChangingCoordinateSysytem(const std::string& letter)
 				break;
 
 			default:
-				utils::println(std::cout, "ERROR 01: Incorrect coordinate system!");
+				_printer.writeLine(std::cout, "ERROR 01: Incorrect coordinate system!");
 				return false;
 		}
 
@@ -98,7 +98,7 @@ Handler::State Handler::parseCommand(const std::string_view command)
 
 	if (!checkChangingMode(letter))
 	{
-		utils::println(std::cout, "ERROR 03: Incorrect input data!");
+		_printer.writeLine(std::cout, "ERROR 03: Incorrect input data!");
 	}
 
 	return State::DEFAULT;
@@ -210,7 +210,7 @@ ParsedResult Handler::parseDataAfterCommand()
 			break;
 	}
 
-	utils::println(std::cout, "ERROR 02: Incorrect input data after literal!");
+	_printer.writeLine(std::cout, "ERROR 02: Incorrect input data after literal!");
 	result.mIsCorrect = false;
 	return result;
 }
