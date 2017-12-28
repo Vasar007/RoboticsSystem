@@ -86,9 +86,13 @@ using Ostream   = decltype(std::cout << std::declval<T>());
 template <typename T>
 using StdFree   = decltype(std::cout << std::to_string(std::declval<T>()));
 template <typename T>
-using Free      = decltype(std::cout << to_string(std::declval<T>()));
+using Free1      = decltype(std::cout << to_string(std::declval<T>()));
 template <typename T>
-using Member    = decltype(std::cout << std::declval<T>().toString());
+using Free2 = decltype(std::cout << toString(std::declval<T>()));
+template <typename T>
+using Member1 = decltype(std::cout << std::declval<T>().to_string());
+template <typename T>
+using Member2    = decltype(std::cout << std::declval<T>().toString());
 
 ////////////////////////////// The implementations. //////////////////////////////
 
@@ -110,11 +114,19 @@ void print(OutputStream& out, const T& t) noexcept
     {
         out << std::to_string(t);
     }
-    else if constexpr(VALID_EXPRESSION<Free, T>)
+    else if constexpr(VALID_EXPRESSION<Free1, T>)
     {
         out << to_string(t);
     }
-    else if constexpr(VALID_EXPRESSION<Member, T>)
+    else if constexpr(VALID_EXPRESSION<Free2, T>)
+    {
+        out << toString(t);
+    }
+    else if constexpr(VALID_EXPRESSION<Member1, T>)
+    {
+        out << t.to_string();
+    }
+    else if constexpr(VALID_EXPRESSION<Member2, T>)
     {
         out << t.toString();
     }
@@ -144,11 +156,19 @@ void print(OutputStream& out, const T& t, const Args&... args) noexcept
     {
         out << std::to_string(t) << ' ';
     }
-    else if constexpr(VALID_EXPRESSION<Free, T>)
+    else if constexpr(VALID_EXPRESSION<Free1, T>)
     {
         out << to_string(t) << ' ';
     }
-    else if constexpr(VALID_EXPRESSION<Member, T>)
+    else if constexpr(VALID_EXPRESSION<Free2, T>)
+    {
+        out << toString(t) << ' ';
+    }
+    else if constexpr(VALID_EXPRESSION<Member1, T>)
+    {
+        out << t.to_string() << ' ';
+    }
+    else if constexpr(VALID_EXPRESSION<Member2, T>)
     {
         out << t.toString() << ' ';
     }
@@ -178,11 +198,19 @@ void println(OutputStream& out, const T& t) noexcept
     {
         out << std::to_string(t) << '\n';
     }
-    else if constexpr(VALID_EXPRESSION<Free, T>)
+    else if constexpr(VALID_EXPRESSION<Free1, T>)
     {
         out << to_string(t) << '\n';
     }
-    else if constexpr(VALID_EXPRESSION<Member, T>)
+    else if constexpr(VALID_EXPRESSION<Free2, T>)
+    {
+        out << toString(t) << '\n';
+    }
+    else if constexpr(VALID_EXPRESSION<Member1, T>)
+    {
+        out << t.to_string() << '\n';
+    }
+    else if constexpr(VALID_EXPRESSION<Member2, T>)
     {
         out << t.toString() << '\n';
     }
@@ -212,11 +240,19 @@ void println(OutputStream& out, const T& t, const Args&... args) noexcept
     {
         out << std::to_string(t) << ' ';
     }
-    else if constexpr(VALID_EXPRESSION<Free, T>)
+    else if constexpr(VALID_EXPRESSION<Free1, T>)
     {
         out << to_string(t) << ' ';
     }
-    else if constexpr(VALID_EXPRESSION<Member, T>)
+    else if constexpr(VALID_EXPRESSION<Free2, T>)
+    {
+        out << toString(t) << ' ';
+    }
+    else if constexpr(VALID_EXPRESSION<Member1, T>)
+    {
+        out << t.to_string() << ' ';
+    }
+    else if constexpr(VALID_EXPRESSION<Member2, T>)
     {
         out << t.toString() << ' ';
     }
