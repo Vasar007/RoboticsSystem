@@ -70,7 +70,7 @@ private:
      * \param[in] t Data to write.
      */
     template <typename T>
-    void implWrite(const T& t) noexcept;
+    void doWrite(const T& t) noexcept;
 
     /**
      * \brief           Write (unlimited) data in output stream.
@@ -80,7 +80,7 @@ private:
      * \param[in] args  Data to write.
      */
     template <typename T, typename ...Args>
-    void implWrite(const T& t, const Args&... args) noexcept;
+    void doWrite(const T& t, const Args&... args) noexcept;
 
     /**
      * \brief       Write data in output stream and new line character.
@@ -88,7 +88,7 @@ private:
      * \param[in] t Data to write.
      */
     template <typename T>
-    void implWriteLine(const T& t) noexcept;
+    void doWriteLine(const T& t) noexcept;
 
     /**
      * \brief           Write (unlimited) data in output stream and new line character.
@@ -98,7 +98,7 @@ private:
      * \param[in] args  Data to write.
      */
     template <typename T, typename ...Args>
-    void implWriteLine(const T& t, const Args&... args) noexcept;
+    void doWriteLine(const T& t, const Args&... args) noexcept;
 
 
 public:

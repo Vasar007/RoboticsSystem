@@ -22,7 +22,7 @@ void Logger::restart(Stream& stream) noexcept
 }
 
 template <typename T>
-void Logger::implWrite(const T& t) noexcept
+void Logger::doWrite(const T& t) noexcept
 {
     // It is necessary to flush buffer here.
     outFile << t << ' ' << std::flush;
@@ -30,16 +30,16 @@ void Logger::implWrite(const T& t) noexcept
 }
 
 template <typename T, typename ...Args>
-void Logger::implWrite(const T& t, const Args&... args) noexcept
+void Logger::doWrite(const T& t, const Args&... args) noexcept
 {
     outFile << t << ' ';
     _hasNotAnyOutputErrors = outFile.good();
 
-    implWrite(args...);
+    doWrite(args...);
 }
 
 template <typename T>
-void Logger::implWriteLine(const T& t) noexcept
+void Logger::doWriteLine(const T& t) noexcept
 {
     // std::endl because it is necessary to flush buffer here.
     outFile << t << std::endl;
@@ -47,26 +47,26 @@ void Logger::implWriteLine(const T& t) noexcept
 }
 
 template <typename T, typename ...Args>
-void Logger::implWriteLine(const T& t, const Args&... args) noexcept
+void Logger::doWriteLine(const T& t, const Args&... args) noexcept
 {
     outFile << t << ' ';
     _hasNotAnyOutputErrors = outFile.good();
 
-    implWriteLine(args...);
+    doWriteLine(args...);
 }
 
 template <typename ...Args>
 void Logger::write(const Args&... args) noexcept
 {
     std::lock_guard<std::mutex> lockGuard{ _mutex };
-    implWrite(args...);
+    doWrite(args...);
 }
 
 template <typename ...Args>
 void Logger::writeLine(const Args&... args) noexcept
 {
     std::lock_guard<std::mutex> lockGuard{ _mutex };
-    implWriteLine(args...);
+    doWriteLine(args...);
 }
 
 template <typename T>
