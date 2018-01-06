@@ -40,6 +40,6 @@ public:
 	TEST_METHOD(testMethod4);
 };
 
-}
+} // namespace clientTests
 
 #endif // CLIENT_TEST_H

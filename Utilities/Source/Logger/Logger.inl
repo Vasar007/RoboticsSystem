@@ -3,14 +3,14 @@
 
 
 template <class Stream>
-void Logger::restart(Stream& stream)
+void Logger::restart(Stream& stream) noexcept
 {
-    if constexpr (utils::isSame<Stream, std::ifstream>())
+    if constexpr (std::is_same<Stream, std::ifstream>::value)
     {
         stream.clear();
         stream.seekg(0, std::ios::beg);
     }
-    else if constexpr (utils::isSame<Stream, std::ofstream>())
+    else if constexpr (std::is_same<Stream, std::ofstream>::value)
     {
         stream.clear();
         stream.seekp(0, std::ios::beg);
@@ -22,7 +22,24 @@ void Logger::restart(Stream& stream)
 }
 
 template <typename T>
-void Logger::write(const T& t)
+void Logger::doWrite(const T& t) noexcept
+{
+    // It is necessary to flush buffer here.
+    outFile << t << ' ' << std::flush;
+    _hasNotAnyOutputErrors = outFile.good();
+}
+
+template <typename T, typename ...Args>
+void Logger::doWrite(const T& t, const Args&... args) noexcept
+{
+    outFile << t << ' ';
+    _hasNotAnyOutputErrors = outFile.good();
+
+    doWrite(args...);
+}
+
+template <typename T>
+void Logger::doWriteLine(const T& t) noexcept
 {
     // std::endl because it is necessary to flush buffer here.
     outFile << t << std::endl;
@@ -30,16 +47,30 @@ void Logger::write(const T& t)
 }
 
 template <typename T, typename ...Args>
-void Logger::write(const T& t, const Args&... args)
+void Logger::doWriteLine(const T& t, const Args&... args) noexcept
 {
     outFile << t << ' ';
     _hasNotAnyOutputErrors = outFile.good();
 
-    write(args...);
+    doWriteLine(args...);
+}
+
+template <typename ...Args>
+void Logger::write(const Args&... args) noexcept
+{
+    std::lock_guard<std::mutex> lockGuard{ _mutex };
+    doWrite(args...);
+}
+
+template <typename ...Args>
+void Logger::writeLine(const Args&... args) noexcept
+{
+    std::lock_guard<std::mutex> lockGuard{ _mutex };
+    doWriteLine(args...);
 }
 
 template <typename T>
-T Logger::read()
+T Logger::read() noexcept
 {  
     std::string readedData;
     if (!inFile.eof())

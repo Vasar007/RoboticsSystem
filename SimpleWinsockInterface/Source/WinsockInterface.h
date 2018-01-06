@@ -8,6 +8,8 @@
 #include <winsock2.h>
 #include <Ws2tcpip.h>
 
+#include "Utilities.h"
+
 #pragma comment (lib, "ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
@@ -113,6 +115,11 @@ protected:
 	 * \brief Buffer that is used to keep clients addresses.
 	 */
 	char							_message[_MAXRECV];
+
+	/**
+	 * \brief Implementation of type-safe output printer.
+	 */
+	printer::Printer&               _printer = printer::Printer::getInstance();
 
 	/**
 	 * \brief Table of WinSock errors, which you can get from function WSAGetLastError().
@@ -233,7 +240,7 @@ public:
 	 * \param[in] other Other object.
 	 * \return			Return nothing because it's deleted.
 	 */
-	WinsockInterface&	operator=(const WinsockInterface& other)			= delete;
+	WinsockInterface&	operator =(const WinsockInterface& other)			= delete;
 
 	/**
 	 * \brief				Deleted move constructor.
@@ -246,7 +253,7 @@ public:
 	 * \param[out] other	Other object.
 	 * \return				Return nothing because it's deleted.
 	 */
-	WinsockInterface&	operator=(WinsockInterface&& other) noexcept		= delete;
+	WinsockInterface&	operator =(WinsockInterface&& other) noexcept		= delete;
 
 	/**
 	 * \brief	Displaying cuurent network interactions.
@@ -275,6 +282,6 @@ public:
 	virtual void		launch() = 0;
 };
 
-}
+} // namespace vasily
 
 #endif // WINSOCK_INTERFACE_H

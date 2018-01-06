@@ -16,8 +16,8 @@ namespace utils
  * \return			            Deserialized data if parsed successful, empty string otherwise.
  */
 [[nodiscard]]
-std::string parseFullData(const std::string& data, const std::size_t numberOfCoords = 9u,
-                          const std::size_t excludeNumber = 2u) noexcept;
+std::string parseFullData(const std::string& data, const int numberOfCoords = 9,
+                          const int excludeNumber = 2) noexcept;
 
 
 /**
@@ -50,6 +50,6 @@ Container	fsplit(const std::string& str, const std::string_view delim = " ") noe
 
 #include "Parsing.inl"
 
-}
+} // namespace utils
 
 #endif // PARSING_H

@@ -9,7 +9,7 @@
 namespace clientTests
 {
 
-class ModClient : public vasily::Client
+class ModClient final : public vasily::Client
 {
 public:
 	/**
@@ -63,7 +63,7 @@ public:
 	 * \details					Create additional thread to receive data from sercer.
 	 * \param[in] numberOfTimes Number of times to allow connections.
 	 */
-	void		receiveDataNTimes(const std::size_t numberOfTimes);
+	void		receiveDataNTimes(const int numberOfTimes);
 
 	/**
 	 * \brief				Check coordinates and if it's right sends to robot.
@@ -81,7 +81,7 @@ public:
 	 */
 	void		circlicMovementMod(const vasily::RobotData& firstPoint, 
 								   const vasily::RobotData& secondPoint,
-								   const std::size_t numberOfIterations);
+								   const int numberOfIterations);
 
 
 	/**
@@ -94,16 +94,16 @@ public:
 	 */
 	void		partialMovementMod(const vasily::RobotData& firstPoint, 
 								   const vasily::RobotData& secondPoint,
-								   const std::size_t numberOfSteps);
+								   const int numberOfSteps);
 
 	/**
 	 * \brief					Spawn new thread to receive data from client.
 	 * \param[in] numberOfTimes Number of times to allow connections.
 	 * \return					Created thread.
 	 */
-	std::thread	spawn(const std::size_t numberOfTimes);
+	std::thread	spawn(const int numberOfTimes);
 };
 
-}
+} // namespace clientTests
 
 #endif // MOD_CLIENT_H

@@ -12,9 +12,9 @@ TestServer::TestServer(const int sendingPort, const int recivingPort, const int 
 {
 }
 
-void TestServer::receiveDataNTimes(const std::size_t numberOfTimes)
+void TestServer::receiveDataNTimes(const int numberOfTimes)
 {
-	std::lock_guard<std::mutex> lockGuard(mMutex);
+	std::lock_guard<std::mutex> lockGuard{ mMutex };
 
 	waitingForConnections();
 	if (_clientReceivingSocket != 0 && _clientSendingSocket != 0)
@@ -22,7 +22,7 @@ void TestServer::receiveDataNTimes(const std::size_t numberOfTimes)
 		mHasConnected = true;
 	}
 
-	for (std::size_t step = 0u; step < numberOfTimes; ++step)
+	for (int step = 0; step < numberOfTimes; ++step)
 	{
 		std::string dataBuffer = receiveData(_clientReceivingSocket);
 
@@ -63,4 +63,4 @@ void TestServer::receiveDataNTimes(const std::size_t numberOfTimes)
 	mHasFinished = true;
 }
 
-}
+} // namespace clientTests

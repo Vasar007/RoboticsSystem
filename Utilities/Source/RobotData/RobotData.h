@@ -2,6 +2,7 @@
 #define ROBOT_DATA_H
 
 #include <array>
+#include <cassert>
 
 
 namespace vasily
@@ -72,8 +73,8 @@ struct RobotData
 						  const int lastCommand) noexcept
 					: coordinates{ x, y, z, w, p, r },
 					  parameters{ segtime, movingType, lastCommand }
-				{
-				}
+	{
+	}
 
 	/**
 	 * \brief                       Constructor for creating structure from two arrays.
@@ -103,7 +104,7 @@ struct RobotData
 	 * \param[in] other Other object.
 	 * \return			Return copied structure.
 	 */
-	constexpr RobotData& operator=(const RobotData& other)      = default;
+	constexpr RobotData& operator =(const RobotData& other)      = default;
 
 	/**
 	 * \brief				Default move constructor.
@@ -116,7 +117,7 @@ struct RobotData
 	 * \param[out] other	Other object.
 	 * \return				Return moved structure.
 	 */
-	constexpr RobotData& operator=(RobotData&& other) noexcept  = default;
+	constexpr RobotData& operator =(RobotData&& other) noexcept  = default;
 
 
 	/**
@@ -127,39 +128,66 @@ struct RobotData
 
 	/**
 	 * \brief	Calculate length of vector which contains 6 coordinates.
-	 * \detail  Fucntion uses only first 3 coordinates!
+	 * \detail  Fucntion uses to calculate length in centimeters!
 	 * \return	Square root of sum of coordinates squares.
 	 */
-	double		length() const;
+	double length() const;
 
 	/**
 	 * \brief			Check two structures on full equality.
 	 * \param[in] other Other object to compare.
 	 * \return			True if structures are equal, false otherwise.
 	 */
-	bool		isEqual(const RobotData& other) const;
+	constexpr bool isEqual(const RobotData& other) const
+	{
+		for (std::size_t i = 0u; i < NUMBER_OF_PARAMETERS; ++i)
+		{
+			if (this->parameters.at(i) != other.parameters.at(i))
+			{
+				return false;
+			}
+		}
+		return *this == other;
+	}
 
 	/**
 	 * \brief Reset coordinates and parameters values to default.
 	 */
-	void        returnToDefault();
+	constexpr void returnToDefault() noexcept
+	{
+		coordinates = DEFAULT_CORDINATES;
+		parameters  = DEFAULT_PARAMETERS;
+	}
 
 
 	/**
 	 * \brief			Check coordinate arrays of two structures on equality.
 	 * \param[in] lhs	Left-hand side object.
 	 * \param[in] rhs	Right-hand side object.
-	 * \return			True if 6 coordinates are equal, false otherwise.
+	 * \return			True if coordinates are equal, false otherwise.
 	 */
-	friend bool operator ==(const RobotData& lhs, const RobotData& rhs);
+	friend constexpr bool operator ==(const RobotData& lhs, const RobotData& rhs)
+	{
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			if (lhs.coordinates.at(i) != rhs.coordinates.at(i))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
 				
 	/**
 	 * \brief			Check coordinate arrays of two structures on equality.
 	 * \param[in] lhs	Left-hand side object.
 	 * \param[in] rhs	Right-hand side object.
-	 * \return			True if 6 coordinates are not equal, false otherwise.
+	 * \return			True if coordinates are not equal, false otherwise.
 	 */
-	friend bool operator !=(const RobotData& lhs, const RobotData& rhs);
+	friend constexpr bool operator !=(const RobotData& lhs, const RobotData& rhs)
+	{
+		return !(lhs == rhs);
+	}
 				
 	/**
 	 * \brief			Compare coordinate arrays of two structures.
@@ -167,7 +195,17 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			True if lhs object is less than rhs object, false otherwise.
 	 */
-	friend bool operator <(const RobotData& lhs, const RobotData& rhs);
+	friend constexpr bool operator <(const RobotData& lhs, const RobotData& rhs)
+	{
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			if (lhs.coordinates.at(i) > rhs.coordinates.at(i))
+			{
+				return false;
+			}
+		}
+		return !(lhs == rhs);
+	}
 				
 	/**
 	 * \brief			Compare coordinate arrays of two structures.
@@ -175,15 +213,10 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			True if lhs object is greater than rhs object, false otherwise.
 	 */
-	friend bool operator >(const RobotData& lhs, const RobotData& rhs);
-
-	/**
-	 * \brief			Subtract coordinate rhs object from lhs object.
-	 * \param[in] lhs	Left-hand side object.
-	 * \param[in] rhs	Right-hand side object.
-	 * \return			Result of sustraction.
-	 */
-	friend RobotData operator -(const RobotData& lhs, const RobotData& rhs);
+	friend constexpr bool operator >(const RobotData& lhs, const RobotData& rhs)
+	{
+		return !(lhs < rhs) && !(lhs == rhs);
+	}
 
 	/**
 	 * \brief			Sum coordinate of lhs and rhs objects.
@@ -191,7 +224,16 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of sum.
 	 */
-	friend RobotData operator +(const RobotData& lhs, const RobotData& rhs);
+	friend constexpr RobotData operator +(const RobotData& lhs, const RobotData& rhs)
+	{
+		RobotData result;
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			result.coordinates.at(i) = lhs.coordinates.at(i) + rhs.coordinates.at(i);
+		}
+
+		return result;
+	}
 
 	/**
 	 * \brief			Sum coordinate of lhs and rhs objects.
@@ -199,7 +241,81 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of sum puts in lhs object.
 	 */
-	friend RobotData& operator +=(RobotData& lhs, const RobotData& rhs);
+	friend constexpr RobotData& operator +=(RobotData& lhs, const RobotData& rhs)
+	{
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			lhs.coordinates.at(i) += rhs.coordinates.at(i);
+		}
+
+		return lhs;
+	}
+
+	/**
+	 * \brief			Subtract coordinate rhs object from lhs object.
+	 * \param[in] lhs	Left-hand side object.
+	 * \param[in] rhs	Right-hand side object.
+	 * \return			Result of sustraction.
+	 */
+	friend constexpr RobotData operator -(const RobotData& lhs, const RobotData& rhs)
+	{
+		RobotData result;
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			result.coordinates.at(i) = lhs.coordinates.at(i) - rhs.coordinates.at(i);
+		}
+
+		return result;
+	}
+
+	/**
+	 * \brief			Subtract coordinate of lhs and rhs objects.
+	 * \param[in] lhs	Left-hand side object.
+	 * \param[in] rhs	Right-hand side object.
+	 * \return			Result of sum puts in lhs object.
+	 */
+	friend constexpr RobotData& operator -=(RobotData& lhs, const RobotData& rhs)
+	{
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			lhs.coordinates.at(i) -= rhs.coordinates.at(i);
+		}
+
+		return lhs;
+	}
+
+	/**
+	 * \brief			Multiply coordinate rhs object from lhs object.
+	 * \param[in] lhs	Left-hand side object.
+	 * \param[in] rhs	Right-hand side object.
+	 * \return			Result of sustraction.
+	 */
+	friend constexpr RobotData operator *(const RobotData& lhs, const RobotData& rhs)
+	{
+		RobotData result;
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			result.coordinates.at(i) = lhs.coordinates.at(i) * rhs.coordinates.at(i);
+		}
+
+		return result;
+	}
+
+	/**
+	 * \brief			Multiply coordinate of lhs and rhs objects.
+	 * \param[in] lhs	Left-hand side object.
+	 * \param[in] rhs	Right-hand side object.
+	 * \return			Result of sum puts in lhs object.
+	 */
+	friend constexpr RobotData& operator *=(RobotData& lhs, const RobotData& rhs)
+	{
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			lhs.coordinates.at(i) *= rhs.coordinates.at(i);
+		}
+
+		return lhs;
+	}
 
 	/**
 	 * \brief			Divide coordinate of lhs and rhs objects.
@@ -207,7 +323,28 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of division.
 	 */
-	friend RobotData operator /(const RobotData& lhs, const int& rhs);
+	friend constexpr RobotData operator /(const RobotData& lhs, const int& rhs)
+	{
+		assert(rhs != 0);
+
+		RobotData result;
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			if (lhs.coordinates.at(i) == 0)
+			{
+				continue;
+			}
+
+			result.coordinates.at(i) = lhs.coordinates.at(i) / rhs;
+			if (result.coordinates.at(i) == 0)
+			{
+				result.coordinates.at(i) = 1;
+			}
+		}
+
+		return result;
+	}
+
 
 	/**
 	 * \brief			Divide coordinate of lhs and rhs objects.
@@ -215,17 +352,44 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of division puts in lhs object.
 	 */
-	friend RobotData& operator /=(RobotData& lhs, const int& rhs);
+	friend constexpr RobotData& operator /=(RobotData& lhs, const int& rhs)
+	{
+		assert(rhs != 0);
+
+		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+		{
+			if (lhs.coordinates.at(i) == 0)
+			{
+				continue;
+			}
+
+			lhs.coordinates.at(i) = lhs.coordinates.at(i) / rhs;
+			if (lhs.coordinates.at(i) == 0)
+			{
+				lhs.coordinates.at(i) = 1;
+			}
+		}
+
+		return lhs;
+	}
 
 	/**
 	 * \brief				Operator overloading for istream.
-	 * \param[in] cin		Refrence to the original istream.
+	 * \param[in] in		Refrence to the original istream.
 	 * \param[in] robotData	Object for records.
 	 * \return				A reference to the original istream object.
 	 */
-	friend std::istream& operator >>(std::istream& cin, RobotData& robotData);
+	friend std::istream& operator >>(std::istream& in, RobotData& robotData);
+
+	/**
+	 * \brief				Operator overloading for ostream.
+	 * \param[in] out		Refrence to the original ostream.
+	 * \param[in] robotData	Object for output.
+	 * \return				A reference to the original ostream object.
+	 */
+	friend std::ostream& operator <<(std::ostream& out, const RobotData& robotData);
 };
 
-}
+} // namespace vasily
 
 #endif // ROBOT_DATA_H
