@@ -16,12 +16,12 @@ class TestServer final : public vasily::ServerImitator
 {
 public:
 	/**
-	 * \brief Constant number of client port to send.
+	 * \brief Constant number of server port to send.
 	 */
 	static constexpr int	PORT_SENDING	= 9998;
 
 	/**
-	 * \brief Constant number of client port to receive.
+	 * \brief Constant number of server port to receive.
 	 */
 	static constexpr int	PORT_RECEIVING	= 9999;
 

@@ -17,14 +17,24 @@ class ServerImitator : public WinsockInterface
 {
 protected:
 	/**
+	 * \brief Receive buffer that is used to keep answers from clients.
+	 */
+	char					_buffer[_MAXRECV];
+
+	/**
+	 * \brief Buffer that is used to keep clients addresses.
+	 */
+	char					_messageWithIP[_MAXRECV];
+
+	/**
 	 * \brief Variable used to keep sending port.
 	 */
-	int					    _sendingPort;
+	int					    _clientSendingPort;
 					
 	/**
 	 * \brief Variable used to keep reciving port.
 	 */
-	int					    _receivingPort;
+	int					    _clientReceivingPort;
 					
 	/**
 	 * \brief The maximum length of the queue of pending connections.
@@ -99,18 +109,18 @@ protected:
 
 public:
 	/**
-	 * \brief					Constructor which initializes sockets and bindes ports to them.
-	 * \param[in] sendingPort	Port for connection.
-	 * \param[in] recivingPort	Port for connection.
-	 * \param[in] backlog		Number of connections allowed on the incoming queue.
+	 * \brief					        Constructor which initializes sockets and bindes ports to them.
+	 * \param[in] clientSendingPort	    Port for connection.
+	 * \param[in] clientRecivingPort	Port for connection.
+	 * \param[in] backlog		        Number of connections allowed on the incoming queue.
 	 */
-	explicit		ServerImitator(const int sendingPort, const int recivingPort, 
+	explicit		ServerImitator(const int clientSendingPort, const int clientRecivingPort,
 								   const int backlog = 10);
 
 	/**
 	 * \brief Default destructor.
 	 */
-					~ServerImitator()							= default;
+	virtual         ~ServerImitator() noexcept					= default;
 
 	/**
 	 * \brief			Deleted copy constructor.

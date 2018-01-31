@@ -74,9 +74,7 @@ WinsockInterface::WinsockInterface()
 	  _receivingSocketAddress(),
 	  _addressInfo(nullptr),
 	  _isRunning(false),
-	  _wasInitialized(false),
-	  _buffer(),
-	  _message()
+	  _wasInitialized(false)
 {
 }
 
@@ -189,12 +187,12 @@ void WinsockInterface::listenOn(const SOCKET& socketToList, const int backlog) c
 	freeaddrinfo(_addressInfo.get());
 }
 
-SOCKET WinsockInterface::acceptSocket(const SOCKET& listeningSocket)
+SOCKET WinsockInterface::acceptSocket(const SOCKET& listeningSocket, char* messageWithIP) const
 {
 	int addrLen = sizeof(SOCKADDR_IN);
 	SOCKADDR_IN address;
 
-	memset(_message, 0, _MAXRECV);
+	memset(messageWithIP, 0, _MAXRECV);
 
 	const SOCKET socket = accept(listeningSocket, reinterpret_cast<SOCKADDR*>(&address), &addrLen);
 	if (socket == SOCKET_ERROR)
@@ -206,11 +204,11 @@ SOCKET WinsockInterface::acceptSocket(const SOCKET& listeningSocket)
 	}
 
 	// Get IP address back and print it.
-	inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
+	inet_ntop(AF_INET, &address.sin_addr, messageWithIP, INET_ADDRSTRLEN);
 
 	// Inform user of socket number — used in send and receive commands.
 	_printer.writeLine(std::cout, "New connection, socket FD is", socket, ", ip is:",
-					   _message, ", PORT:", ntohs(address.sin_port));
+					   messageWithIP, ", PORT:", ntohs(address.sin_port));
 
 	return socket;
 }
@@ -259,24 +257,25 @@ void WinsockInterface::sendData(const SOCKET& socketForSending, const std::strin
 	_printer.writeLine(std::cout, "Sent data:", data, "successfully.\n");
 }
 
-std::string WinsockInterface::receiveData(const SOCKET socketForReceiving)
+std::string WinsockInterface::receiveData(const SOCKET socketForReceiving, char* messageWithIP,
+										  char* buffer)
 {
 	int addrlen = sizeof(SOCKADDR_IN);
 
 	SOCKADDR_IN address;
 
-	memset(_message, 0, _MAXRECV);
-	memset(_buffer, 0, _MAXRECV);
+	memset(messageWithIP, 0, _MAXRECV);
+	memset(buffer, 0, _MAXRECV);
 
 	// Get details of the client.
 	getpeername(socketForReceiving, reinterpret_cast<SOCKADDR*>(&address),
 				static_cast<int*>(&addrlen));
 
-	const int valRead	= recv(socketForReceiving, _buffer, _MAXRECV, 0);
+	const int valRead	= recv(socketForReceiving, buffer, _MAXRECV, 0);
 	const u_short port	= ntohs(address.sin_port);
 
 	// Get IP address back and print it.
-	inet_ntop(AF_INET, &address.sin_addr, _message, INET_ADDRSTRLEN);
+	inet_ntop(AF_INET, &address.sin_addr, messageWithIP, INET_ADDRSTRLEN);
 
 	if (valRead == SOCKET_ERROR)
 	{
@@ -285,8 +284,8 @@ std::string WinsockInterface::receiveData(const SOCKET socketForReceiving)
 		if (errorCode == WSAECONNRESET)
 		{
 			// Node disconnected, get his details and print.
-			_printer.writeLine(std::cout, "Node disconnected unexpectedly, IP", _message, ", PORT",
-							   port);
+			_printer.writeLine(std::cout, "Node disconnected unexpectedly, IP", messageWithIP,
+							   ", PORT", port);
 		}
 		else
 		{
@@ -299,7 +298,7 @@ std::string WinsockInterface::receiveData(const SOCKET socketForReceiving)
 	if (valRead == 0)
 	{
 		// Node disconnected, get his details and print.
-		_printer.writeLine(std::cout, "Node disconnected, IP", _message, ", PORT", port);
+		_printer.writeLine(std::cout, "Node disconnected, IP", messageWithIP, ", PORT", port);
 
 		_isRunning.store(false);
 		return { "" };
@@ -309,11 +308,11 @@ std::string WinsockInterface::receiveData(const SOCKET socketForReceiving)
 	{
 		// Add null character, if you want to use with printf/puts or other string 
 		// handling functions.
-		_buffer[valRead] = '\0';
+		buffer[valRead] = '\0';
 
-		_printer.writeLine(std::cout, _message, ':', port, '-', _buffer);
+		_printer.writeLine(std::cout, messageWithIP, ':', port, '-', buffer);
 
-		return { _buffer };
+		return { buffer };
 	}
 
 	return { "" };
@@ -329,4 +328,4 @@ void WinsockInterface::setTimeout(const SOCKET& socketToChange, const long secon
 			   reinterpret_cast<char*>(&timeout), sizeof timeout);
 }
 
-}
+} // namespace vasily

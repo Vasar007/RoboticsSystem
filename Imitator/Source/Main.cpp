@@ -18,6 +18,5 @@ int main()
 	server.launch();
 	server.run();
 
-	std::cin.get();
 	return 0;
 }

@@ -29,13 +29,14 @@ void init(vasily::Client& client)
 
 int main()
 {
-	constexpr int	SERVER_PORT				= 9997;
+	constexpr int	SERVER_PORT				= 8888;
 	constexpr int	SERVER_PORT_SENDING		= 9999;
 	constexpr int	SERVER_PORT_RECEIVING	= 9998;
 	constexpr char	SERVER_IP[]				= "192.168.0.101";
 
 	// MAKE SURE THAT YOU USE RIGHT CLIENT TO WORK WITH ROBOT: 1 - DEBUG, 2 - WORKING WITH ROBOT.
-	vasily::Client client(SERVER_PORT_SENDING, SERVER_PORT_RECEIVING, SERVER_IP);
+	vasily::Client client(SERVER_PORT, SERVER_IP);
+	///vasily::Client client(SERVER_PORT_SENDING, SERVER_PORT_RECEIVING, SERVER_IP);
 	///vasily::Client client;
 
 	std::thread clientThread(vasily::init, std::ref(client));
@@ -51,10 +52,10 @@ int main()
 
 	while (window.isOpen())
 	{
-		if (client.isNeedToUpdate)
+		if (client.isNeedToUpdate.load())
 		{
 			transmitter.updateVertices(client.getDuration().count(), client.getRobotData());
-			client.isNeedToUpdate = false;
+			client.isNeedToUpdate.store(false);
 		}
 
 		sf::Event event;

@@ -107,16 +107,6 @@ protected:
 	static constexpr std::size_t	_MAXRECV = 1024u;
 
 	/**
-	 * \brief Receive buffer that is used to keep answers from clients.
-	 */
-	char							_buffer[_MAXRECV];
-
-	/**
-	 * \brief Buffer that is used to keep clients addresses.
-	 */
-	char							_message[_MAXRECV];
-
-	/**
 	 * \brief Implementation of type-safe output printer.
 	 */
 	printer::Printer&               _printer = printer::Printer::getInstance();
@@ -167,13 +157,14 @@ protected:
 	 * \param[in] listeningSocket   A descriptor that identifies a socket that has been placed in
 	 *                              a listening state with the listen function. The connection is
 	 *                              actually made with the socket that is returned by accept.
+	 * \param[out] messageWithIP    Buffer to write accepted IP address.
 	 * \return                      If no error occurs, accept returns a value of type SOCKET 
 	 *                              that is a descriptor for the new socket. This returned value is
 	 *                              a handle for the socket on which the actual connection is made. 
 	 *                              Otherwise, a value of INVALID_SOCKET is returned, and a specific
 	 *                              error code can be retrieved by calling WSAGetLastError.
 	 */
-	SOCKET          acceptSocket(const SOCKET& listeningSocket);
+	SOCKET          acceptSocket(const SOCKET& listeningSocket, char* messageWithIP) const;
 
 	/**
 	 * \brief						Establishe a connection to a specified socket.
@@ -199,9 +190,11 @@ protected:
 	/**
 	 * \brief						    Receive data from receiving socket.
 	 * \param[in] socketForReceiving	A descriptor identifying a receiving socket.
+	 * \param[out] messageWithIP	    Buffer to write accepted IP address.
+	 * \param[out] buffer	            Buffer to write received data.
 	 * \return						    Received data from receiving socket.
 	 */
-	std::string		receiveData(const SOCKET socketForReceiving);
+	std::string		receiveData(const SOCKET socketForReceiving, char* messageWithIP, char* buffer);
 
 	/**
 	 * \brief					    Set timeout for socket.

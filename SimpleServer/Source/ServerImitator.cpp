@@ -6,10 +6,13 @@
 namespace vasily
 {
 
-ServerImitator::ServerImitator(const int sendingPort, const int recivingPort, const int backlog)
+ServerImitator::ServerImitator(const int clientSendingPort, const int clientRecivingPort,
+							   const int backlog)
 	: WinsockInterface(),
-	  _sendingPort(sendingPort),
-	  _receivingPort(recivingPort),
+	  _buffer(),
+	  _messageWithIP(),
+	  _clientSendingPort(clientSendingPort),
+	  _clientReceivingPort(clientRecivingPort),
 	  _backlog(backlog),
 	  _clientSendingSocket(0),
 	  _clientReceivingSocket(0),
@@ -21,8 +24,10 @@ ServerImitator::ServerImitator(const int sendingPort, const int recivingPort, co
 
 ServerImitator::ServerImitator(ServerImitator&& other) noexcept
 	: WinsockInterface(),
-	  _sendingPort(other._sendingPort),
-	  _receivingPort(other._receivingPort),
+	  _buffer(),
+	  _messageWithIP(),
+	  _clientSendingPort(other._clientSendingPort),
+	  _clientReceivingPort(other._clientReceivingPort),
 	  _backlog(other._backlog),
 	  _clientSendingSocket(0),
 	  _clientReceivingSocket(0),
@@ -47,15 +52,15 @@ void ServerImitator::process()
 	_printer.writeLine(std::cout, "\n\n\nWaiting for connections...\n");
 	_logger.writeLine("\n\nServer waiting for connections at", utils::getCurrentSystemTime());
 
-	while (!_isRunning)
+	while (!_isRunning.load())
 	{
-		_clientReceivingSocket  = acceptSocket(_receivingSocket);
-		_clientSendingSocket    = acceptSocket(_sendingSocket);
+		_clientReceivingSocket  = acceptSocket(_receivingSocket, _messageWithIP);
+		_clientSendingSocket    = acceptSocket(_sendingSocket, _messageWithIP);
 		_hasGotCoordSystem.store(false);
 
-		if (!_isRunning)
+		if (!_isRunning.load())
 		{
-			_isRunning = true;
+			_isRunning.store(true);
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(10LL));
@@ -72,9 +77,9 @@ void ServerImitator::waitLoop()
 
 	while (true)
 	{
-		std::string dataBuffer = receiveData(_clientReceivingSocket);
+		std::string dataBuffer = receiveData(_clientReceivingSocket, _messageWithIP, _buffer);
 
-		if (!_isRunning)
+		if (!_isRunning.load())
 		{
 			waitingForConnections();
 			continue;
@@ -87,7 +92,7 @@ void ServerImitator::waitLoop()
 			_hasGotCoordSystem.store(true);
 		}
 
-		_logger.writeLine(_message, '-', dataBuffer);
+		_logger.writeLine(_messageWithIP, '-', dataBuffer);
 		std::string toSending = utils::parseFullData(dataBuffer);
 
 		bool flag;
@@ -100,21 +105,20 @@ void ServerImitator::waitLoop()
 		if (!toSending.empty())
 		{
 			sendData(_clientSendingSocket, toSending);
-			dataBuffer.clear();
 		}
 	}
 }
 
 void ServerImitator::run()
 {
-	_isRunning = true;
+	_isRunning.store(true);
 	waitLoop();
 }
 
 void ServerImitator::launch()
 {
-	bindSocket(_sendingSocket, _sendingSocketAddress, _sendingPort);
-	bindSocket(_receivingSocket, _receivingSocketAddress, _receivingPort);
+	bindSocket(_sendingSocket, _sendingSocketAddress, _clientSendingPort);
+	bindSocket(_receivingSocket, _receivingSocketAddress, _clientReceivingPort);
 
 	listenOn(_sendingSocket, _backlog);
 	listenOn(_receivingSocket, _backlog);
@@ -128,7 +132,7 @@ void ServerImitator::waitingForConnections()
 	closesocket(_clientSendingSocket);
 	_clientSendingSocket = 0;
 
-	_isRunning = false;
+	_isRunning.store(false);
 
 	std::thread processThread(&ServerImitator::process, this);
 	processThread.join();
@@ -148,4 +152,4 @@ std::chrono::milliseconds ServerImitator::calculateDuration(const RobotData& rob
 	return std::chrono::milliseconds(result);
 }
 
-}
+} // namespace vasily

@@ -18,7 +18,7 @@ void ModClient::receiveDataNTimes(const int numberOfTimes)
 
 	for (int step = 0; step < numberOfTimes; ++step)
 	{
-		receiveData(_receivingSocket);
+		receiveData(_receivingSocket, _messageWithIP, _buffer);
 
 		if (_isNeedToWait.load())
 		{

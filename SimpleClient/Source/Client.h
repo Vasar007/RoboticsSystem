@@ -37,6 +37,16 @@ protected:
 
 protected:
 	/**
+	 * \brief Receive buffer that is used to keep answers from clients.
+	 */
+	char		_buffer[_MAXRECV];
+
+	/**
+	 * \brief Buffer that is used to keep clients addresses.
+	 */
+	char		_messageWithIP[_MAXRECV];
+
+	/**
 	 * \brief Structure which contains data that is used for interaction with robot.
 	 */
 	RobotData	_robotData;
@@ -99,32 +109,32 @@ protected:
 	/**
 	 * \brief Default file name for input.
 	 */
-	static constexpr char       _DEFAULT_IN_FILE_NAME[]     = "in.txt";
+	static constexpr char       _DEFAULT_IN_FILE_NAME[]             = "in.txt";
 
 	/**
 	 * \brief Default file name for output.
 	 */
-	static constexpr char       _DEFAULT_OUT_FILE_NAME[]    = "out.txt";
+	static constexpr char       _DEFAULT_OUT_FILE_NAME[]            = "out.txt";
 
 	/**
 	 * \brief Default value for server IP.
 	 */
-	static constexpr char		_DEFAULT_SERVER_IP[]	    = "192.168.0.21";
+	static constexpr char		_DEFAULT_SERVER_IP[]	            = "192.168.0.21";
 
 	/**
 	 * \brief Default value for sending port.
 	 */
-	static constexpr int		_DEFAULT_SENDING_PORT	    = 59002;
+	static constexpr int		_DEFAULT_SENDING_PORT_TO_SERVER	    = 59002;
 													
 	/**                                             
 	 * \brief Default value for receiving port.     
 	 */                                             
-	static constexpr int		_DEFAULT_RECEIVING_PORT	    = 59003;
+	static constexpr int		_DEFAULT_RECEIVING_PORT_FROM_SERVER	= 59003;
 
 	/**
 	 * \brief Constant number of coordinates to check to avoid "magic number".
 	 */
-	static constexpr std::size_t _MAIN_COORDINATES		    = 3u;
+	static constexpr std::size_t _MAIN_COORDINATES		            = 3u;
 
 	/**
 	 * \brief Default (beginning) robot position.
@@ -138,13 +148,13 @@ protected:
 	static constexpr std::array<int, _MAIN_COORDINATES> _MIN_COORDS{ 830'000, -400'000, 539'000 };
 
 	/**
-	 * \brief Array contains maximum value for first 3 coordinates (x, y, z). 317'000
+	 * \brief Array contains maximum value for first 3 coordinates (x, y, z).
 	 */
 	static constexpr std::array<int, _MAIN_COORDINATES> _MAX_COORDS{ 1'320'000, 400'000, 960'000 };
 
 
 	/**
-	 * \brief Try to establishe a connection to a specified socket again.
+	 * \brief Try to establish a connection to a specified socket again.
 	 */
 	void		tryReconnect();
 
@@ -205,14 +215,14 @@ public:
 	 * \param[in] serverReceivingPort	Server port to recieve.
 	 * \param[in] serverIP			    Server IP address for connection.
 	 */
-	explicit	Client(const int serverSendingPort = _DEFAULT_SENDING_PORT, 
-					   const int serverReceivingPort = _DEFAULT_RECEIVING_PORT,
-					   const std::string_view serverIP = _DEFAULT_SERVER_IP);
+	explicit	Client(const int serverSendingPort      = _DEFAULT_SENDING_PORT_TO_SERVER, 
+					   const int serverReceivingPort    = _DEFAULT_RECEIVING_PORT_FROM_SERVER,
+					   const std::string_view serverIP  = _DEFAULT_SERVER_IP);
 
 	/**	
 	 * \brief Default destructor.
 	 */
-				~Client()						= default;
+	virtual     ~Client() noexcept				= default;
 
 	/**
 	 * \brief			Deleted copy constructor.

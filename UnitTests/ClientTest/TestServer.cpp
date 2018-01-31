@@ -24,7 +24,7 @@ void TestServer::receiveDataNTimes(const int numberOfTimes)
 
 	for (int step = 0; step < numberOfTimes; ++step)
 	{
-		std::string dataBuffer = receiveData(_clientReceivingSocket);
+		std::string dataBuffer = receiveData(_clientReceivingSocket, _messageWithIP, _buffer);
 
 		if (!_isRunning)
 		{
