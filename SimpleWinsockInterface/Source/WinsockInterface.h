@@ -240,7 +240,7 @@ public:
 	 * \param[in] other Other object.
 	 * \return			Return nothing because it's deleted.
 	 */
-	WinsockInterface&	operator =(const WinsockInterface& other)			= delete;
+	WinsockInterface&	operator=(const WinsockInterface& other)			= delete;
 
 	/**
 	 * \brief				Deleted move constructor.
@@ -253,7 +253,7 @@ public:
 	 * \param[out] other	Other object.
 	 * \return				Return nothing because it's deleted.
 	 */
-	WinsockInterface&	operator =(WinsockInterface&& other) noexcept		= delete;
+	WinsockInterface&	operator=(WinsockInterface&& other) noexcept		= delete;
 
 	/**
 	 * \brief	Displaying cuurent network interactions.

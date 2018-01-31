@@ -138,16 +138,16 @@ ParsedResult Handler::parseDataAfterCommand()
 				std::string strToParse = _data.substr(findPosZero + 1u, 
 													  foundPosFirst - findPosZero - 1u);
 				bool flag1;
-				result.mFirstPoint = utils::fromString<RobotData>(strToParse, flag1);
+				result.firstPoint = utils::fromString<RobotData>(strToParse, flag1);
 
 				const std::size_t foundPosSecond = _data.find('|', foundPosFirst + 1u);
 				strToParse = _data.substr(foundPosFirst + 1u, foundPosSecond - foundPosFirst - 1u);
 				bool flag2;
-				result.mSecondPoint = utils::fromString<RobotData>(strToParse, flag2);
+				result.secondPoint = utils::fromString<RobotData>(strToParse, flag2);
 
 				strToParse = _data.substr(foundPosSecond + 1u);
 				bool flag3;
-				result.mNumberOfIterations = utils::fromString<std::size_t>(strToParse, flag3);
+				result.numberOfIterations = utils::fromString<std::size_t>(strToParse, flag3);
 
 				if (flag1 && flag2 && flag3)
 				{
@@ -190,9 +190,9 @@ ParsedResult Handler::parseDataAfterCommand()
 		case State::YAW_MINUS:
 			if (_data.size() > 1u)
 			{
-				if (const int coefficient = utils::stringToInt(_data.substr(1)); coefficient > 0)
+				if (const int coefficient = utils::stringToInt(_data.substr(1u)); coefficient > 0)
 				{
-					result.mCoefficient = coefficient;
+					result.coefficient = coefficient;
 					setCoefficient(coefficient);
 					return result;
 				}
@@ -211,7 +211,7 @@ ParsedResult Handler::parseDataAfterCommand()
 	}
 
 	_printer.writeLine(std::cout, "ERROR 02: Incorrect input data after literal!");
-	result.mIsCorrect = false;
+	result.isCorrect = false;
 	return result;
 }
 
@@ -243,7 +243,7 @@ void Handler::appendCommand(const std::string_view command, RobotData& robotData
 
 	_parsedResult = parseDataAfterCommand();
 
-	if (!_parsedResult.mIsCorrect)
+	if (!_parsedResult.isCorrect)
 	{
 		_state = State::DEFAULT;
 	}

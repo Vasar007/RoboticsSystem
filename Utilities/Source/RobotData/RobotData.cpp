@@ -24,7 +24,7 @@ std::string RobotData::toString() const
 
 double RobotData::length() const
 {
-	double result = 0;
+	double result = 0.;
 
 	for (std::size_t i = 0u; i < NUMBER_OF_COORDINATES; ++i)
 	{
@@ -35,7 +35,7 @@ double RobotData::length() const
 	return std::sqrt(result);
 }
 
-std::istream& operator >>(std::istream& in, RobotData& robotData)
+std::istream& operator>>(std::istream& in, RobotData& robotData)
 {
 	for (auto& coordinate : robotData.coordinates)
 	{
@@ -50,7 +50,7 @@ std::istream& operator >>(std::istream& in, RobotData& robotData)
 	return in;
 }
 
-std::ostream& operator <<(std::ostream& out, const RobotData& robotData)
+std::ostream& operator<<(std::ostream& out, const RobotData& robotData)
 {
 	std::copy(robotData.coordinates.begin(), robotData.coordinates.end(),
 			  std::ostream_iterator<int>(out, " "));

@@ -90,7 +90,7 @@ void Client::receive()
 			continue;
 		}
 
-		if (_isNeedToWait)
+		if (_isNeedToWait.load())
 		{
 			// NEED TO DO AFTER DANILA REFACTORING.
 			///RobotData robotData;
@@ -99,7 +99,7 @@ void Client::receive()
 
 			///if (flag && robotData == _waitAnswer)
 			{
-				_isNeedToWait = false;
+				_isNeedToWait.store(false);
 				switch (_circlicState)
 				{
 					case CirclicState::SEND_FIRST:
@@ -200,14 +200,14 @@ void Client::waitLoop()
 				else if (_handler.getCurrentState() == Handler::State::CIRCLIC)
 				{
 					const ParsedResult parsedResult = _handler.getParsedResult();
-					circlicMovement(parsedResult.mFirstPoint, parsedResult.mSecondPoint,
-									parsedResult.mNumberOfIterations);
+					circlicMovement(parsedResult.firstPoint, parsedResult.secondPoint,
+									parsedResult.numberOfIterations);
 				}
 				else if (_handler.getCurrentState() == Handler::State::PARTIAL)
 				{
 					const ParsedResult parsedResult = _handler.getParsedResult();
-					partialMovement(parsedResult.mFirstPoint, parsedResult.mSecondPoint,
-									parsedResult.mNumberOfIterations);
+					partialMovement(parsedResult.firstPoint, parsedResult.secondPoint,
+									parsedResult.numberOfIterations);
 				}
 				else if (_handler.getCurrentState() == Handler::State::HOME)
 				{
@@ -238,7 +238,7 @@ void Client::waitLoop()
 					{
 						_robotData.coordinates.at(Handler::Y) += 100 * i * (i & 1 ? 1 : -1);
 						sendCoordinates(_robotData);
-						_isNeedToWait = true;
+						_isNeedToWait.store(true);
 						while (_isNeedToWait)
 						{
 							std::this_thread::sleep_for(std::chrono::milliseconds(1LL));
@@ -332,7 +332,7 @@ void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& sec
 				}
 				++counterIterations;
 
-				_isNeedToWait	= true;
+				_isNeedToWait.store(true);
 				_waitAnswer		= firstPoint;
 				_circlicState	= CirclicState::WAIT_FIRST_ANSWER;
 
@@ -349,7 +349,7 @@ void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& sec
 			}
 
 			case CirclicState::SEND_SECOND:
-				_isNeedToWait	= true;
+				_isNeedToWait.store(true);
 				_waitAnswer		= secondPoint;
 				_circlicState	= CirclicState::WAIT_SECOND_ANSWER;
 

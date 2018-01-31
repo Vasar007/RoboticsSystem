@@ -242,7 +242,7 @@ bool WinsockInterface::tryConnect(const int port, const std::string& ip,
 
 bool WinsockInterface::isRun() const
 {
-	return _isRunning;
+	return _isRunning.load();
 }
 
 void WinsockInterface::sendData(const SOCKET& socketForSending, const std::string& data) const
@@ -293,7 +293,7 @@ std::string WinsockInterface::receiveData(const SOCKET socketForReceiving)
 			_printer.writeLine(std::cout, "recv failed with error code:", errorCode);
 		}
 
-		_isRunning	= false;
+		_isRunning.store(false);
 		return { "" };
 	}
 	if (valRead == 0)
@@ -301,7 +301,7 @@ std::string WinsockInterface::receiveData(const SOCKET socketForReceiving)
 		// Node disconnected, get his details and print.
 		_printer.writeLine(std::cout, "Node disconnected, IP", _message, ", PORT", port);
 
-		_isRunning	= false;
+		_isRunning.store(false);
 		return { "" };
 	}
 	// Process message that came in.

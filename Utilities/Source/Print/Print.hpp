@@ -32,7 +32,7 @@
  * {
  * };
  *
- * std::ostream& operator <<(std::ostream& out, const B&)
+ * std::ostream& operator<<(std::ostream& out, const B&)
  * {
  *   out << "oss(B)";
  *   return out;
@@ -46,7 +46,7 @@
  * class C
  * {
  * public:
- *   friend std::ostream& operator <<(std::ostream& out, const C&)
+ *   friend std::ostream& operator<<(std::ostream& out, const C&)
  *   {
  *     out << "oss(C)";
  *     return out;

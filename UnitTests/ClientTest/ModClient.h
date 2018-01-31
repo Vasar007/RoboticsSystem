@@ -30,22 +30,22 @@ public:
 	/**
 	 * \brief Constant number of server IP.
 	 */
-	static constexpr char	SERVER_IP[]				= "192.168.0.100";
+	static constexpr char	SERVER_IP[]				= "192.168.0.101";
 
 	/**
 	 * \brief Mutex to lock thread for safety.
 	 */
-	std::mutex					mMutex;
+	std::mutex					mutex;
 
 	/**
 	 * \brief Additional flag used to define end of receiving method.
 	 */
-	std::atomic_bool			mHasFinished;
+	std::atomic_bool			hasFinished;
 
 	/**
 	 * \brief Array of sent data to server to check.
 	 */
-	std::vector<std::string>	mStorage;
+	std::vector<std::string>	storage;
 
 
 	/**

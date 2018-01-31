@@ -28,22 +28,22 @@ public:
 	/**
 	 * \brief Mutex to lock thread for safety.
 	 */
-	std::mutex					mMutex;
+	std::mutex					mutex;
 
 	/**
 	 * \brief Additional flag used to define successful connection.
 	 */
-	std::atomic_bool			mHasConnected;
+	std::atomic_bool			hasConnected;
 
 	/**
 	 * \brief Additional flag used to define end of receiving method.
 	 */
-	std::atomic_bool			mHasFinished;
+	std::atomic_bool			hasFinished;
 
 	/**
 	 * \brief Array of received data from client to check.
 	 */
-	std::vector<std::string>	mStorage;
+	std::vector<std::string>	storage;
 
 
 	/**

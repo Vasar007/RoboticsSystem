@@ -18,27 +18,27 @@ struct ParsedResult
 	/**
 	 * \brief Number used to change coordinates.
 	 */
-	int			mCoefficient		= 1;
+	int			coefficient		    = 1;
 
 	/**
 	 * \brief Number of iterations for circlic movement.
 	 */
-	int	        mNumberOfIterations	= 1;
+	int	        numberOfIterations	= 1;
 
 	/**
 	 * \brief Additional flag to check correctness of coordinates.
 	 */
-	bool		mIsCorrect			= true;
+	bool		isCorrect			= true;
 
 	/**
 	 * \brief First point of interval.
 	 */
-	RobotData	mFirstPoint			= {};
+	RobotData	firstPoint			= {};
 
 	/**
 	 * \brief Second point of interval.
 	 */
-	RobotData	mSecondPoint		= {};
+	RobotData	secondPoint		    = {};
 };
 
 /**

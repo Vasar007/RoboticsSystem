@@ -51,7 +51,7 @@ void ServerImitator::process()
 	{
 		_clientReceivingSocket  = acceptSocket(_receivingSocket);
 		_clientSendingSocket    = acceptSocket(_sendingSocket);
-		_hasGotCoordSystem		= false;
+		_hasGotCoordSystem.store(false);
 
 		if (!_isRunning)
 		{
@@ -80,11 +80,11 @@ void ServerImitator::waitLoop()
 			continue;
 		}
 
-		if (!_hasGotCoordSystem && !dataBuffer.empty())
+		if (!_hasGotCoordSystem.load() && !dataBuffer.empty())
 		{
 			const std::string coordSystemStr = dataBuffer.substr(0u, 1u);
 			_printer.writeLine(std::cout, coordSystemStr);
-			_hasGotCoordSystem = true;
+			_hasGotCoordSystem.store(true);
 		}
 
 		_logger.writeLine(_message, '-', dataBuffer);

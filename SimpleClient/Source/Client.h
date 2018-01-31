@@ -225,7 +225,7 @@ public:
 	 * \param[in] other Other client object.
 	 * \return			Returns nothing because it's deleted.
 	 */
-	Client&		operator =(const Client& other)	= delete;
+	Client&		operator=(const Client& other)	= delete;
 
 	/**
 	 * \brief				Move constructor.
@@ -238,7 +238,7 @@ public:
 	 * \param[out] other	Other client object.
 	 * \return				Returns an object with all moved data.
 	 */
-	Client&		operator =(Client&& other) noexcept;
+	Client&		operator=(Client&& other) noexcept;
 
 
 	/**

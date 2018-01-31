@@ -59,17 +59,17 @@ void ClientTest::testMethod1()
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 
-	while (!testServer.mHasFinished && !client.mHasFinished)
+	while (!testServer.hasFinished.load() && !client.hasFinished.load())
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 	}
 
-	Assert::IsTrue(testServer.mHasConnected, L"Bad connection!");
+	Assert::IsTrue(testServer.hasConnected, L"Bad connection!");
 
-	Assert::IsFalse(testServer.mStorage.empty(), L"There are not sent coordinates on server!");
-	Assert::IsFalse(client.mStorage.empty(), L"There are not sent coordinates on client!");
+	Assert::IsFalse(testServer.storage.empty(), L"There are not sent coordinates on server!");
+	Assert::IsFalse(client.storage.empty(), L"There are not sent coordinates on client!");
 	
-	Assert::AreEqual(client.mStorage.at(0u), testServer.mStorage.at(0u), L"Incorrect sent data!");
+	Assert::AreEqual(client.storage.at(0u), testServer.storage.at(0u), L"Incorrect sent data!");
 }
 
 void ClientTest::testMethod2()
@@ -89,25 +89,29 @@ void ClientTest::testMethod2()
 		client.sendCoordinatesMod({ 985'000,   -401'000,	940'000, -180'000, 0, 0, 10, 2, 0 });
 		client.sendCoordinatesMod({ 985'000,	0,			538'000, -180'000, 0, 0, 10, 2, 0 });
 		client.sendCoordinatesMod({ 1'321'000,  0,			940'000, -180'000, 0, 0, 10, 2, 0 });
-		client.sendCoordinatesMod({ 985'000,	318'000,	940'000, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 985'000,	401'000,	940'000, -180'000, 0, 0, 10, 2, 0 });
 		client.sendCoordinatesMod({ 985'000,	0,			961'000, -180'000, 0, 0, 10, 2, 0 });
+
 		client.sendCoordinatesMod({ 829'999,	0,			940'000, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 985'000,   -400'001,	940'000, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 985'000,	0,			538'999, -180'000, 0, 0, 10, 2, 0 });
 		client.sendCoordinatesMod({ 1'320'001,  0,			940'000, -180'000, 0, 0, 10, 2, 0 });
-		client.sendCoordinatesMod({ 830'000,   -400'001,	538'999, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 985'000,	400'001,	940'000, -180'000, 0, 0, 10, 2, 0 });
+		client.sendCoordinatesMod({ 985'000,	0,			960'001, -180'000, 0, 0, 10, 2, 0 });
 	}, 0);
 
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 
-	while (!testServer.mHasFinished && !client.mHasFinished)
+	while (!testServer.hasFinished.load() && !client.hasFinished.load())
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 	}
 
-	Assert::IsTrue(testServer.mHasConnected, L"Bad connection!");
+	Assert::IsTrue(testServer.hasConnected, L"Bad connection!");
 
-	Assert::IsTrue(testServer.mStorage.empty(), L"There are not accepted coordinates on server!");
-	Assert::IsTrue(client.mStorage.empty(), L"There are not accepted coordinates on client!");
+	Assert::IsTrue(testServer.storage.empty(), L"There are not accepted coordinates on server!");
+	Assert::IsTrue(client.storage.empty(), L"There are not accepted coordinates on client!");
 }
 
 void ClientTest::testMethod3()
@@ -136,21 +140,21 @@ void ClientTest::testMethod3()
 	
 	std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 
-	while (!testServer.mHasFinished && !client.mHasFinished)
+	while (!testServer.hasFinished.load() && !client.hasFinished.load())
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 	}
 	
-	Assert::IsTrue(testServer.mHasConnected, L"Bad connection!");
+	Assert::IsTrue(testServer.hasConnected, L"Bad connection!");
 	
-	Assert::IsFalse(testServer.mStorage.empty(), L"There are not sent coordinates on server!");
-	Assert::IsFalse(client.mStorage.empty(), L"There are not sent coordinates on client!");
+	Assert::IsFalse(testServer.storage.empty(), L"There are not sent coordinates on server!");
+	Assert::IsFalse(client.storage.empty(), L"There are not sent coordinates on client!");
 	
 	std::wstring message = L"Incorrect data at 0!";
-	for (std::size_t i = 0u; i < client.mStorage.size(); ++i)
+	for (std::size_t i = 0u; i < client.storage.size(); ++i)
 	{
 		message.replace(18u, 1u, std::to_wstring(i + 1u));
-		Assert::AreEqual(client.mStorage.at(i), testServer.mStorage.at(i), message.c_str());
+		Assert::AreEqual(client.storage.at(i), testServer.storage.at(i), message.c_str());
 	}
 }
 
@@ -180,21 +184,21 @@ void ClientTest::testMethod4()
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 
-	while (!testServer.mHasFinished && !client.mHasFinished)
+	while (!testServer.hasFinished.load() && !client.hasFinished.load())
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100LL));
 	}
 
-	Assert::IsTrue(testServer.mHasConnected, L"Bad connection!");
+	Assert::IsTrue(testServer.hasConnected, L"Bad connection!");
 
-	Assert::IsFalse(testServer.mStorage.empty(), L"There are not sent coordinates on server!");
-	Assert::IsFalse(client.mStorage.empty(), L"There are not sent coordinates on client!");
+	Assert::IsFalse(testServer.storage.empty(), L"There are not sent coordinates on server!");
+	Assert::IsFalse(client.storage.empty(), L"There are not sent coordinates on client!");
 
 	std::wstring message = L"Incorrect data at 0!";
-	for (std::size_t i = 0u; i < client.mStorage.size(); ++i)
+	for (std::size_t i = 0u; i < client.storage.size(); ++i)
 	{
 		message.replace(18u, 1u, std::to_wstring(i + 1u));
-		Assert::AreEqual(client.mStorage.at(i), testServer.mStorage.at(i), message.c_str());
+		Assert::AreEqual(client.storage.at(i), testServer.storage.at(i), message.c_str());
 	}
 }
 

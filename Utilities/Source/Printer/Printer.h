@@ -80,7 +80,7 @@ public:
      * \param[in] other Other object.
      * \return			Return copied object.
      */
-    Printer& operator =(const Printer& other)       = delete;
+    Printer& operator=(const Printer& other)       = delete;
 
     /**
      * \brief				Default move constructor.
@@ -93,7 +93,7 @@ public:
      * \param[out] other	Other object.
      * \return				Return moved object.
      */
-    Printer& operator =(Printer&& other) noexcept   = default;
+    Printer& operator=(Printer&& other) noexcept   = default;
 
     /**
      * \brief               Overloaded operator to print data to outstream with subclasses.
@@ -103,7 +103,7 @@ public:
      * \param[in] args      Data to print.
      */
     template<class OutputStream, typename... Args>
-    void operator ()(OutputStream& out, const Args&... args) noexcept;
+    void operator()(OutputStream& out, const Args&... args) noexcept;
 
     /**
      * \brief               Print datatypes (unlimited) to outstream.
