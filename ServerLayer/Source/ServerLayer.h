@@ -12,16 +12,6 @@ class ServerLayer : public WinsockInterface
 {
 protected:
     /**
-     * \brief Receive buffer that is used to keep answers from server.
-     */
-    char		_bufferForServer[_MAXRECV];
-
-    /**
-     * \brief Buffer that is used to keep server address.
-     */
-    char		_messageWithIPForServer[_MAXRECV];
-
-    /**
      * \brief Receive buffer that is used to keep answers from clients.
      */
     char		_bufferForClient[_MAXRECV];
@@ -115,13 +105,13 @@ protected:
     /**
      * \brief Try to establish a connection to a specified socket again.
      */
-    void tryReconnect();
+    void tryReconnectToServer();
 
     /**
      * \brief			Check connection to robot every time.
      * \param[in] time	Period time to check.
      */
-    void checkConnection(const std::atomic_int64_t& time);
+    void checkConnectionToServer(const std::atomic_int64_t& time);
 
     /**
      * \brief Additional loop which has a handler for connections.

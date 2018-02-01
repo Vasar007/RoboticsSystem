@@ -20,7 +20,16 @@ public:
 	/**
 	 * \brief Simplify coordinate system enum.
 	 */
-	typedef Handler::CoordinateSystem CoordinateSystem;
+	using CoordinateSystem = Handler::CoordinateSystem;
+
+	/**
+	 * \brief Array of modes for client how to work with robot.
+	 */
+	enum class WorkMode
+	{
+		STRAIGHTFORWARD,
+		INDIRECT
+	};
 
 protected:
 	/**
@@ -36,16 +45,6 @@ protected:
 
 
 protected:
-	/**
-	 * \brief Receive buffer that is used to keep answers from clients.
-	 */
-	char		_buffer[_MAXRECV];
-
-	/**
-	 * \brief Buffer that is used to keep clients addresses.
-	 */
-	char		_messageWithIP[_MAXRECV];
-
 	/**
 	 * \brief Structure which contains data that is used for interaction with robot.
 	 */
@@ -100,6 +99,11 @@ protected:
 	 * \brief Current state of work in circle.
 	 */
 	CirclicState		_circlicState;
+
+	/**
+	 * \brief Work mode for client, initialize when object created.
+	 */
+	WorkMode            _workMode;
 
 	/**
 	 * \brief Logger used to write received data to file.
@@ -206,8 +210,11 @@ public:
 	 * \brief					Constructor that initializes sockets and connects to server.
 	 * \param[in] serverPort	Server port for connection.
 	 * \param[in] serverIP		Server IP address for connection.
+	 * \param[in] workMode      Set work mode for client to work with robot straightforward or
+	 *                          indirect.
 	 */
-	explicit	Client(const int serverPort, const std::string_view serverIP);
+	explicit	Client(const int serverPort, const std::string_view serverIP,
+					   const WorkMode workMode = WorkMode::INDIRECT);
 
 	/**
 	 * \brief						    Constructor that initializes sockets and connects to server.
@@ -217,7 +224,8 @@ public:
 	 */
 	explicit	Client(const int serverSendingPort      = _DEFAULT_SENDING_PORT_TO_SERVER, 
 					   const int serverReceivingPort    = _DEFAULT_RECEIVING_PORT_FROM_SERVER,
-					   const std::string_view serverIP  = _DEFAULT_SERVER_IP);
+					   const std::string_view serverIP  = _DEFAULT_SERVER_IP,
+					   const WorkMode workMode = WorkMode::INDIRECT);
 
 	/**	
 	 * \brief Default destructor.

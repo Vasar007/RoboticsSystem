@@ -47,7 +47,8 @@ void ClientTest::testMethod1()
 	std::thread serverThread(initTestServer, std::ref(testServer), 1 + 1);
 	serverThread.detach();
 	
-	ModClient client;
+	ModClient client(ModClient::SERVER_PORT_SENDING, ModClient::SERVER_PORT_RECEIVING,
+					 ModClient::SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
 	initClient(client, [&client]()
 	{	
 		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
@@ -79,7 +80,8 @@ void ClientTest::testMethod2()
 	std::thread serverThread(initTestServer, std::ref(testServer), 1);
 	serverThread.detach();
 
-	ModClient client;
+	ModClient client(ModClient::SERVER_PORT_SENDING, ModClient::SERVER_PORT_RECEIVING,
+					 ModClient::SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
 	initClient(client, [&client]()
 	{
 		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
@@ -121,7 +123,8 @@ void ClientTest::testMethod3()
 	std::thread serverThread(initTestServer, std::ref(testServer), 1 + 5 + 1);
 	serverThread.detach();
 	
-	ModClient client;
+	ModClient client(ModClient::SERVER_PORT_SENDING, ModClient::SERVER_PORT_RECEIVING,
+					 ModClient::SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
 	initClient(client, [&client]()
 	{
 		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
@@ -165,7 +168,8 @@ void ClientTest::testMethod4()
 	std::thread serverThread(initTestServer, std::ref(testServer), 1 + 6 + 5);
 	serverThread.detach();
 
-	ModClient client;
+	ModClient client(ModClient::SERVER_PORT_SENDING, ModClient::SERVER_PORT_RECEIVING,
+					 ModClient::SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
 	initClient(client, [&client]()
 	{
 		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);

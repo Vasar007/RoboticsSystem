@@ -14,8 +14,8 @@ int main()
     constexpr int   LAYER_PORT              = 8888;
     constexpr int   BACKLOG                 = 10;
 
-    vasily::ServerLayer serverLayer{ SERVER_SENDING_PORT, SERVER_RECEIVING_PORT, SERVER_IP,
-                                     LAYER_PORT, BACKLOG };
+    vasily::ServerLayer serverLayer(SERVER_SENDING_PORT, SERVER_RECEIVING_PORT, SERVER_IP,
+                                    LAYER_PORT, BACKLOG);
 
     serverLayer.init();
     serverLayer.launch();

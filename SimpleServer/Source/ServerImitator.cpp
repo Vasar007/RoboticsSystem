@@ -9,8 +9,6 @@ namespace vasily
 ServerImitator::ServerImitator(const int clientSendingPort, const int clientRecivingPort,
 							   const int backlog)
 	: WinsockInterface(),
-	  _buffer(),
-	  _messageWithIP(),
 	  _clientSendingPort(clientSendingPort),
 	  _clientReceivingPort(clientRecivingPort),
 	  _backlog(backlog),
@@ -24,8 +22,6 @@ ServerImitator::ServerImitator(const int clientSendingPort, const int clientReci
 
 ServerImitator::ServerImitator(ServerImitator&& other) noexcept
 	: WinsockInterface(),
-	  _buffer(),
-	  _messageWithIP(),
 	  _clientSendingPort(other._clientSendingPort),
 	  _clientReceivingPort(other._clientReceivingPort),
 	  _backlog(other._backlog),

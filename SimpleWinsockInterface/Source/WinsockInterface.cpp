@@ -74,7 +74,9 @@ WinsockInterface::WinsockInterface()
 	  _receivingSocketAddress(),
 	  _addressInfo(nullptr),
 	  _isRunning(false),
-	  _wasInitialized(false)
+	  _wasInitialized(false),
+	  _buffer(),
+	  _messageWithIP()
 {
 }
 

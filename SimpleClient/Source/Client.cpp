@@ -7,10 +7,8 @@
 namespace vasily
 {
 
-Client::Client(const int serverPort, const std::string_view serverIP)
+Client::Client(const int serverPort, const std::string_view serverIP, const WorkMode workMode)
 	: WinsockInterface(),
-	  _buffer(),
-	  _messageWithIP(),
 	  _robotData(),
 	  _serverIP(serverIP),
 	  _serverPort(serverPort),
@@ -22,6 +20,7 @@ Client::Client(const int serverPort, const std::string_view serverIP)
 	  _waitAnswer(),
 	  _isNeedToWait(false),
 	  _circlicState(),
+	  _workMode(workMode),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
 	  isNeedToUpdate(false),
 	  lastSentPoint{ { vasily::RobotData::DEFAULT_CORDINATES },
@@ -29,20 +28,21 @@ Client::Client(const int serverPort, const std::string_view serverIP)
 {
 }
 
-Client::Client(const int serverPortSending, const int serverReceiving,
-			   const std::string_view serverIP)
+Client::Client(const int serverSendingPort, const int serverReceivingPort,
+			   const std::string_view serverIP, const WorkMode workMode)
 	: WinsockInterface(),
 	  _robotData(),
 	  _serverIP(serverIP),
 	  _serverPort(0),
-	  _serverSendingPort(serverPortSending),
-	  _serverReceivingPort(serverReceiving),
+	  _serverSendingPort(serverSendingPort),
+	  _serverReceivingPort(serverReceivingPort),
 	  _handler(),
 	  _start(std::chrono::steady_clock::now()),
 	  _duration(),
 	  _waitAnswer(),
 	  _isNeedToWait(false),
 	  _circlicState(),
+	  _workMode(workMode),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
 	  isNeedToUpdate(false),
 	  lastSentPoint{ { vasily::RobotData::DEFAULT_CORDINATES },
@@ -83,8 +83,20 @@ void Client::receive()
 	int count = 0;
 	while (true)
 	{
-		const std::string dataBuffer = receiveData(_sendingSocket, _messageWithIP, _buffer);  ///_receivingSocket
-		_duration = std::chrono::steady_clock::now() - _start;
+		std::string dataBuffer;
+		if (_workMode == WorkMode::INDIRECT)
+		{
+			dataBuffer = receiveData(_sendingSocket, _messageWithIP, _buffer);
+		}
+		else if (_workMode == WorkMode::STRAIGHTFORWARD)
+		{
+			dataBuffer = receiveData(_receivingSocket, _messageWithIP, _buffer);
+		}
+		else
+		{
+			assert(false);
+		}
+		 _duration = std::chrono::steady_clock::now() - _start;
 
 		if (!_isRunning.load())
 		{
@@ -277,17 +289,31 @@ void Client::tryReconnect()
 	while (!_isRunning.load())
 	{
 		closesocket(_sendingSocket);
-		///closesocket(_receivingSocket);
-
 		initSocket(_sendingSocket);
-		///initSocket(_receivingSocket);
+		switch (_workMode)
+		{
+			case WorkMode::STRAIGHTFORWARD:
+			{
+				closesocket(_receivingSocket);
+				initSocket(_receivingSocket);
 
-		_isRunning.store(tryConnect(_serverPort, _serverIP, _sendingSocket, _sendingSocketAddress));
-		///const bool reconnect = tryConnect(_serverSendingPort, _serverIP, _sendingSocket, 
-		///								  _sendingSocketAddress)
-		///						&& tryConnect(_serverReceivingPort, _serverIP, _receivingSocket,
-		///									  _receivingSocketAddress);
-		///_isRunning.store(reconnect);
+				const bool reconnect = tryConnect(_serverSendingPort, _serverIP, _sendingSocket, 
+												  _sendingSocketAddress)
+										&& tryConnect(_serverReceivingPort, _serverIP,
+													  _receivingSocket, _receivingSocketAddress);
+				_isRunning.store(reconnect);
+				break;
+			}
+			
+			case WorkMode::INDIRECT:
+				_isRunning.store(tryConnect(_serverPort, _serverIP, _sendingSocket,
+											_sendingSocketAddress));
+				break;
+			
+			default:
+				assert(false);
+				break;
+		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000LL));
 	}
@@ -301,10 +327,21 @@ void Client::run()
 
 void Client::launch()
 {
-	tryConnect(_serverPort, _serverIP, _sendingSocket, _sendingSocketAddress);
-	///setTimeout(_sendingSocket, 1000, 0);
-	///tryConnect(_serverSendingPort, _serverIP, _sendingSocket, _sendingSocketAddress);
-	///tryConnect(_serverReceivingPort, _serverIP, _receivingSocket, _receivingSocketAddress);
+	switch (_workMode)
+	{
+		case WorkMode::STRAIGHTFORWARD:
+			tryConnect(_serverSendingPort, _serverIP, _sendingSocket, _sendingSocketAddress);
+			tryConnect(_serverReceivingPort, _serverIP, _receivingSocket, _receivingSocketAddress);
+			break;
+
+		case WorkMode::INDIRECT:
+			tryConnect(_serverPort, _serverIP, _sendingSocket, _sendingSocketAddress);
+			break;
+
+		default:
+			assert(false);
+			break;
+	}
 }
 
 void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& secondPoint, 

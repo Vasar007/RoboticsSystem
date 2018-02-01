@@ -17,16 +17,6 @@ class ServerImitator : public WinsockInterface
 {
 protected:
 	/**
-	 * \brief Receive buffer that is used to keep answers from clients.
-	 */
-	char					_buffer[_MAXRECV];
-
-	/**
-	 * \brief Buffer that is used to keep clients addresses.
-	 */
-	char					_messageWithIP[_MAXRECV];
-
-	/**
 	 * \brief Variable used to keep sending port.
 	 */
 	int					    _clientSendingPort;

@@ -52,9 +52,9 @@ public:
 	 * \param[in] recivingPort	Port for connection.
 	 * \param[in] backlog		Number of connections allowed on the incoming queue.
 	 */
-	explicit	TestServer(const int sendingPort = PORT_SENDING,
-						   const int recivingPort = PORT_RECEIVING,
-						   const int backlog = 10);
+	explicit	TestServer(const int sendingPort    = PORT_SENDING,
+						   const int recivingPort   = PORT_RECEIVING,
+						   const int backlog        = 10);
 
 	/**
 	 * \brief					Receiv data from receiving socket.

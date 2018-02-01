@@ -29,8 +29,8 @@ namespace vasily
  * \code
  * int main()
  * {
- *	const int SERVER_PORT	= 9997;
- *	const std::string SERVER_IP = "192.168.0.100";
+ *	constexpr int SERVER_PORT = 9997;
+ *	constexpr char SERVER_IP[] = "192.168.0.100";
  *  
  *	Client client(SERVER_PORT, SERVER_IP);
  *  
@@ -105,6 +105,16 @@ protected:
 	 * \brief Size of receive buffer, this is string length.
 	 */
 	static constexpr std::size_t	_MAXRECV = 1024u;
+
+	/**
+	 * \brief Receive buffer that is used to keep answers from clients.
+	 */
+	char		                    _buffer[_MAXRECV];
+
+	/**
+	 * \brief Buffer that is used to keep clients addresses.
+	 */
+	char		                    _messageWithIP[_MAXRECV];
 
 	/**
 	 * \brief Implementation of type-safe output printer.
@@ -201,6 +211,9 @@ protected:
 	 * \param[in] socketToChange	A descriptor identifying a socket.
 	 * \param[in] seconds		    Time interval, in seconds.
 	 * \param[in] microseconds	    Time interval, in microseconds.
+	 * \code
+	 * Example: setTimeout(_sendingSocket, 1000, 0);
+	 * \endcode
 	 */
 	void			setTimeout(const SOCKET& socketToChange,
 							   const long seconds, const long microseconds) const;

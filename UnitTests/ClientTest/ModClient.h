@@ -15,7 +15,7 @@ public:
 	/**
 	 * \brief Constant number of server port.
 	 */
-	static constexpr int	SERVER_PORT				= 9997;
+	static constexpr int	SERVER_PORT				= 8888;
 
 	/**
 	 * \brief Constant number of server port to send.
@@ -54,9 +54,10 @@ public:
 	 * \param[in] serverReceiving	Server port to recieve.
 	 * \param[in] serverIP			Server IP address for connection.
 	 */
-	explicit	ModClient(const int serverPortSending = SERVER_PORT_SENDING,
-						  const int serverReceiving = SERVER_PORT_RECEIVING,
-						  const std::string_view serverIP = SERVER_IP);
+	explicit	ModClient(const int serverPortSending       = SERVER_PORT_SENDING,
+						  const int serverReceiving         = SERVER_PORT_RECEIVING,
+						  const std::string_view serverIP   = SERVER_IP,
+						  const Client::WorkMode workMode   = Client::WorkMode::INDIRECT);
 
 	/**
 	 * \brief					Receive data from receiving socket.

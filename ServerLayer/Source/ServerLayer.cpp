@@ -7,8 +7,6 @@ namespace vasily
 ServerLayer::ServerLayer(const int serverSendingPortR, const int serverRecivingPort,
 						 const std::string_view serverIP, const int layerPort, const int backlog)
 	: WinsockInterface(),
-	  _bufferForServer(),
-	  _messageWithIPForServer(),
 	  _bufferForClient(),
 	  _messageWithIPForClient(),
 	  _serverIP(serverIP),
@@ -30,7 +28,6 @@ ServerLayer::~ServerLayer() noexcept
 	_layerSocket = 0;
 }
 
-
 void ServerLayer::receiveFromServer()
 {
 	_printer.writeLine(std::cout, "\nReceiving thread started...\n");
@@ -38,17 +35,16 @@ void ServerLayer::receiveFromServer()
 	int count = 0;
 	while (true)
 	{
-		const std::string dataBuffer = receiveData(_receivingSocket, _messageWithIPForServer,
-												   _bufferForServer);
+		const std::string dataBuffer = receiveData(_receivingSocket, _messageWithIP, _buffer);
 
 		if (!_isRunning.load())
 		{
-			tryReconnect();
+			tryReconnectToServer();
 			continue;
 		}
 
 		++count;
-		_logger.writeLine(_messageWithIPForServer, '-', dataBuffer);
+		_logger.writeLine(_messageWithIP, '-', dataBuffer);
 
 		if (!dataBuffer.empty())
 		{
@@ -57,7 +53,7 @@ void ServerLayer::receiveFromServer()
 	}
 }
 
-void ServerLayer::checkConnection(const std::atomic_int64_t& time)
+void ServerLayer::checkConnectionToServer(const std::atomic_int64_t& time)
 {
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000LL));
 
@@ -159,7 +155,7 @@ void ServerLayer::setServerIP(const std::string_view newServerIP)
 	_serverIP = newServerIP;
 }
 
-void ServerLayer::tryReconnect()
+void ServerLayer::tryReconnectToServer()
 {
 	while (!_isRunning.load())
 	{
