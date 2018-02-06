@@ -8,16 +8,12 @@ namespace vasily
 {
 
 Client::Client(const int serverPort, const std::string_view serverIP, const WorkMode workMode)
-	: WinsockInterface(),
-	  _robotData(),
-	  _serverIP(serverIP),
+	: _serverIP(serverIP),
 	  _serverPort(serverPort),
 	  _serverSendingPort(0),
 	  _serverReceivingPort(0),
-	  _handler(),
 	  _start(std::chrono::steady_clock::now()),
 	  _duration(),
-	  _waitAnswer(),
 	  _isNeedToWait(false),
 	  _circlicState(),
 	  _workMode(workMode),
@@ -30,16 +26,12 @@ Client::Client(const int serverPort, const std::string_view serverIP, const Work
 
 Client::Client(const int serverSendingPort, const int serverReceivingPort,
 			   const std::string_view serverIP, const WorkMode workMode)
-	: WinsockInterface(),
-	  _robotData(),
-	  _serverIP(serverIP),
+	: _serverIP(serverIP),
 	  _serverPort(0),
 	  _serverSendingPort(serverSendingPort),
 	  _serverReceivingPort(serverReceivingPort),
-	  _handler(),
 	  _start(std::chrono::steady_clock::now()),
 	  _duration(),
-	  _waitAnswer(),
 	  _isNeedToWait(false),
 	  _circlicState(),
 	  _workMode(workMode),
@@ -51,14 +43,13 @@ Client::Client(const int serverSendingPort, const int serverReceivingPort,
 }
 
 Client::Client(Client&& other) noexcept
-	: WinsockInterface(),
-	  _robotData(other._robotData),
-	  _serverIP(other._serverIP),
+	: _robotData(std::move(other._robotData)),
+	  _serverIP(std::move(other._serverIP)),
 	  _serverPort(other._serverPort),
-	  _handler(other._handler),
-	  _start(other._start),
-	  _waitAnswer(other._waitAnswer),
-	  _isNeedToWait(other._isNeedToWait ? true : false),
+	  _handler(std::move(other._handler)),
+	  _start(std::move(other._start)),
+	  _waitAnswer(std::move(other._waitAnswer)),
+	  _isNeedToWait(other._isNeedToWait.load()),
 	  _circlicState(other._circlicState),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
 	  isNeedToUpdate(false)
@@ -84,17 +75,19 @@ void Client::receive()
 	while (true)
 	{
 		std::string dataBuffer;
-		if (_workMode == WorkMode::INDIRECT)
+		switch (_workMode)
 		{
-			dataBuffer = receiveData(_sendingSocket, _messageWithIP, _buffer);
-		}
-		else if (_workMode == WorkMode::STRAIGHTFORWARD)
-		{
-			dataBuffer = receiveData(_receivingSocket, _messageWithIP, _buffer);
-		}
-		else
-		{
-			assert(false);
+			case WorkMode::INDIRECT:
+				dataBuffer = receiveData(_sendingSocket, _messageWithIP, _buffer);
+				break;
+			
+			case WorkMode::STRAIGHTFORWARD:
+				dataBuffer = receiveData(_receivingSocket, _messageWithIP, _buffer);
+				break;
+			
+			default:
+				assert(false);
+				break;
 		}
 		 _duration = std::chrono::steady_clock::now() - _start;
 
@@ -139,6 +132,7 @@ void Client::receive()
 		++count;
 		_printer.writeLine(std::cout, count, "Duration:", _duration.count(), "seconds");
 
+		_start = std::chrono::steady_clock::now();
 		_logger.writeLine(_messageWithIP, '-', dataBuffer);
 		_logger.writeLine(count, "Duration:", _duration.count(), "seconds");
 	}
@@ -225,7 +219,7 @@ void Client::waitLoop()
 				}
 				else if (_handler.getCurrentState() == Handler::State::FROM_FILE)
 				{
-					_robotData = _logger.read<RobotData>();
+					_robotData = _logger.readLine<RobotData>();
 					if (!_logger.hasAnyInputErrors())
 					{
 						sendCoordinates(_robotData);
@@ -244,7 +238,22 @@ void Client::waitLoop()
 				else if (input == "test")
 				{
 					_robotData = _DEFAULT_POSITION;
-					for (int i = 1; i <= 1'000; ++i)
+					for (int i = 1; i <= 1000; ++i)
+					{
+						_robotData.coordinates.at(Handler::Y) += 100 * i * (i & 1 ? 1 : -1);
+						sendCoordinates(_robotData);
+						_isNeedToWait.store(true);
+						while (_isNeedToWait.load())
+						{
+							std::this_thread::sleep_for(std::chrono::milliseconds(1LL));
+						}
+					}
+				}
+				else if (input == "find")
+				{
+					// [1.11, 1.75] => [11100, 17500] 
+					_robotData = _DEFAULT_POSITION;
+					for (int i = 111; i <= 175; ++i)
 					{
 						_robotData.coordinates.at(Handler::Y) += 100 * i * (i & 1 ? 1 : -1);
 						sendCoordinates(_robotData);
@@ -288,13 +297,13 @@ void Client::tryReconnect()
 {
 	while (!_isRunning.load())
 	{
-		closesocket(_sendingSocket);
+		closeSocket(_sendingSocket);
 		initSocket(_sendingSocket);
 		switch (_workMode)
 		{
 			case WorkMode::STRAIGHTFORWARD:
 			{
-				closesocket(_receivingSocket);
+				closeSocket(_receivingSocket);
 				initSocket(_receivingSocket);
 
 				const bool reconnect = tryConnect(_serverSendingPort, _serverIP, _sendingSocket, 
@@ -344,17 +353,15 @@ void Client::launch()
 	}
 }
 
-void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& secondPoint, 
-							   const int numberOfIterations)
+void Client::circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint,
+							 const int numberOfIterations)
 {
 	assert(numberOfIterations > 0);
 
 	_circlicState = CirclicState::SEND_FIRST;
 
 	int counterIterations = 0;
-
 	bool flag = true;
-
 	while (flag)
 	{
 		switch (_circlicState)
@@ -409,8 +416,8 @@ void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& sec
 	sendCoordinates(firstPoint);
 }
 
-void Client::partialProcessing(const RobotData& firstPoint, const RobotData& secondPoint,
-							   const int numberOfSteps)
+void Client::partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
+							 const int numberOfSteps)
 {
 	assert(numberOfSteps > 0);
 
@@ -462,11 +469,11 @@ bool Client::sendCoordinates(const RobotData& robotData)
 {
 	if (checkCoordinates(robotData))
 	{
+		_start          = std::chrono::steady_clock::now();
+		sendData(_sendingSocket, robotData.toString());
 		lastSentPoint   = robotData;
 		_robotData      = robotData;
 		_logger.writeLine(robotData);
-		_start          = std::chrono::steady_clock::now();
-		sendData(_sendingSocket, robotData.toString());
 		return true;
 	}
 	
@@ -491,22 +498,6 @@ void Client::sendCoordinateType(const CoordinateSystem coordinateType) const
 			_printer.writeLine(std::cout, "ERROR 05: Incorrect coordinate system to send!");
 			break;
 	}
-}
-
-void Client::circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
-							 const int numberOfIterations)
-{
-	std::thread circlicThread(&Client::circlicProcessing, this, std::cref(firstPoint), 
-							  std::cref(secondPoint), numberOfIterations);
-	circlicThread.join();
-}
-
-void Client::partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
-							 const int numberOfSteps)
-{
-	std::thread partialThread(&Client::partialProcessing, this, std::cref(firstPoint), 
-							  std::cref(secondPoint), numberOfSteps);
-	partialThread.join();
 }
 
 } // namespace vasily

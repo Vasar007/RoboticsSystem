@@ -20,7 +20,6 @@ void init(vasily::Client& client)
 	auto& printer = printer::Printer::getInstance();
 	printer(std::cout, "Console client for connecting to Fanuc M-20iA v 0.1\n\n");
 
-	client.init();
 	client.launch();
 	client.run();
 }
@@ -32,13 +31,18 @@ int main()
 	constexpr int	SERVER_PORT				= 8888;
 	constexpr int	SERVER_PORT_SENDING		= 9999;
 	constexpr int	SERVER_PORT_RECEIVING	= 9998;
-	constexpr char	SERVER_IP[]				= "192.168.0.101";
+	constexpr char	SERVER_IP[]				= "192.168.0.10"; // 192.168.0.101
 
-	// MAKE SURE THAT YOU USE RIGHT CLIENT: 1 or 2 — DEBUG, 3 — WORKING WITH ROBOT.
-	vasily::Client client(SERVER_PORT, SERVER_IP, vasily::Client::WorkMode::INDIRECT);
+	constexpr int	ROBOT_SENDING_PORT_TO_SERVER      = 59002;
+	constexpr int	ROBOT_RECEIVING_PORT_FROM_SERVER  = 59003;
+	constexpr char	ROBOT_SERVER_IP[]                 = "192.168.0.21";
+
+	// MAKE SURE THAT YOU USE RIGHT CLIENT: 2 — DEBUG, 3 — WORKING WITH ROBOT, 1 — UNIVERSAL.
+	///vasily::Client client(SERVER_PORT, SERVER_IP, vasily::Client::WorkMode::INDIRECT);
 	///vasily::Client client(SERVER_PORT_SENDING, SERVER_PORT_RECEIVING, SERVER_IP,
-	///					  vasily::Client::WorkMode::STRAIGHTFORWARD);
-	///vasily::Client client{};
+	///				      vasily::Client::WorkMode::INDIRECT);
+	vasily::Client client(ROBOT_SENDING_PORT_TO_SERVER, ROBOT_RECEIVING_PORT_FROM_SERVER,
+						  ROBOT_SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
 
 	std::thread clientThread(vasily::init, std::ref(client));
 	clientThread.detach();

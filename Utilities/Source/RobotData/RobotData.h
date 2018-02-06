@@ -332,6 +332,7 @@ struct RobotData
 		{
 			if (lhs.coordinates.at(i) == 0)
 			{
+				result.coordinates.at(i) = 0;
 				continue;
 			}
 

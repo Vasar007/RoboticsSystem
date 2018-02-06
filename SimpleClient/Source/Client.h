@@ -179,19 +179,25 @@ protected:
 	 * \param[in] firstPoint			First point to send and in which robot should return.
 	 * \param[in] secondPoint			Second point for circlic movement.
 	 * \param[in] numberOfIterations	Number of iterations in circlic movement.
+	 * \code
+	 * Enter command: c|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|5
+	 * \endcode
 	 */
-	void		circlicProcessing(const RobotData& firstPoint, const RobotData& secondPoint, 
-								  const int numberOfIterations = 1);
+	void		circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
+								const int numberOfIterations = 1);
 
 	/**
 	 * \brief					Work with robot in partial mode.
 	 * \details					Now function works only with 2 points!
 	 * \param[in] firstPoint	Start point.
 	 * \param[in] secondPoint	End point.
-	 * \param[in] numberOfSteps Number of steps for which robot should move from start to end point.
-	 */
-	void		partialProcessing(const RobotData& firstPoint, const RobotData& secondPoint,
-								  const int numberOfSteps = 1);
+	 * \param[in] numberOfSteps	Number of steps for which robot should move from start to end point.
+	 * \code
+	 * Enter command: p|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|3
+	 * \endcode
+	*/
+	void		partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
+								const int numberOfSteps = 1);
 
 
 public:
@@ -221,11 +227,13 @@ public:
 	 * \param[in] serverSendingPort	    Server port to send.
 	 * \param[in] serverReceivingPort	Server port to recieve.
 	 * \param[in] serverIP			    Server IP address for connection.
+	 * \param[in] workMode              Set work mode for client to work with robot straightforward
+	 *                                  or indirect.
 	 */
 	explicit	Client(const int serverSendingPort      = _DEFAULT_SENDING_PORT_TO_SERVER, 
 					   const int serverReceivingPort    = _DEFAULT_RECEIVING_PORT_FROM_SERVER,
 					   const std::string_view serverIP  = _DEFAULT_SERVER_IP,
-					   const WorkMode workMode = WorkMode::INDIRECT);
+					   const WorkMode workMode          = WorkMode::INDIRECT);
 
 	/**	
 	 * \brief Default destructor.
@@ -292,34 +300,6 @@ public:
 	 * \brief Fuction processes sockets (call 'connect').
 	 */
 	void		launch() override;
-
-	/**
-	 * \brief							Launch thread for circlic processing and
-	 *									forwards parameters.
-	 * \details							Now function works only with 2 points!
-	 * \param[in] firstPoint			First point to send and in which robot should return.
-	 * \param[in] secondPoint			Second point for circlic movement.
-	 * \param[in] numberOfIterations	Number of iterations in circlic movement.
-	 * \code
-	 * Enter command: c|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|5
-	 * \endcode
-	 */
-	void		circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
-								const int numberOfIterations = 1);
-
-	/**
-	 * \brief					Launch thread for partial processing and 
-	 *							forwards parameters.
-	 * \details					Now function works only with 2 points!
-	 * \param[in] firstPoint	Start point.
-	 * \param[in] secondPoint	End point.
-	 * \param[in] numberOfSteps	Number of steps for which robot should move from start to end point.
-	 * \code
-	 * Enter command: p|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|3
-	 * \endcode
-	*/
-	void		partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
-								const int numberOfSteps = 1);
 
 	/**
 	 * \brief Additional fuction that receives data from server.

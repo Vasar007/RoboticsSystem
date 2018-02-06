@@ -12,10 +12,8 @@ Handler::Handler()
 	: _state(State::DEFAULT),
 	  _mode(Mode::COMMAND),
 	  _coorninateSystem(CoordinateSystem::WORLD),
-	  _data(),
 	  _coefficient(10'000),
 	  _numberOfIterations(0),
-	  _parsedResult(),
 	  _mapping({
 		{ "q", State::FORWARD },		{ "a", State::BACK },
 		{ "w", State::LEFT },			{ "s", State::RIGHT },
@@ -352,9 +350,9 @@ Handler::CoordinateSystem Handler::getCoordinateSystem() const
 	return _coorninateSystem;
 }
 
-void Handler::setCoordinateSystem(const CoordinateSystem coorninateType)
+void Handler::setCoordinateSystem(const CoordinateSystem coordninateSystem)
 {
-	_coorninateSystem = coorninateType;
+	_coorninateSystem = coordninateSystem;
 }
 
 int Handler::getNumberOfIterations() const
@@ -367,4 +365,4 @@ ParsedResult Handler::getParsedResult() const
 	return _parsedResult;
 }
 
-}
+} // namespace vasily

@@ -1,4 +1,4 @@
-#include <cassert>
+//#include <cassert>
 #include <thread>
 
 #include "WinsockInterface.h"
@@ -78,38 +78,47 @@ WinsockInterface::WinsockInterface()
 	  _buffer(),
 	  _messageWithIP()
 {
+	init();
 }
 
 WinsockInterface::~WinsockInterface() noexcept
 {
 	if (_wasInitialized)
 	{
-		// The closing of the socket and Winsock.
-		closesocket(_sendingSocket);
-		closesocket(_receivingSocket);
-		WSACleanup();
+		close();
 	}
 }
 
 void WinsockInterface::init()
 {
-	_wasInitialized = true;
+	if (!_wasInitialized)
+	{
+		_wasInitialized = true;
 
-	initWinsock(_wsaData);
-	initSocket(_sendingSocket);
-	initSocket(_receivingSocket);
+		initWinsock(_wsaData);
+		initSocket(_sendingSocket);
+		initSocket(_receivingSocket);
+	}
+	else
+	{
+		_printer.writeLine(std::cout, "Components have initialized yet!");
+	}
 }
 
 void WinsockInterface::close()
 {
-	_wasInitialized = false;
+	if (_wasInitialized)
+	{
+		_wasInitialized = false;
 
-	closesocket(_sendingSocket);
-	closesocket(_receivingSocket);
-	WSACleanup();
-
-	_sendingSocket		= 0;
-	_receivingSocket	= 0;
+		closeSocket(_sendingSocket);
+		closeSocket(_receivingSocket);
+		WSACleanup();
+	}
+	else
+	{
+		_printer.writeLine(std::cout, "Components have closed yet!");
+	}
 }
 
 void WinsockInterface::initWinsock(WSADATA& wsaData) const
@@ -146,10 +155,17 @@ void WinsockInterface::initSocket(SOCKET& socketToInit, const int aiProtocol) co
 	_printer.writeLine(std::cout, "Socket created.");
 }
 
+void WinsockInterface::closeSocket(SOCKET& socketToClose) const
+{
+	closesocket(socketToClose);
+	socketToClose = 0;
+	_printer.writeLine(std::cout, "Closed socket.");
+}
+
 void WinsockInterface::bindSocket(const SOCKET& socketToBind, SOCKADDR_IN& socketAddress, 
 								  const int port) const
 {
-	const u_short usPort = static_cast<u_short>(port);
+	const u_short usPort                = static_cast<u_short>(port);
 
 	// Set socket settings.
 	socketAddress.sin_family			= AF_INET;
@@ -218,8 +234,8 @@ SOCKET WinsockInterface::acceptSocket(const SOCKET& listeningSocket, char* messa
 bool WinsockInterface::tryConnect(const int port, const std::string& ip, 
 								  const SOCKET& socketToConnect, SOCKADDR_IN& socketAddress) const
 {
-	const char* serverIP	= ip.c_str();
-	const u_short usPort	= static_cast<u_short>(port);
+	const char* serverIP	    = ip.c_str();
+	const u_short usPort	    = static_cast<u_short>(port);
 
 	// Set socket settings.
 	socketAddress.sin_family	= AF_INET;
@@ -259,7 +275,7 @@ void WinsockInterface::sendData(const SOCKET& socketForSending, const std::strin
 	_printer.writeLine(std::cout, "Sent data:", data, "successfully.\n");
 }
 
-std::string WinsockInterface::receiveData(const SOCKET socketForReceiving, char* messageWithIP,
+std::string WinsockInterface::receiveData(const SOCKET& socketForReceiving, char* messageWithIP,
 										  char* buffer)
 {
 	int addrlen = sizeof(SOCKADDR_IN);
@@ -306,7 +322,7 @@ std::string WinsockInterface::receiveData(const SOCKET socketForReceiving, char*
 		return { "" };
 	}
 	// Process message that came in.
-	else if (valRead > 0 && valRead < _MAXRECV)
+	if (0 < valRead && valRead < _MAXRECV)
 	{
 		// Add null character, if you want to use with printf/puts or other string 
 		// handling functions.

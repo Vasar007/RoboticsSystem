@@ -34,7 +34,6 @@ namespace vasily
  *  
  *	Client client(SERVER_PORT, SERVER_IP);
  *  
- *	client.init();
  *	client.launch();
  *	client.run();
  *	
@@ -143,6 +142,12 @@ protected:
 	 *							specified. 
 	 */
 	void			initSocket(SOCKET& socketToInit, const int aiProtocol = 6) const;
+
+	/**
+	 * \brief                       Close socket.
+	 * \param[out] socketToClose    Descriptor referencing socket.
+	 */
+	void			closeSocket(SOCKET& socketToClose) const;
 				 
 	/**
 	 * \brief						Associate a local address with a socket.
@@ -204,7 +209,8 @@ protected:
 	 * \param[out] buffer	            Buffer to write received data.
 	 * \return						    Received data from receiving socket.
 	 */
-	std::string		receiveData(const SOCKET socketForReceiving, char* messageWithIP, char* buffer);
+	std::string		receiveData(const SOCKET& socketForReceiving, char* messageWithIP,
+								char* buffer);
 
 	/**
 	 * \brief					    Set timeout for socket.

@@ -4,10 +4,9 @@
 namespace vasily
 {
 
-ServerLayer::ServerLayer(const int serverSendingPortR, const int serverRecivingPort,
+ServerLayer::ServerLayer(const int serverSendingPort, const int serverRecivingPort,
 						 const std::string_view serverIP, const int layerPort, const int backlog)
-	: WinsockInterface(),
-	  _bufferForClient(),
+	: _bufferForClient(),
 	  _messageWithIPForClient(),
 	  _serverIP(serverIP),
 	  _layerPort(layerPort),
@@ -15,24 +14,40 @@ ServerLayer::ServerLayer(const int serverSendingPortR, const int serverRecivingP
 	  _clientSocket(0),
 	  _layerSocket(),
 	  _layerSocketAddress(),
-	  _serverSendingPort(serverSendingPortR),
+	  _serverSendingPort(serverSendingPort),
 	  _serverReceivingPort(serverRecivingPort),
-	  _robotData(), 
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
 {
+	_hasReadTable = readDataTable();
 }
 
 ServerLayer::~ServerLayer() noexcept
 {
-	closesocket(_layerSocket);
-	_layerSocket = 0;
+	closeSocket(_layerSocket);
+}
+
+bool ServerLayer::readDataTable()
+{
+	while (!_logger.inFile.eof())
+	{
+		if (_logger.hasAnyInputErrors())
+		{
+			_printer.writeLine(std::cout, "Failed to read data from table!");
+			return false;
+		}
+
+		const long long distance    = _logger.read<long long>();
+		const long long time        = _logger.read<long long>();
+		_distanceToTimeTable.emplace_hint(_distanceToTimeTable.end(), distance, time);
+	}
+
+	return !_distanceToTimeTable.empty();
 }
 
 void ServerLayer::receiveFromServer()
 {
-	_printer.writeLine(std::cout, "\nReceiving thread started...\n");
+	_printer.writeLine(std::cout, "\nReceiving thread for server started...\n");
 
-	int count = 0;
 	while (true)
 	{
 		const std::string dataBuffer = receiveData(_receivingSocket, _messageWithIP, _buffer);
@@ -43,7 +58,6 @@ void ServerLayer::receiveFromServer()
 			continue;
 		}
 
-		++count;
 		_logger.writeLine(_messageWithIP, '-', dataBuffer);
 
 		if (!dataBuffer.empty())
@@ -53,16 +67,97 @@ void ServerLayer::receiveFromServer()
 	}
 }
 
-void ServerLayer::checkConnectionToServer(const std::atomic_int64_t& time)
+void ServerLayer::checkConnectionToServer(const long long& time)
 {
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000LL));
 
 	while (true)
 	{
-		_logger.writeLine(_robotData);
-		sendData(_sendingSocket, _robotData.toString());
+		_logger.writeLine(_lastReceivedPoint);
+		sendData(_sendingSocket, _lastReceivedPoint.toString());
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(time.load()));
+		std::this_thread::sleep_for(std::chrono::milliseconds(time));
+	}
+}
+
+std::chrono::milliseconds ServerLayer::calculateDuration(const RobotData& robotData)
+{	
+	if (!_hasReadTable)
+	{
+		_printer.writeLine(std::cout, "No duration!");
+		return std::chrono::milliseconds(0LL);
+	}
+
+	// Calculate distance between two points, which contains only first 3 coordinates.
+	const long long distance    = utils::distance(_lastReceivedPoint.coordinates.begin(),
+												  _lastReceivedPoint.coordinates.begin() + 2,
+												  robotData.coordinates.begin(), 0LL, 1LL);
+	_lastReceivedPoint          = robotData;
+
+	const auto low = _distanceToTimeTable.lower_bound(distance);
+	
+	if (low == _distanceToTimeTable.end())
+	{
+		const auto it = --_distanceToTimeTable.end();
+		_printer.writeLine(std::cout, "Distance:", it->first, ", Duration:", it->second.count());
+		return it->second;
+	}
+	if (low == _distanceToTimeTable.begin())
+	{
+		_printer.writeLine(std::cout, "Distance:", low->first, ", Duration:", low->second.count());
+		return low->second;
+	}
+	
+	auto prev = low;
+	--prev;
+	if ((distance - prev->first) < (low->first - distance))
+	{
+		_printer.writeLine(std::cout, "Distance:", prev->first,
+						   ", Duration:", prev->second.count());
+		return prev->second;
+	}
+
+	_printer.writeLine(std::cout, "Distance:", low->first, ", Duration:", low->second.count());
+	return low->second;
+}
+
+void ServerLayer::receiveFromClients()
+{
+	_printer.writeLine(std::cout, "\nReceive thread for clients started...\n");
+
+	while (true)
+	{
+		const std::string dataBuffer = receiveData(_clientSocket, _messageWithIPForClient,
+												   _bufferForClient);
+		_logger.writeLine(_messageWithIPForClient, '-', dataBuffer);
+
+		if (!_isRunning.load())
+		{
+			waitingForConnections();
+			continue;
+		}
+
+		if (dataBuffer.empty())
+		{
+			continue;
+		}
+
+		std::lock_guard<std::mutex> lockGuard{ _mutex };
+		if (utils::parseCoordinateType(dataBuffer))
+		{
+			sendData(_sendingSocket, dataBuffer);
+		}
+		else if (_messagesStorage.empty())
+		{
+			_messagesStorage = utils::parseData(dataBuffer);
+		}
+		else
+		{
+			for (auto&& datum : utils::parseData(dataBuffer))
+			{
+				_messagesStorage.emplace_back(std::move(datum));
+			}
+		}
 	}
 }
 
@@ -88,29 +183,26 @@ void ServerLayer::waitLoop()
 {
 	_printer.writeLine(std::cout, "\n\nLaunched layer...\n");
 
-	std::thread reciveThread(&ServerLayer::receiveFromServer, this);
-	reciveThread.detach();
+	std::thread reciveThreadFromServer(&ServerLayer::receiveFromServer, this);
+	reciveThreadFromServer.detach();
 
 	waitingForConnections();
+
+	std::thread reciveThreadFromClients(&ServerLayer::receiveFromClients, this);
+	reciveThreadFromClients.detach();
 
 	_logger.writeLine("Server layer started to receive at", utils::getCurrentSystemTime());
 
 	while (true)
 	{
-		std::string dataBuffer = receiveData(_clientSocket, _messageWithIPForClient,
-											 _bufferForClient);
-
-		if (!_isRunning.load())
+		std::lock_guard<std::mutex> lockGuard{ _mutex };
+		while (!_messagesStorage.empty())
 		{
-			waitingForConnections();
-			continue;
-		}
+			const RobotData robotData = std::move(_messagesStorage.front());
+			sendData(_sendingSocket, robotData.toString());
 
-		_logger.writeLine(_messageWithIPForClient, '-', dataBuffer);
-
-		if (!dataBuffer.empty())
-		{
-			sendData(_sendingSocket, dataBuffer);
+			std::this_thread::sleep_for(calculateDuration(robotData));
+			_messagesStorage.pop_front();
 		}
 	}
 }
@@ -135,14 +227,9 @@ void ServerLayer::launch()
 
 void ServerLayer::waitingForConnections()
 {
-	// Close the socket and mark as 0 for reuse.
-	closesocket(_clientSocket);
-	_clientSocket = 0;
-
+	closeSocket(_clientSocket);
 	_isRunning.store(false);
-
-	std::thread processThread(&ServerLayer::process, this);
-	processThread.join();
+	process();
 }
 
 std::string ServerLayer::getServerIP() const
@@ -159,8 +246,8 @@ void ServerLayer::tryReconnectToServer()
 {
 	while (!_isRunning.load())
 	{
-		closesocket(_sendingSocket);
-		closesocket(_receivingSocket);
+		closeSocket(_sendingSocket);
+		closeSocket(_receivingSocket);
 
 		initSocket(_sendingSocket);
 		initSocket(_receivingSocket);

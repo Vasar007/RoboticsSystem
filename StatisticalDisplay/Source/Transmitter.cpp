@@ -10,16 +10,16 @@ namespace statistic
 Transmitter::Transmitter(const int maxX, const int maxY)
 	: _limitX(maxX),
 	  _limitY(maxY),
-	  _distance(),
-	  _velocity(),
-	  _time(),
 	  _coordSystem(sf::Lines, 4),
 	  _deltaTime(sf::Points, _limitX),
 	  _lastReachedPoint{ { vasily::RobotData::DEFAULT_CORDINATES },
 						 { vasily::RobotData::DEFAULT_PARAMETERS } },
-	  _circles(),
 	  _shapes(sf::Lines, _limitX * _limitY / 100)
 {
+	_distance.reserve(_NUMBER_FOR_RESERVE);
+	_velocity.reserve(_NUMBER_FOR_RESERVE);
+	_time.reserve(_NUMBER_FOR_RESERVE);
+
 	_coordSystem.append({ sf::Vector2f(1.f, 1.f), sf::Color::Red });
 	_coordSystem.append({ sf::Vector2f(1.f, static_cast<float>(_limitY)), sf::Color::Red });
 	_coordSystem.append({ sf::Vector2f(1.f, static_cast<float>(_limitY - 1)), sf::Color::Red });
@@ -58,9 +58,9 @@ void Transmitter::updateVertices(const double time, const vasily::RobotData& rob
 		_velocity.emplace_back(_distance.back() / time);
 	}
 
-	auto& printer = printer::Printer::getInstance();
-	printer.writeLine(std::cout, std::setw(5), "1st ===> ", _lastReachedPoint, " <=== END");
-	printer.writeLine(std::cout, std::setw(5), "2nd ===> ", robotData, " <=== END");
+	///auto& printer = printer::Printer::getInstance();
+	///printer.writeLine(std::cout, std::setw(5), "1st ===> ", _lastReachedPoint, " <=== END");
+	///printer.writeLine(std::cout, std::setw(5), "2nd ===> ", robotData, " <=== END");
 
 	_time.emplace_back(time);
 	_lastReachedPoint = robotData;
@@ -72,8 +72,8 @@ void Transmitter::updateVertices(const double time, const vasily::RobotData& rob
 		// Two types of velocity and distance placement.
 		//const float coordX = static_cast<float>(_velocity.at(i));
 		//const float coordY = static_cast<float>(_limitY - _distance.at(i)) - 1.f;
-		const float coordX = static_cast<float>(_distance.at(i) * 10);
-		const float coordY = static_cast<float>(_limitY - _velocity.at(i) * 10) - 1.f;
+		const float coordX = static_cast<float>(_distance.at(i) * 20);
+		const float coordY = static_cast<float>(_limitY - _velocity.at(i) * 20) - 1.f;
 		_deltaTime.append({ sf::Vector2f(coordX, coordY), sf::Color::Blue });
 
 		sf::CircleShape circle;
@@ -116,4 +116,4 @@ void Transmitter::draw(sf::RenderTarget& target, sf::RenderStates) const
 	}
 }
 
-}
+} // namespace statistic

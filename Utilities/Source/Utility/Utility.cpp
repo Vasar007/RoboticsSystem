@@ -109,11 +109,8 @@ bool almostEqual2Complement(float a, float b, int maxUlps) noexcept
 	}
 
 	const int intDiff = std::abs(aInt - bInt);
-	if (intDiff <= maxUlps)
-	{
-		return true;
-	}
-	return false;
+
+	return intDiff <= maxUlps;
 }
 
 } // namespace utils

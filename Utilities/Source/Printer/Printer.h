@@ -62,7 +62,7 @@ public:
      * \brief   Get the instance of singleton.
      * \return  Reference to singleton object.
      */
-    static Printer& getInstance();
+    static Printer& getInstance() noexcept;
 
     /**
      * \brief Default destructor.
@@ -86,14 +86,14 @@ public:
      * \brief				Default move constructor.
      * \param[out] other	Other object.
      */
-    Printer(Printer&& other) noexcept               = default;
+    Printer(Printer&& other) noexcept               = delete;
 
     /**
      * \brief				Default move assignment operator.
      * \param[out] other	Other object.
      * \return				Return moved object.
      */
-    Printer& operator=(Printer&& other) noexcept   = default;
+    Printer& operator=(Printer&& other) noexcept   = delete;
 
     /**
      * \brief               Overloaded operator to print data to outstream with subclasses.

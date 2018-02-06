@@ -70,7 +70,7 @@ private:
      * \param[in] t Data to write.
      */
     template <typename T>
-    void doWrite(const T& t) noexcept;
+    void writeImpl(const T& t) noexcept;
 
     /**
      * \brief           Write (unlimited) data in output stream.
@@ -80,7 +80,7 @@ private:
      * \param[in] args  Data to write.
      */
     template <typename T, typename ...Args>
-    void doWrite(const T& t, const Args&... args) noexcept;
+    void writeImpl(const T& t, const Args&... args) noexcept;
 
     /**
      * \brief       Write data in output stream and new line character.
@@ -88,7 +88,7 @@ private:
      * \param[in] t Data to write.
      */
     template <typename T>
-    void doWriteLine(const T& t) noexcept;
+    void writeLineImpl(const T& t) noexcept;
 
     /**
      * \brief           Write (unlimited) data in output stream and new line character.
@@ -98,7 +98,13 @@ private:
      * \param[in] args  Data to write.
      */
     template <typename T, typename ...Args>
-    void doWriteLine(const T& t, const Args&... args) noexcept;
+    void writeLineImpl(const T& t, const Args&... args) noexcept;
+
+    /**
+     * \brief               Report error if any error occurred with streams.
+     * \param[in] message   Print this string to user with error.
+     */
+    void repoortError(const std::string_view message) const noexcept;
 
 
 public:
@@ -118,27 +124,27 @@ public:
      * \brief			Default copy constructor.
      * \param[in] other Other object.
      */
-    Logger(const Logger& other)                 = default;
+    Logger(const Logger& other)                 = delete;
 
     /**
      * \brief			Default copy assignment operator.
      * \param[in] other Other object.
      * \return			Return copied object.
      */
-    Logger& operator=(const Logger& other)      = default;
+    Logger& operator=(const Logger& other)      = delete;
 
     /**
      * \brief				Default move constructor.
      * \param[out] other	Other object.
      */
-    Logger(Logger&& other)                      = default;
+    Logger(Logger&& other)                      = delete;
 
     /**
      * \brief				Default move assignment operator.
      * \param[out] other	Other object.
      * \return				Return moved object.
      */
-    Logger& operator=(Logger&& other)           = default;
+    Logger& operator=(Logger&& other)           = delete;
 
     /**
      * \brief           Write (unlimited) data in output stream.
@@ -157,12 +163,20 @@ public:
     void writeLine(const Args&... args) noexcept;
 
     /**
-     * \brief       Read data from input stream.
+     * \brief       Read data from input stream. Read data until space character (' ').
      * \tparam T    Type of input data.
      * \return      Readed data.
      */
     template <typename T>
     T read() noexcept;
+
+    /**
+     * \brief       Read data from input stream. Read data until newline character ('\n').
+     * \tparam T    Type of input data.
+     * \return      Readed data.
+     */
+    template <typename T>
+    T readLine() noexcept;
 
     /**
      * \brief   Show if any errors in input stream occurred.
@@ -187,6 +201,12 @@ public:
      * \param[in] ioStream  Type of stream to restart.
      */
     void restartStream(const TypeStream ioStream) noexcept;
+
+    /**
+     * \brief   Count lines in input file.
+     * \return  Number of lines.
+     */
+    std::size_t countLinesInInputFile() noexcept;
 };
 
 #include "Logger.inl"

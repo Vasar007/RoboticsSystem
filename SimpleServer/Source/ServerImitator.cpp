@@ -8,8 +8,7 @@ namespace vasily
 
 ServerImitator::ServerImitator(const int clientSendingPort, const int clientRecivingPort,
 							   const int backlog)
-	: WinsockInterface(),
-	  _clientSendingPort(clientSendingPort),
+	: _clientSendingPort(clientSendingPort),
 	  _clientReceivingPort(clientRecivingPort),
 	  _backlog(backlog),
 	  _clientSendingSocket(0),
@@ -21,15 +20,14 @@ ServerImitator::ServerImitator(const int clientSendingPort, const int clientReci
 }
 
 ServerImitator::ServerImitator(ServerImitator&& other) noexcept
-	: WinsockInterface(),
-	  _clientSendingPort(other._clientSendingPort),
+	: _clientSendingPort(other._clientSendingPort),
 	  _clientReceivingPort(other._clientReceivingPort),
 	  _backlog(other._backlog),
 	  _clientSendingSocket(0),
 	  _clientReceivingSocket(0),
-	  _hasGotCoordSystem(other._hasGotCoordSystem ? true : false),
+	  _hasGotCoordSystem(other._hasGotCoordSystem.load()),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
-	  _lastReceivedData(other._lastReceivedData)
+	  _lastReceivedData(std::move(other._lastReceivedData))
 {
 	utils::swap(*this, other);
 }
@@ -122,16 +120,10 @@ void ServerImitator::launch()
 
 void ServerImitator::waitingForConnections()
 {
-	// Close the socket and mark as 0 for reuse.
-	closesocket(_clientReceivingSocket);
-	_clientReceivingSocket = 0;
-	closesocket(_clientSendingSocket);
-	_clientSendingSocket = 0;
-
+	closeSocket(_clientReceivingSocket);
+	closeSocket(_clientSendingSocket);
 	_isRunning.store(false);
-
-	std::thread processThread(&ServerImitator::process, this);
-	processThread.join();
+	process();
 }
 
 std::chrono::milliseconds ServerImitator::calculateDuration(const RobotData& robotData)

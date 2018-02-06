@@ -9,8 +9,8 @@
 
 
 /*
- * Use cases:
- *
+ * \details Use cases:
+ * \code
  * namespace NA
  * {
  *
@@ -75,6 +75,7 @@
  * print(NB::B());
  * print(NC::C());
  * print(ND::D());
+ * \endcode
  */
 
 namespace utils

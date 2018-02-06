@@ -1,8 +1,10 @@
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 #include "../Utility/Utility.h"
 #include "../Print/Print.h"
+#include "../RobotData/RobotData.h"
 #include "Parsing.h"
 
 
@@ -19,7 +21,7 @@ std::string parseFullData(const std::string& data, const int numberOfCoords,
 	}
 
 	std::string result;
-	std::vector<std::string> strStorage = utils::split<std::vector<std::string>>(data);
+	auto strStorage = utils::split<std::vector<std::string>>(data);
 
 	strStorage.erase(std::remove(strStorage.begin(), strStorage.end(), ""), strStorage.end());
 
@@ -57,21 +59,25 @@ std::string parseFullData(const std::string& data, const int numberOfCoords,
 	return result;
 }
 
-// TODO: finish this function with Danila.
-std::string parseData(const std::string& data) noexcept
+std::deque<vasily::RobotData> parseData(const std::string_view data) noexcept
 {
-	std::vector<std::string> strStorage = utils::split<std::vector<std::string>>(data);
+	std::deque<vasily::RobotData> result;
 
-	int count = 0;
-	for (const auto& str : strStorage)
+	std::stringstream rawData(data.data());
+	vasily::RobotData robotData;
+	while (rawData >> robotData)
 	{
-		if (utils::isCorrectNumber(str))
+		if (!rawData.fail())
 		{
-			++count;
+			result.emplace_back(std::move(robotData));
 		}
 	}
+	return result;
+}
 
-	return "";
+bool parseCoordinateType(const std::string_view data) noexcept
+{
+	return data.size() == 1u && isCorrectNumber(data.data());
 }
 
 } // namespace utils

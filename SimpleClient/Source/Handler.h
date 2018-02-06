@@ -281,6 +281,6 @@ public:
 	ParsedResult getParsedResult() const;
 };
 
-}
+} // namespace vasily
 
 #endif // HANDLER_H

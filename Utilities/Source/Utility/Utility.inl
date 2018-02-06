@@ -66,15 +66,15 @@ template <class InputIt1, class InputIt2, typename T>
 [[nodiscard]]
 T distance(InputIt1 first1, InputIt1 last1, InputIt2 first2, T value, T divisor)
 {
-	auto squareOfSumsOfDifferences = [divisor](T a, T b)
+	assert(divisor != 0);
+
+	auto squareOfSumsOfDifferences = [&divisor](T a, T b)
 	{
 		return static_cast<T>((a - b) * (a - b) / (divisor * divisor));
 	};
 	const T result = std::inner_product(first1, last1, first2, value, std::plus<>(),
-									    squareOfSumsOfDifferences);
-	value = static_cast<T>(std::sqrt(result));
-
-	return value;
+										squareOfSumsOfDifferences);
+	return static_cast<T>(std::sqrt(result));
 }
 
 #endif // UTILITY_INL

@@ -7,6 +7,7 @@
 #include <utility>
 #include <string_view>
 #include <numeric>
+#include <cassert>
 
 
 // Forward declaration.
@@ -103,7 +104,7 @@ int					stringToInt(const std::string& str) noexcept;
 
 /**
  * \brief           Get current system time.
- * \return          String that cintains current readable time.
+ * \return          String that contains current readable time.
  */
 std::string         getCurrentSystemTime() noexcept;
 
