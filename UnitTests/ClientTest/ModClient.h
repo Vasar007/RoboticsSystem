@@ -53,6 +53,8 @@ public:
 	 * \param[in] serverPortSending	Server port to send.
 	 * \param[in] serverReceiving	Server port to recieve.
 	 * \param[in] serverIP			Server IP address for connection.
+	 * \param[in] workMode          Set work mode for client to work with robot straightforward or
+	 *                              indirect.
 	 */
 	explicit	ModClient(const int serverPortSending       = SERVER_PORT_SENDING,
 						  const int serverReceiving         = SERVER_PORT_RECEIVING,

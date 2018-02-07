@@ -16,7 +16,7 @@ int main()
 
     constexpr int	ROBOT_SENDING_PORT_TO_SERVER        = 59002;
     constexpr int	ROBOT_RECEIVING_PORT_FROM_SERVER    = 59003;
-    constexpr char	ROBOT_SERVER_IP[]                   = "192.168.0.21";
+    constexpr char	ROBOT_SERVER_IP[]                   = "192.168.1.21";
 
     vasily::ServerLayer serverLayer(SERVER_SENDING_PORT, SERVER_RECEIVING_PORT, SERVER_IP,
                                     LAYER_PORT, BACKLOG);

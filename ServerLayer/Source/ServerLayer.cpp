@@ -36,8 +36,8 @@ bool ServerLayer::readDataTable()
 			return false;
 		}
 
-		const long long distance    = _logger.read<long long>();
-		const long long time        = _logger.read<long long>();
+		const auto distance = _logger.read<long long>();
+		const auto time     = _logger.read<long long>();
 		_distanceToTimeTable.emplace_hint(_distanceToTimeTable.end(), distance, time);
 	}
 
@@ -110,7 +110,7 @@ std::chrono::milliseconds ServerLayer::calculateDuration(const RobotData& robotD
 	
 	auto prev = low;
 	--prev;
-	if ((distance - prev->first) < (low->first - distance))
+	if (distance - prev->first < low->first - distance)
 	{
 		_printer.writeLine(std::cout, "Distance:", prev->first,
 						   ", Duration:", prev->second.count());
@@ -156,7 +156,7 @@ void ServerLayer::receiveFromClients()
 		{
 			for (auto&& datum : utils::parseData(dataBuffer))
 			{
-				_messagesStorage.emplace_back(std::move(datum));
+				_messagesStorage.emplace_back(datum);
 			}
 		}
 	}
@@ -199,7 +199,7 @@ void ServerLayer::waitLoop()
 		std::lock_guard<std::mutex> lockGuard{ _mutex };
 		while (!_messagesStorage.empty())
 		{
-			const RobotData robotData = std::move(_messagesStorage.front());
+			const RobotData robotData = _messagesStorage.front();
 			sendData(_sendingSocket, robotData.toString());
 
 			std::this_thread::sleep_for(calculateDuration(robotData));

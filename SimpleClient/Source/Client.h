@@ -58,12 +58,12 @@ protected:
 	/**
 	 * \brief Variable used to keep server port to send.
 	 */
-	int			_serverSendingPort;
+	int			_serverSendingPort{};
 
 	/**
 	 * \brief Variable used to keep server port to recieve.
 	 */
-	int			_serverReceivingPort;
+	int			_serverReceivingPort{};
 
 	/**
 	 * \brief User data handler.
@@ -78,7 +78,7 @@ protected:
 	/**
 	 * \brief Measured time between start point and some event.
 	 */
-	std::chrono::duration<double>						_duration;
+	std::chrono::duration<double>						_duration{};
 
 	/**
 	 * \brief Data used to send and with we compare answer from robot if it needs.
@@ -118,7 +118,7 @@ protected:
 	/**
 	 * \brief Default value for server IP.
 	 */
-	static constexpr char		_DEFAULT_SERVER_IP[]	            = "192.168.0.21";
+	static constexpr char		_DEFAULT_SERVER_IP[]	            = "192.168.1.21";
 
 	/**
 	 * \brief Default value for sending port.

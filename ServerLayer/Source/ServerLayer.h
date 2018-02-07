@@ -121,7 +121,7 @@ protected:
 	/**
 	 * \brief Default value for server IP.
 	 */
-	static constexpr char	_DEFAULT_SERVER_IP[]                = "192.168.0.21";
+	static constexpr char	_DEFAULT_SERVER_IP[]                = "192.168.1.21";
 
 	/**
 	 * \brief Default value for sending port.

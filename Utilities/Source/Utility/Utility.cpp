@@ -87,7 +87,7 @@ std::string getCurrentSystemTime() noexcept
 	return timebuf;
 }
 
-bool almostEqual2Complement(float a, float b, int maxUlps) noexcept
+bool almostEqual2Complement(float a, float b, const int maxUlps) noexcept
 {
 	// maxUlps must not be negative and not too large to NaN was not equal to any number.
 	assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);

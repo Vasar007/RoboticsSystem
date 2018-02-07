@@ -135,7 +135,7 @@ T                   distance(InputIt1 first1, InputIt1 last1, InputIt2 first2, T
  * \return          True if numbers almost equal, false — otherwise.
  */
 [[nodiscard]]
-bool                almostEqual2Complement(float a, float b, int maxUlps) noexcept;
+bool                almostEqual2Complement(float a, float b, const int maxUlps) noexcept;
 
 
 #include "Utility.inl"

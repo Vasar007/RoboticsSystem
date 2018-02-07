@@ -28,8 +28,7 @@ double RobotData::length() const
 
 	for (std::size_t i = 0u; i < NUMBER_OF_COORDINATES; ++i)
 	{
-		const double temp = coordinates.at(i) * coordinates.at(i) / (10'000 * 10'000);
-		result += temp;
+		result += coordinates.at(i) * coordinates.at(i) / (10'000.0 * 10'000.0);
 	}
 
 	return std::sqrt(result);

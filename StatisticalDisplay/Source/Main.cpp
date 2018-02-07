@@ -35,7 +35,7 @@ int main()
 
 	constexpr int	ROBOT_SENDING_PORT_TO_SERVER      = 59002;
 	constexpr int	ROBOT_RECEIVING_PORT_FROM_SERVER  = 59003;
-	constexpr char	ROBOT_SERVER_IP[]                 = "192.168.0.21";
+	constexpr char	ROBOT_SERVER_IP[]                 = "192.168.1.21";
 
 	// MAKE SURE THAT YOU USE RIGHT CLIENT: 2 — DEBUG, 3 — WORKING WITH ROBOT, 1 — UNIVERSAL.
 	vasily::Client client(SERVER_PORT, SERVER_IP, vasily::Client::WorkMode::INDIRECT);
@@ -63,7 +63,7 @@ int main()
 			client.isNeedToUpdate.store(false);
 		}
 
-		sf::Event event;
+		sf::Event event{};
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)

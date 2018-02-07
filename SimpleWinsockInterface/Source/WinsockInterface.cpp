@@ -164,7 +164,7 @@ void WinsockInterface::closeSocket(SOCKET& socketToClose) const
 void WinsockInterface::bindSocket(const SOCKET& socketToBind, SOCKADDR_IN& socketAddress, 
 								  const int port) const
 {
-	const u_short usPort                = static_cast<u_short>(port);
+	const auto usPort                   = static_cast<u_short>(port);
 
 	// Set socket settings.
 	socketAddress.sin_family			= AF_INET;
@@ -234,7 +234,7 @@ bool WinsockInterface::tryConnect(const int port, const std::string& ip,
 								  const SOCKET& socketToConnect, SOCKADDR_IN& socketAddress) const
 {
 	const char* serverIP	    = ip.c_str();
-	const u_short usPort	    = static_cast<u_short>(port);
+	const auto usPort	        = static_cast<u_short>(port);
 
 	// Set socket settings.
 	socketAddress.sin_family	= AF_INET;

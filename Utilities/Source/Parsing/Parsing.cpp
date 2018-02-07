@@ -69,7 +69,7 @@ std::deque<vasily::RobotData> parseData(const std::string_view data) noexcept
 	{
 		if (!rawData.fail())
 		{
-			result.emplace_back(std::move(robotData));
+			result.emplace_back(robotData);
 		}
 	}
 	return result;

@@ -80,7 +80,7 @@ public:
      * \param[in] other Other object.
      * \return			Return copied object.
      */
-    Printer& operator=(const Printer& other)       = delete;
+    Printer& operator=(const Printer& other)        = delete;
 
     /**
      * \brief				Default move constructor.
@@ -93,7 +93,7 @@ public:
      * \param[out] other	Other object.
      * \return				Return moved object.
      */
-    Printer& operator=(Printer&& other) noexcept   = delete;
+    Printer& operator=(Printer&& other) noexcept    = delete;
 
     /**
      * \brief               Overloaded operator to print data to outstream with subclasses.

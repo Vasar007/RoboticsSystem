@@ -24,9 +24,9 @@ ServerImitator::ServerImitator(ServerImitator&& other) noexcept
 	  _backlog(other._backlog),
 	  _clientSendingSocket(0),
 	  _clientReceivingSocket(0),
-	  _coorninateSystem(std::move(other._coorninateSystem)),
+	  _coorninateSystem(other._coorninateSystem),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
-	  _lastReceivedData(std::move(other._lastReceivedData))
+	  _lastReceivedData(other._lastReceivedData)
 {
 	utils::swap(*this, other);
 }
@@ -89,7 +89,7 @@ void ServerImitator::waitLoop()
 		std::string toSending = utils::parseFullData(dataBuffer);
 
 		bool flag;
-		const RobotData robotData = utils::fromString<RobotData>(dataBuffer, flag);
+		const auto robotData = utils::fromString<RobotData>(dataBuffer, flag);
 		if (flag)
 		{
 			std::this_thread::sleep_for(calculateDuration(robotData));
@@ -134,7 +134,7 @@ std::chrono::milliseconds ServerImitator::calculateDuration(const RobotData& rob
 	_lastReceivedData       = robotData;
 
 	constexpr long long multiplier  = 65LL;
-	const long long result          = static_cast<long long>(distance * multiplier);
+	const auto result               = static_cast<long long>(distance * multiplier);
 
 	return std::chrono::milliseconds(result);
 }
