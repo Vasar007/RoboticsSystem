@@ -20,7 +20,6 @@ std::string parseFullData(const std::string& data, const int numberOfCoords,
 		return { "" };
 	}
 
-	std::string result;
 	auto strStorage = utils::split<std::vector<std::string>>(data);
 
 	strStorage.erase(std::remove(strStorage.begin(), strStorage.end(), ""), strStorage.end());
@@ -30,6 +29,7 @@ std::string parseFullData(const std::string& data, const int numberOfCoords,
 		return { "" };
 	}
 
+	std::string result;
 	int count = 0;
 	for (const auto& str : strStorage)
 	{
@@ -75,9 +75,21 @@ std::deque<vasily::RobotData> parseData(const std::string_view data) noexcept
 	return result;
 }
 
-bool parseCoordinateType(const std::string_view data) noexcept
+std::pair<vasily::CoordinateSystem, bool> parseCoordinateSystem(
+	const std::string_view data) noexcept
 {
-	return data.size() == 1u && isCorrectNumber(data.data());
+	const bool parsedResult = data.size() == 1u && utils::isCorrectNumber(data);
+
+	if (!parsedResult)
+	{
+		return { vasily::CoordinateSystem::INVALID, parsedResult };
+	}
+	if (const int type = utils::stringToInt(data); 0 <= type && type <= 2)
+	{
+	    return { static_cast<vasily::CoordinateSystem>(type), parsedResult };
+	}
+
+	return { vasily::CoordinateSystem::INVALID, parsedResult };
 }
 
 } // namespace utils

@@ -23,21 +23,17 @@ void TestServer::receiveDataNTimes(const int numberOfTimes)
 
 	for (int step = 0; step < numberOfTimes; ++step)
 	{
-		std::string dataBuffer = receiveData(_clientReceivingSocket, _messageWithIP, _buffer);
+		const std::string dataBuffer = receiveData(_clientReceivingSocket, _messageWithIP, _buffer);
 
 		if (!_isRunning)
 		{
 			waitingForConnections();
 		}
 
-		if (!_hasGotCoordSystem.load() && !dataBuffer.empty())
+		if (const auto [value, check] = utils::parseCoordinateSystem(dataBuffer); check)
 		{
-			const std::string coordSystemStr = dataBuffer.substr(0u, 1u);
-			_hasGotCoordSystem.store(true);
-		}
 
-		if (dataBuffer.size() == 1u)
-		{
+			_coorninateSystem.emplace(value);
 			continue;
 		}
 
@@ -51,7 +47,7 @@ void TestServer::receiveDataNTimes(const int numberOfTimes)
 		}
 
 
-		std::string toSending = utils::parseFullData(dataBuffer);
+		const std::string toSending = utils::parseFullData(dataBuffer);
 		if (!toSending.empty())
 		{
 			sendData(_clientSendingSocket, toSending);

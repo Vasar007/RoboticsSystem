@@ -10,7 +10,7 @@ int main()
 
     constexpr int	SERVER_SENDING_PORT     = 9999;
     constexpr int	SERVER_RECEIVING_PORT   = 9998;
-    constexpr char	SERVER_IP[]             = "192.168.0.10"; // 192.168.0.10
+    constexpr char	SERVER_IP[]             = "192.168.0.101";
     constexpr int   LAYER_PORT              = 8888;
     constexpr int   BACKLOG                 = 10;
 
@@ -18,10 +18,10 @@ int main()
     constexpr int	ROBOT_RECEIVING_PORT_FROM_SERVER    = 59003;
     constexpr char	ROBOT_SERVER_IP[]                   = "192.168.0.21";
 
-    ///vasily::ServerLayer serverLayer(SERVER_SENDING_PORT, SERVER_RECEIVING_PORT, SERVER_IP,
-    ///                                LAYER_PORT, BACKLOG);
-    vasily::ServerLayer serverLayer(ROBOT_SENDING_PORT_TO_SERVER, ROBOT_RECEIVING_PORT_FROM_SERVER,
-                                    ROBOT_SERVER_IP, LAYER_PORT, BACKLOG);
+    vasily::ServerLayer serverLayer(SERVER_SENDING_PORT, SERVER_RECEIVING_PORT, SERVER_IP,
+                                    LAYER_PORT, BACKLOG);
+    ///vasily::ServerLayer serverLayer(ROBOT_SENDING_PORT_TO_SERVER, ROBOT_RECEIVING_PORT_FROM_SERVER,
+    ///                                ROBOT_SERVER_IP, LAYER_PORT, BACKLOG);
 
     serverLayer.launch();
     serverLayer.run();

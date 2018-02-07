@@ -81,7 +81,7 @@ void				swap(T& first, T& second) noexcept;
  * \param[in] flag	Additional flag to perfom some actions.
  * \return			True if string is number, false otherwise.
  */
-bool				isCorrectNumber(const std::string& str, const int flag = 0) noexcept;
+bool				isCorrectNumber(const std::string_view str, const int flag = 0) noexcept;
 
 
 /**
@@ -96,10 +96,10 @@ int					randomInt(const int exclusiveMax) noexcept;
 /**
  * \brief			Parse string to integer.
  * \param[in] str	String for parsing to integer.
- * \return			Parsed integer from string.
+ * \return			Parsed integer from string or zero if input data is not integral.
  */
 [[nodiscard]]
-int					stringToInt(const std::string& str) noexcept;
+int					stringToInt(const std::string_view str) noexcept;
 
 
 /**

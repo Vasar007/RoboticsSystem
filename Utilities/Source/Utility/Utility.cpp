@@ -35,11 +35,11 @@ int randomInt(const int exclusiveMax) noexcept
 	return distr(RANDOM_ENGINE);
 }
 
-bool isCorrectNumber(const std::string& str, const int flag) noexcept
+bool isCorrectNumber(const std::string_view str, const int flag) noexcept
 {
 	char* ptr;
 
-	const double out = strtod(str.c_str(), &ptr);
+	const double out = strtod(str.data(), &ptr);
 
 	if (flag == 1)
 	{
@@ -50,11 +50,11 @@ bool isCorrectNumber(const std::string& str, const int flag) noexcept
 }
 
 [[nodiscard]]
-int stringToInt(const std::string& str) noexcept
+int stringToInt(const std::string_view str) noexcept
 {
 	if (utils::isCorrectNumber(str))
 	{
-		return std::atoi(str.c_str());
+		return std::atoi(str.data());
 	}
 
 	return 0;

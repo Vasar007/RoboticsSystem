@@ -13,7 +13,6 @@ ServerImitator::ServerImitator(const int clientSendingPort, const int clientReci
 	  _backlog(backlog),
 	  _clientSendingSocket(0),
 	  _clientReceivingSocket(0),
-	  _hasGotCoordSystem(false),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
 	  _lastReceivedData{ { RobotData::DEFAULT_CORDINATES }, { RobotData::DEFAULT_PARAMETERS } }
 {
@@ -25,7 +24,7 @@ ServerImitator::ServerImitator(ServerImitator&& other) noexcept
 	  _backlog(other._backlog),
 	  _clientSendingSocket(0),
 	  _clientReceivingSocket(0),
-	  _hasGotCoordSystem(other._hasGotCoordSystem.load()),
+	  _coorninateSystem(std::move(other._coorninateSystem)),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
 	  _lastReceivedData(std::move(other._lastReceivedData))
 {
@@ -50,7 +49,7 @@ void ServerImitator::process()
 	{
 		_clientReceivingSocket  = acceptSocket(_receivingSocket, _messageWithIP);
 		_clientSendingSocket    = acceptSocket(_sendingSocket, _messageWithIP);
-		_hasGotCoordSystem.store(false);
+		_coorninateSystem.reset();
 
 		if (!_isRunning.load())
 		{
@@ -71,7 +70,7 @@ void ServerImitator::waitLoop()
 
 	while (true)
 	{
-		std::string dataBuffer = receiveData(_clientReceivingSocket, _messageWithIP, _buffer);
+		const std::string dataBuffer = receiveData(_clientReceivingSocket, _messageWithIP, _buffer);
 
 		if (!_isRunning.load())
 		{
@@ -79,11 +78,11 @@ void ServerImitator::waitLoop()
 			continue;
 		}
 
-		if (!_hasGotCoordSystem.load() && !dataBuffer.empty())
+		if (const auto [value, check] = utils::parseCoordinateSystem(dataBuffer); check)
 		{
 			const std::string coordSystemStr = dataBuffer.substr(0u, 1u);
 			_printer.writeLine(std::cout, coordSystemStr);
-			_hasGotCoordSystem.store(true);
+			_coorninateSystem.emplace(value);
 		}
 
 		_logger.writeLine(_messageWithIP, '-', dataBuffer);

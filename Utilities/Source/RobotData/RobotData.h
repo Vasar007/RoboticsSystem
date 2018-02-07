@@ -9,6 +9,19 @@ namespace vasily
 {
 
 /**
+ * \brief Array of coordinates type.
+ */
+enum class CoordinateSystem
+{
+	JOINT = 0,
+	JGFRM = 1,
+	WORLD = 2,
+
+	INVALID = 3
+};
+
+
+/**
  * \brief Simple structure which contains values and parameteres to exchanging.
  */
 struct RobotData

@@ -12,6 +12,8 @@ namespace vasily
 
 struct RobotData;
 
+enum class CoordinateSystem;
+
 }
 
 namespace utils
@@ -44,7 +46,7 @@ std::deque<vasily::RobotData> parseData(const std::string_view data) noexcept;
  * \param[in] data  Data for parsin.
  * \return          True if input data contains only one digit, false otherwise.
  */
-bool parseCoordinateType(const std::string_view data) noexcept;
+std::pair<vasily::CoordinateSystem, bool> parseCoordinateSystem(const std::string_view data) noexcept;
 
 
 /**

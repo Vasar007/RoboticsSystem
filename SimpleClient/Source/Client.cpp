@@ -155,7 +155,7 @@ void Client::waitLoop()
 	// Create data for robot.
 	_robotData = _DEFAULT_POSITION;
 
-	sendCoordinateType(CoordinateSystem::WORLD);
+	sendCoordinateSystem(CoordinateSystem::WORLD);
 
 	std::thread reciveThread(&Client::receive, this);
 	reciveThread.detach();
@@ -183,7 +183,7 @@ void Client::waitLoop()
 
 				if (_handler.getCurrentState() == Handler::State::COORDINATE_TYPE)
 				{
-					sendCoordinateType(_handler.getCoordinateSystem());
+					sendCoordinateSystem(_handler.getCoordinateSystem());
 				}
 				else if (_handler.getCurrentState() == Handler::State::FULL_CONTROL)
 				{
@@ -199,7 +199,7 @@ void Client::waitLoop()
 
 				if (_handler.getCurrentState() == Handler::State::COORDINATE_TYPE)
 				{
-					sendCoordinateType(_handler.getCoordinateSystem());
+					sendCoordinateSystem(_handler.getCoordinateSystem());
 				}
 				else if (_handler.getCurrentState() == Handler::State::CIRCLIC)
 				{
@@ -239,21 +239,6 @@ void Client::waitLoop()
 				{
 					_robotData = _DEFAULT_POSITION;
 					for (int i = 1; i <= 1000; ++i)
-					{
-						_robotData.coordinates.at(Handler::Y) += 100 * i * (i & 1 ? 1 : -1);
-						sendCoordinates(_robotData);
-						_isNeedToWait.store(true);
-						while (_isNeedToWait.load())
-						{
-							std::this_thread::sleep_for(std::chrono::milliseconds(1LL));
-						}
-					}
-				}
-				else if (input == "find")
-				{
-					// [1.11, 1.75] => [11100, 17500] 
-					_robotData = _DEFAULT_POSITION;
-					for (int i = 111; i <= 175; ++i)
 					{
 						_robotData.coordinates.at(Handler::Y) += 100 * i * (i & 1 ? 1 : -1);
 						sendCoordinates(_robotData);
@@ -482,18 +467,24 @@ bool Client::sendCoordinates(const RobotData& robotData)
 	return false;
 }
 
-void Client::sendCoordinateType(const CoordinateSystem coordinateType) const
+void Client::sendCoordinateSystem(const CoordinateSystem coordinateSystem) const
 {
-	switch (coordinateType)
+	switch (coordinateSystem)
 	{
 		case CoordinateSystem::JOINT:
-			sendData(_sendingSocket, "1");
+			sendData(_sendingSocket, "0");
+			break;
+
+		case CoordinateSystem::JGFRM:
+			_printer.writeLine(std::cout, "Not supported yet!");
 			break;
 		
 		case CoordinateSystem::WORLD:
 			sendData(_sendingSocket, "2");
 			break;
-		
+
+		case CoordinateSystem::INVALID:
+			[[fallthrough]];
 		default:
 			_printer.writeLine(std::cout, "ERROR 05: Incorrect coordinate system to send!");
 			break;

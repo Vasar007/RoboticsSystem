@@ -143,9 +143,10 @@ void ServerLayer::receiveFromClients()
 		}
 
 		std::lock_guard<std::mutex> lockGuard{ _mutex };
-		if (utils::parseCoordinateType(dataBuffer))
+		if (const auto [value, check] = utils::parseCoordinateSystem(dataBuffer); check)
 		{
 			sendData(_sendingSocket, dataBuffer);
+			_coorninateSystem.emplace(value);
 		}
 		else if (_messagesStorage.empty())
 		{

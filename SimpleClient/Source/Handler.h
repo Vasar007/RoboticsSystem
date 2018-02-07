@@ -81,15 +81,6 @@ public:
 	};
 
 	/**
-	* \brief Array of coordinates type.
-	*/
-	enum class CoordinateSystem
-	{
-		JOINT = 0,
-		WORLD = 2
-	};
-
-	/**
 	 * \brief Input mode.
 	 */
 	enum class Mode
@@ -195,7 +186,7 @@ private:
 	 * \param[in] letter	String for parsing.
 	 * \return				True if mode is changed, false otherwise.
 	 */
-	bool checkChangingMode(const std::string& letter);
+	bool checkChangingMode(const std::string_view letter);
 
 	/**
 	 * \brief				Check if letter contains command to change current coordinate
@@ -203,7 +194,7 @@ private:
 	 * \param[in] letter	String for parsing.
 	 * \return				True if system is changed, false otherwise.
 	 */
-	bool checkChangingCoordinateSysytem(const std::string& letter);
+	bool checkChangingCoordinateSysytem(const std::string_view letter);
 
 
 public:

@@ -26,7 +26,7 @@ Handler::Handler()
 {
 }
 
-bool Handler::checkChangingMode(const std::string& letter)
+bool Handler::checkChangingMode(const std::string_view letter)
 {
 	if (letter == "=")
 	{
@@ -51,28 +51,15 @@ bool Handler::checkChangingMode(const std::string& letter)
 	return false;
 }
 
-bool Handler::checkChangingCoordinateSysytem(const std::string& letter)
+bool Handler::checkChangingCoordinateSysytem(const std::string_view letter)
 {
-	if (const int type = utils::stringToInt(letter); type > 0)
+	if (const auto [value, check] = utils::parseCoordinateSystem(letter); check)
 	{
-		switch (type)
-		{
-			case 1:
-				setCoordinateSystem(CoordinateSystem::JOINT);
-				break;
-
-			case 2:
-				setCoordinateSystem(CoordinateSystem::WORLD);
-				break;
-
-			default:
-				_printer.writeLine(std::cout, "ERROR 01: Incorrect coordinate system!");
-				return false;
-		}
-
+		setCoordinateSystem(value);
 		return true;
 	}
 
+	_printer.writeLine(std::cout, "ERROR 01: Incorrect coordinate system!");
 	return false;
 }
 
@@ -215,9 +202,15 @@ ParsedResult Handler::parseDataAfterCommand()
 
 void Handler::parseRawData(const std::string& data, RobotData& robotData)
 {
+	if (data.empty())
+	{
+		_state = State::DEFAULT;
+		return;
+	}
+
 	std::string copiedData = data;
 
-	const std::string letter = data.substr(0u, 1u);
+	const std::string_view letter = data.substr(0u, 1u);
 
 	if (checkChangingMode(letter))
 	{
@@ -237,9 +230,14 @@ void Handler::parseRawData(const std::string& data, RobotData& robotData)
 
 void Handler::appendCommand(const std::string_view command, RobotData& robotData)
 {
-	_state = parseCommand(command);
+	if (command.empty())
+	{
+		_state = State::DEFAULT;
+		return;
+	}
 
-	_parsedResult = parseDataAfterCommand();
+	_state          = parseCommand(command);
+	_parsedResult   = parseDataAfterCommand();
 
 	if (!_parsedResult.isCorrect)
 	{
@@ -345,7 +343,7 @@ void Handler::setMode(const Mode mode)
 	_mode = mode;
 }
 
-Handler::CoordinateSystem Handler::getCoordinateSystem() const
+CoordinateSystem Handler::getCoordinateSystem() const
 {
 	return _coorninateSystem;
 }

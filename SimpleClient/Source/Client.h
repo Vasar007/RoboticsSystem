@@ -18,11 +18,6 @@ class Client : public WinsockInterface
 {
 public:
 	/**
-	 * \brief Simplify coordinate system enum.
-	 */
-	using CoordinateSystem = Handler::CoordinateSystem;
-
-	/**
 	 * \brief Array of modes for client how to work with robot.
 	 */
 	enum class WorkMode
@@ -323,9 +318,9 @@ public:
 
 	/**
 	 * \brief						Send coordinate system to robot.
-	 * \param[in] coordinateType	Coordinate system to send.
+	 * \param[in] coordinateSystem	Coordinate system to send.
 	 */
-	void		sendCoordinateType(const CoordinateSystem coordinateType) const;
+	void		sendCoordinateSystem(const CoordinateSystem coordinateSystem) const;
 
 
 	// Friendly swapping fuction.

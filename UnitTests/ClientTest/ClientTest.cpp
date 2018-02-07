@@ -54,7 +54,7 @@ void ClientTest::sendReceiveAbility()
 					 ModClient::SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
 	initClient(client, [&client, &STANDART_DELAY]()
 	{	
-		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
+		client.sendCoordinateSystem(vasily::CoordinateSystem::WORLD);
 		std::this_thread::sleep_for(std::chrono::milliseconds(STANDART_DELAY));
 
 		client.sendCoordinatesMod({ 985'000, 0, 940'000, -180'000, 0, 0, 10, 2, 0 });
@@ -92,7 +92,7 @@ void ClientTest::dangerusZone()
 					 ModClient::SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
 	initClient(client, [&client, &STANDART_DELAY]()
 	{
-		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
+		client.sendCoordinateSystem(vasily::CoordinateSystem::WORLD);
 		std::this_thread::sleep_for(std::chrono::milliseconds(STANDART_DELAY));
 
 		client.sendCoordinatesMod({ 829'000,	0,			940'000, -180'000, 0, 0, 10, 2, 0 });
@@ -142,7 +142,7 @@ void ClientTest::circlicMovement()
 					 ModClient::SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
 	initClient(client, [&client, &STANDART_DELAY]()
 	{
-		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
+		client.sendCoordinateSystem(vasily::CoordinateSystem::WORLD);
 		std::this_thread::sleep_for(std::chrono::milliseconds(STANDART_DELAY));
 	
 		constexpr int NUMBER_OF_TIMES = 2;
@@ -195,7 +195,7 @@ void ClientTest::partialMovement()
 					 ModClient::SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
 	initClient(client, [&client, &STANDART_DELAY]()
 	{
-		client.sendCoordinateType(ModClient::CoordinateSystem::WORLD);
+		client.sendCoordinateSystem(vasily::CoordinateSystem::WORLD);
 		std::this_thread::sleep_for(std::chrono::milliseconds(STANDART_DELAY));
 
 		constexpr int NUMBER_OF_STEPS = 5;
