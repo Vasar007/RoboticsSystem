@@ -226,7 +226,7 @@ void Client::waitLoop()
 					}
 					else
 					{
-						_printer.writeLine(std::cout, "ERROR 06: Some error occurred in input "
+						_printer.writeLine(std::cout, "ERROR 05: Some error occurred in input "
 										   "stream! Input stream will be restarted.");
 						_logger.restartStream(logger::Logger::TypeStream::INPUT_STREAM);
 					}
@@ -463,7 +463,7 @@ bool Client::sendCoordinates(const RobotData& robotData)
 	}
 	
 	_robotData = lastSentPoint;
-	_printer.writeLine(std::cout, "ERROR 04: Incorrect coordinates to send!", robotData);
+	_printer.writeLine(std::cout, "ERROR 03: Incorrect coordinates to send!", robotData);
 	return false;
 }
 
@@ -486,7 +486,7 @@ void Client::sendCoordinateSystem(const CoordinateSystem coordinateSystem) const
 		case CoordinateSystem::INVALID:
 			[[fallthrough]];
 		default:
-			_printer.writeLine(std::cout, "ERROR 05: Incorrect coordinate system to send!");
+			_printer.writeLine(std::cout, "ERROR 04: Incorrect coordinate system to send!");
 			break;
 	}
 }

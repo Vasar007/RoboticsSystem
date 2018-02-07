@@ -59,7 +59,6 @@ bool Handler::checkChangingCoordinateSysytem(const std::string_view letter)
 		return true;
 	}
 
-	_printer.writeLine(std::cout, "ERROR 01: Incorrect coordinate system!");
 	return false;
 }
 
@@ -83,7 +82,7 @@ Handler::State Handler::parseCommand(const std::string_view command)
 
 	if (!checkChangingMode(letter))
 	{
-		_printer.writeLine(std::cout, "ERROR 03: Incorrect input data!");
+		_printer.writeLine(std::cout, "ERROR 02: Incorrect input data!");
 	}
 
 	return State::DEFAULT;
@@ -195,7 +194,7 @@ ParsedResult Handler::parseDataAfterCommand()
 			break;
 	}
 
-	_printer.writeLine(std::cout, "ERROR 02: Incorrect input data after literal!");
+	_printer.writeLine(std::cout, "ERROR 01: Incorrect input data after literal!");
 	result.isCorrect = false;
 	return result;
 }
