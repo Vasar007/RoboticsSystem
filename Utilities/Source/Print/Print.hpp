@@ -9,8 +9,8 @@
 
 
 /*
- * Use cases:
- *
+ * \details Use cases:
+ * \code
  * namespace NA
  * {
  *
@@ -32,7 +32,7 @@
  * {
  * };
  *
- * std::ostream& operator <<(std::ostream& out, const B&)
+ * std::ostream& operator<<(std::ostream& out, const B&)
  * {
  *   out << "oss(B)";
  *   return out;
@@ -46,7 +46,7 @@
  * class C
  * {
  * public:
- *   friend std::ostream& operator <<(std::ostream& out, const C&)
+ *   friend std::ostream& operator<<(std::ostream& out, const C&)
  *   {
  *     out << "oss(C)";
  *     return out;
@@ -75,6 +75,7 @@
  * print(NB::B());
  * print(NC::C());
  * print(ND::D());
+ * \endcode
  */
 
 namespace utils

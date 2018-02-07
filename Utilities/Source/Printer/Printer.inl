@@ -3,7 +3,7 @@
 
 
 template<class OutputStream, typename... Args>
-void Printer::operator ()(OutputStream& out, const Args&... args) noexcept
+void Printer::operator()(OutputStream& out, const Args&... args) noexcept
 {
     std::lock_guard<std::mutex> lockGuard{ _mutex };
     (item::ItemPrinter<OutputStream, Args>(out, args), ...);

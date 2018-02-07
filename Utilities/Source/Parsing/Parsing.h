@@ -2,7 +2,19 @@
 #define PARSING_H
 
 #include <string>
+#include <deque>
+#include <functional>
 
+
+// Forward declaration.
+namespace vasily
+{
+
+struct RobotData;
+
+enum class CoordinateSystem;
+
+}
 
 namespace utils
 {
@@ -13,7 +25,7 @@ namespace utils
  * \param[in] data	            Data for parsing.
  * \param[in] numberOfCoords	Number of coordinates in one structure.
  * \param[in] excludeNumber	    Number of exclude coordintes.
- * \return			            Deserialized data if parsed successful, empty string otherwise.
+ * \return			            Deserialized data if parsed successful, empty container otherwise.
  */
 [[nodiscard]]
 std::string parseFullData(const std::string& data, const int numberOfCoords = 9,
@@ -21,16 +33,24 @@ std::string parseFullData(const std::string& data, const int numberOfCoords = 9,
 
 
 /**
- * \brief           Parse input data.
+ * \brief           Parse input data to queue as messages.
  * \param[in] data  Data for parsing.
- * \return          Deserialized data if parsed successful, empty string otherwise.
+ * \return          Deserialized data if parsed successful, empty container otherwise.
  */
 [[nodiscard]]
-std::string parseData(const std::string& data) noexcept;
+std::deque<vasily::RobotData> parseData(const std::string_view data) noexcept;
 
 
 /**
- * \brief					Split string by delimeter characters but doesn't include them.
+ * \brief           Check if input data are coordinate type or not.
+ * \param[in] data  Data for parsin.
+ * \return          True if input data contains only one digit, false otherwise.
+ */
+std::pair<vasily::CoordinateSystem, bool> parseCoordinateSystem(const std::string_view data) noexcept;
+
+
+/**
+ * \brief					Split string by delimeter characters and don't include them.
  * \tparam Container		Type of the contatiner for output.
  * \param[in] str			String to split.
  * \param[in] delims		Delimiter characters (not STRINGS!).
@@ -40,7 +60,7 @@ Container	split(const std::string& str, const std::string_view delims = " ") noe
 
 
 /**
- * \brief					Split string by delimeter string and includes it.
+ * \brief					Split string by delimeter string and don't includes it.
  * \tparam Container		Type of the contatiner for output.
  * \param[in] str			String to split.
  * \param[in] delim			Delimiter string (not CHARACTERS!).

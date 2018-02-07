@@ -15,7 +15,7 @@ public:
 	/**
 	 * \brief Constant number of server port.
 	 */
-	static constexpr int	SERVER_PORT				= 9997;
+	static constexpr int	SERVER_PORT				= 8888;
 
 	/**
 	 * \brief Constant number of server port to send.
@@ -30,22 +30,22 @@ public:
 	/**
 	 * \brief Constant number of server IP.
 	 */
-	static constexpr char	SERVER_IP[]				= "192.168.0.100";
+	static constexpr char	SERVER_IP[]				= "192.168.0.101";
 
 	/**
 	 * \brief Mutex to lock thread for safety.
 	 */
-	std::mutex					mMutex;
+	std::mutex					mutex;
 
 	/**
 	 * \brief Additional flag used to define end of receiving method.
 	 */
-	std::atomic_bool			mHasFinished;
+	std::atomic_bool			hasFinished;
 
 	/**
 	 * \brief Array of sent data to server to check.
 	 */
-	std::vector<std::string>	mStorage;
+	std::vector<std::string>	storage;
 
 
 	/**
@@ -53,10 +53,13 @@ public:
 	 * \param[in] serverPortSending	Server port to send.
 	 * \param[in] serverReceiving	Server port to recieve.
 	 * \param[in] serverIP			Server IP address for connection.
+	 * \param[in] workMode          Set work mode for client to work with robot straightforward or
+	 *                              indirect.
 	 */
-	explicit	ModClient(const int serverPortSending = SERVER_PORT_SENDING,
-						  const int serverReceiving = SERVER_PORT_RECEIVING,
-						  const std::string_view serverIP = SERVER_IP);
+	explicit	ModClient(const int serverPortSending       = SERVER_PORT_SENDING,
+						  const int serverReceiving         = SERVER_PORT_RECEIVING,
+						  const std::string_view serverIP   = SERVER_IP,
+						  const Client::WorkMode workMode   = Client::WorkMode::INDIRECT);
 
 	/**
 	 * \brief					Receive data from receiving socket.

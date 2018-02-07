@@ -35,11 +35,11 @@ int randomInt(const int exclusiveMax) noexcept
 	return distr(RANDOM_ENGINE);
 }
 
-bool isCorrectNumber(const std::string& str, const int flag) noexcept
+bool isCorrectNumber(const std::string_view str, const int flag) noexcept
 {
 	char* ptr;
 
-	const double out = strtod(str.c_str(), &ptr);
+	const double out = strtod(str.data(), &ptr);
 
 	if (flag == 1)
 	{
@@ -50,11 +50,11 @@ bool isCorrectNumber(const std::string& str, const int flag) noexcept
 }
 
 [[nodiscard]]
-int stringToInt(const std::string& str) noexcept
+int stringToInt(const std::string_view str) noexcept
 {
 	if (utils::isCorrectNumber(str))
 	{
-		return std::atoi(str.c_str());
+		return std::atoi(str.data());
 	}
 
 	return 0;
@@ -87,7 +87,7 @@ std::string getCurrentSystemTime() noexcept
 	return timebuf;
 }
 
-bool almostEqual2Complement(float a, float b, int maxUlps) noexcept
+bool almostEqual2Complement(float a, float b, const int maxUlps) noexcept
 {
 	// maxUlps must not be negative and not too large to NaN was not equal to any number.
 	assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
@@ -109,11 +109,8 @@ bool almostEqual2Complement(float a, float b, int maxUlps) noexcept
 	}
 
 	const int intDiff = std::abs(aInt - bInt);
-	if (intDiff <= maxUlps)
-	{
-		return true;
-	}
-	return false;
+
+	return intDiff <= maxUlps;
 }
 
 } // namespace utils

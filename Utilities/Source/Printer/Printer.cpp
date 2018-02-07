@@ -4,7 +4,7 @@
 namespace printer
 {
 
-Printer& Printer::getInstance()
+Printer& Printer::getInstance() noexcept
 {
     // Guaranteed to be destroyed. Instantiated on first use.
     static Printer instance;

@@ -62,7 +62,7 @@ public:
      * \brief   Get the instance of singleton.
      * \return  Reference to singleton object.
      */
-    static Printer& getInstance();
+    static Printer& getInstance() noexcept;
 
     /**
      * \brief Default destructor.
@@ -80,20 +80,20 @@ public:
      * \param[in] other Other object.
      * \return			Return copied object.
      */
-    Printer& operator =(const Printer& other)       = delete;
+    Printer& operator=(const Printer& other)        = delete;
 
     /**
      * \brief				Default move constructor.
      * \param[out] other	Other object.
      */
-    Printer(Printer&& other) noexcept               = default;
+    Printer(Printer&& other) noexcept               = delete;
 
     /**
      * \brief				Default move assignment operator.
      * \param[out] other	Other object.
      * \return				Return moved object.
      */
-    Printer& operator =(Printer&& other) noexcept   = default;
+    Printer& operator=(Printer&& other) noexcept    = delete;
 
     /**
      * \brief               Overloaded operator to print data to outstream with subclasses.
@@ -103,7 +103,7 @@ public:
      * \param[in] args      Data to print.
      */
     template<class OutputStream, typename... Args>
-    void operator ()(OutputStream& out, const Args&... args) noexcept;
+    void operator()(OutputStream& out, const Args&... args) noexcept;
 
     /**
      * \brief               Print datatypes (unlimited) to outstream.

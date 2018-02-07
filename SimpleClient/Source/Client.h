@@ -18,9 +18,13 @@ class Client : public WinsockInterface
 {
 public:
 	/**
-	 * \brief Simplify coordinate system enum.
+	 * \brief Array of modes for client how to work with robot.
 	 */
-	typedef Handler::CoordinateSystem CoordinateSystem;
+	enum class WorkMode
+	{
+		STRAIGHTFORWARD,
+		INDIRECT
+	};
 
 protected:
 	/**
@@ -54,12 +58,12 @@ protected:
 	/**
 	 * \brief Variable used to keep server port to send.
 	 */
-	int			_serverSendingPort;
+	int			_serverSendingPort{};
 
 	/**
 	 * \brief Variable used to keep server port to recieve.
 	 */
-	int			_serverReceivingPort;
+	int			_serverReceivingPort{};
 
 	/**
 	 * \brief User data handler.
@@ -74,7 +78,7 @@ protected:
 	/**
 	 * \brief Measured time between start point and some event.
 	 */
-	std::chrono::duration<double>						_duration;
+	std::chrono::duration<double>						_duration{};
 
 	/**
 	 * \brief Data used to send and with we compare answer from robot if it needs.
@@ -92,6 +96,11 @@ protected:
 	CirclicState		_circlicState;
 
 	/**
+	 * \brief Work mode for client, initialize when object created.
+	 */
+	WorkMode            _workMode;
+
+	/**
 	 * \brief Logger used to write received data to file.
 	 */
 	logger::Logger      _logger;
@@ -99,32 +108,32 @@ protected:
 	/**
 	 * \brief Default file name for input.
 	 */
-	static constexpr char       _DEFAULT_IN_FILE_NAME[]     = "in.txt";
+	static constexpr char       _DEFAULT_IN_FILE_NAME[]             = "in.txt";
 
 	/**
 	 * \brief Default file name for output.
 	 */
-	static constexpr char       _DEFAULT_OUT_FILE_NAME[]    = "out.txt";
+	static constexpr char       _DEFAULT_OUT_FILE_NAME[]            = "out.txt";
 
 	/**
 	 * \brief Default value for server IP.
 	 */
-	static constexpr char		_DEFAULT_SERVER_IP[]	    = "192.168.0.21";
+	static constexpr char		_DEFAULT_SERVER_IP[]	            = "192.168.1.21";
 
 	/**
 	 * \brief Default value for sending port.
 	 */
-	static constexpr int		_DEFAULT_SENDING_PORT	    = 59002;
+	static constexpr int		_DEFAULT_SENDING_PORT_TO_SERVER	    = 59002;
 													
 	/**                                             
 	 * \brief Default value for receiving port.     
 	 */                                             
-	static constexpr int		_DEFAULT_RECEIVING_PORT	    = 59003;
+	static constexpr int		_DEFAULT_RECEIVING_PORT_FROM_SERVER	= 59003;
 
 	/**
 	 * \brief Constant number of coordinates to check to avoid "magic number".
 	 */
-	static constexpr std::size_t _MAIN_COORDINATES		    = 3u;
+	static constexpr std::size_t _MAIN_COORDINATES		            = 3u;
 
 	/**
 	 * \brief Default (beginning) robot position.
@@ -138,13 +147,13 @@ protected:
 	static constexpr std::array<int, _MAIN_COORDINATES> _MIN_COORDS{ 830'000, -400'000, 539'000 };
 
 	/**
-	 * \brief Array contains maximum value for first 3 coordinates (x, y, z). 317'000
+	 * \brief Array contains maximum value for first 3 coordinates (x, y, z).
 	 */
 	static constexpr std::array<int, _MAIN_COORDINATES> _MAX_COORDS{ 1'320'000, 400'000, 960'000 };
 
 
 	/**
-	 * \brief Try to establishe a connection to a specified socket again.
+	 * \brief Try to establish a connection to a specified socket again.
 	 */
 	void		tryReconnect();
 
@@ -165,19 +174,25 @@ protected:
 	 * \param[in] firstPoint			First point to send and in which robot should return.
 	 * \param[in] secondPoint			Second point for circlic movement.
 	 * \param[in] numberOfIterations	Number of iterations in circlic movement.
+	 * \code
+	 * Enter command: c|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|5
+	 * \endcode
 	 */
-	void		circlicProcessing(const RobotData& firstPoint, const RobotData& secondPoint, 
-								  const int numberOfIterations = 1);
+	void		circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
+								const int numberOfIterations = 1);
 
 	/**
 	 * \brief					Work with robot in partial mode.
 	 * \details					Now function works only with 2 points!
 	 * \param[in] firstPoint	Start point.
 	 * \param[in] secondPoint	End point.
-	 * \param[in] numberOfSteps Number of steps for which robot should move from start to end point.
-	 */
-	void		partialProcessing(const RobotData& firstPoint, const RobotData& secondPoint,
-								  const int numberOfSteps = 1);
+	 * \param[in] numberOfSteps	Number of steps for which robot should move from start to end point.
+	 * \code
+	 * Enter command: p|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|3
+	 * \endcode
+	*/
+	void		partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
+								const int numberOfSteps = 1);
 
 
 public:
@@ -196,23 +211,29 @@ public:
 	 * \brief					Constructor that initializes sockets and connects to server.
 	 * \param[in] serverPort	Server port for connection.
 	 * \param[in] serverIP		Server IP address for connection.
+	 * \param[in] workMode      Set work mode for client to work with robot straightforward or
+	 *                          indirect.
 	 */
-	explicit	Client(const int serverPort, const std::string_view serverIP);
+	explicit	Client(const int serverPort, const std::string_view serverIP,
+					   const WorkMode workMode = WorkMode::INDIRECT);
 
 	/**
 	 * \brief						    Constructor that initializes sockets and connects to server.
 	 * \param[in] serverSendingPort	    Server port to send.
 	 * \param[in] serverReceivingPort	Server port to recieve.
 	 * \param[in] serverIP			    Server IP address for connection.
+	 * \param[in] workMode              Set work mode for client to work with robot straightforward
+	 *                                  or indirect.
 	 */
-	explicit	Client(const int serverSendingPort = _DEFAULT_SENDING_PORT, 
-					   const int serverReceivingPort = _DEFAULT_RECEIVING_PORT,
-					   const std::string_view serverIP = _DEFAULT_SERVER_IP);
+	explicit	Client(const int serverSendingPort      = _DEFAULT_SENDING_PORT_TO_SERVER, 
+					   const int serverReceivingPort    = _DEFAULT_RECEIVING_PORT_FROM_SERVER,
+					   const std::string_view serverIP  = _DEFAULT_SERVER_IP,
+					   const WorkMode workMode          = WorkMode::INDIRECT);
 
 	/**	
 	 * \brief Default destructor.
 	 */
-				~Client()						= default;
+	virtual     ~Client() noexcept				= default;
 
 	/**
 	 * \brief			Deleted copy constructor.
@@ -225,7 +246,7 @@ public:
 	 * \param[in] other Other client object.
 	 * \return			Returns nothing because it's deleted.
 	 */
-	Client&		operator =(const Client& other)	= delete;
+	Client&		operator=(const Client& other)	= delete;
 
 	/**
 	 * \brief				Move constructor.
@@ -238,7 +259,7 @@ public:
 	 * \param[out] other	Other client object.
 	 * \return				Returns an object with all moved data.
 	 */
-	Client&		operator =(Client&& other) noexcept;
+	Client&		operator=(Client&& other) noexcept;
 
 
 	/**
@@ -276,34 +297,6 @@ public:
 	void		launch() override;
 
 	/**
-	 * \brief							Launch thread for circlic processing and
-	 *									forwards parameters.
-	 * \details							Now function works only with 2 points!
-	 * \param[in] firstPoint			First point to send and in which robot should return.
-	 * \param[in] secondPoint			Second point for circlic movement.
-	 * \param[in] numberOfIterations	Number of iterations in circlic movement.
-	 * \code
-	 * Enter command: c|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|5
-	 * \endcode
-	 */
-	void		circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
-								const int numberOfIterations = 1);
-
-	/**
-	 * \brief					Launch thread for partial processing and 
-	 *							forwards parameters.
-	 * \details					Now function works only with 2 points!
-	 * \param[in] firstPoint	Start point.
-	 * \param[in] secondPoint	End point.
-	 * \param[in] numberOfSteps	Number of steps for which robot should move from start to end point.
-	 * \code
-	 * Enter command: p|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|3
-	 * \endcode
-	*/
-	void		partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
-								const int numberOfSteps = 1);
-
-	/**
 	 * \brief Additional fuction that receives data from server.
 	 */
 	void		receive();
@@ -325,9 +318,9 @@ public:
 
 	/**
 	 * \brief						Send coordinate system to robot.
-	 * \param[in] coordinateType	Coordinate system to send.
+	 * \param[in] coordinateSystem	Coordinate system to send.
 	 */
-	void		sendCoordinateType(const CoordinateSystem coordinateType) const;
+	void		sendCoordinateSystem(const CoordinateSystem coordinateSystem) const;
 
 
 	// Friendly swapping fuction.

@@ -14,10 +14,8 @@ int main()
 	
 	vasily::ServerImitator server(PORT_SENDING, PORT_RECEIVING, BACKLOG);
 
-	server.init();
 	server.launch();
 	server.run();
 
-	std::cin.get();
 	return 0;
 }

@@ -9,6 +9,19 @@ namespace vasily
 {
 
 /**
+ * \brief Array of coordinates type.
+ */
+enum class CoordinateSystem
+{
+	JOINT = 0,
+	JGFRM = 1,
+	WORLD = 2,
+
+	INVALID = 3
+};
+
+
+/**
  * \brief Simple structure which contains values and parameteres to exchanging.
  */
 struct RobotData
@@ -104,7 +117,7 @@ struct RobotData
 	 * \param[in] other Other object.
 	 * \return			Return copied structure.
 	 */
-	constexpr RobotData& operator =(const RobotData& other)      = default;
+	constexpr RobotData& operator=(const RobotData& other)      = default;
 
 	/**
 	 * \brief				Default move constructor.
@@ -117,7 +130,7 @@ struct RobotData
 	 * \param[out] other	Other object.
 	 * \return				Return moved structure.
 	 */
-	constexpr RobotData& operator =(RobotData&& other) noexcept  = default;
+	constexpr RobotData& operator=(RobotData&& other) noexcept  = default;
 
 
 	/**
@@ -166,7 +179,7 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			True if coordinates are equal, false otherwise.
 	 */
-	friend constexpr bool operator ==(const RobotData& lhs, const RobotData& rhs)
+	friend constexpr bool operator==(const RobotData& lhs, const RobotData& rhs)
 	{
 		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
 		{
@@ -184,7 +197,7 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			True if coordinates are not equal, false otherwise.
 	 */
-	friend constexpr bool operator !=(const RobotData& lhs, const RobotData& rhs)
+	friend constexpr bool operator!=(const RobotData& lhs, const RobotData& rhs)
 	{
 		return !(lhs == rhs);
 	}
@@ -195,7 +208,7 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			True if lhs object is less than rhs object, false otherwise.
 	 */
-	friend constexpr bool operator <(const RobotData& lhs, const RobotData& rhs)
+	friend constexpr bool operator<(const RobotData& lhs, const RobotData& rhs)
 	{
 		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
 		{
@@ -213,7 +226,7 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			True if lhs object is greater than rhs object, false otherwise.
 	 */
-	friend constexpr bool operator >(const RobotData& lhs, const RobotData& rhs)
+	friend constexpr bool operator>(const RobotData& lhs, const RobotData& rhs)
 	{
 		return !(lhs < rhs) && !(lhs == rhs);
 	}
@@ -224,7 +237,7 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of sum.
 	 */
-	friend constexpr RobotData operator +(const RobotData& lhs, const RobotData& rhs)
+	friend constexpr RobotData operator+(const RobotData& lhs, const RobotData& rhs)
 	{
 		RobotData result;
 		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
@@ -241,7 +254,7 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of sum puts in lhs object.
 	 */
-	friend constexpr RobotData& operator +=(RobotData& lhs, const RobotData& rhs)
+	friend constexpr RobotData& operator+=(RobotData& lhs, const RobotData& rhs)
 	{
 		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
 		{
@@ -257,7 +270,7 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of sustraction.
 	 */
-	friend constexpr RobotData operator -(const RobotData& lhs, const RobotData& rhs)
+	friend constexpr RobotData operator-(const RobotData& lhs, const RobotData& rhs)
 	{
 		RobotData result;
 		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
@@ -274,7 +287,7 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of sum puts in lhs object.
 	 */
-	friend constexpr RobotData& operator -=(RobotData& lhs, const RobotData& rhs)
+	friend constexpr RobotData& operator-=(RobotData& lhs, const RobotData& rhs)
 	{
 		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
 		{
@@ -290,7 +303,7 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of sustraction.
 	 */
-	friend constexpr RobotData operator *(const RobotData& lhs, const RobotData& rhs)
+	friend constexpr RobotData operator*(const RobotData& lhs, const RobotData& rhs)
 	{
 		RobotData result;
 		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
@@ -307,7 +320,7 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of sum puts in lhs object.
 	 */
-	friend constexpr RobotData& operator *=(RobotData& lhs, const RobotData& rhs)
+	friend constexpr RobotData& operator*=(RobotData& lhs, const RobotData& rhs)
 	{
 		for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
 		{
@@ -323,7 +336,7 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of division.
 	 */
-	friend constexpr RobotData operator /(const RobotData& lhs, const int& rhs)
+	friend constexpr RobotData operator/(const RobotData& lhs, const int& rhs)
 	{
 		assert(rhs != 0);
 
@@ -332,6 +345,7 @@ struct RobotData
 		{
 			if (lhs.coordinates.at(i) == 0)
 			{
+				result.coordinates.at(i) = 0;
 				continue;
 			}
 
@@ -352,7 +366,7 @@ struct RobotData
 	 * \param[in] rhs	Right-hand side object.
 	 * \return			Result of division puts in lhs object.
 	 */
-	friend constexpr RobotData& operator /=(RobotData& lhs, const int& rhs)
+	friend constexpr RobotData& operator/=(RobotData& lhs, const int& rhs)
 	{
 		assert(rhs != 0);
 
@@ -379,7 +393,7 @@ struct RobotData
 	 * \param[in] robotData	Object for records.
 	 * \return				A reference to the original istream object.
 	 */
-	friend std::istream& operator >>(std::istream& in, RobotData& robotData);
+	friend std::istream& operator>>(std::istream& in, RobotData& robotData);
 
 	/**
 	 * \brief				Operator overloading for ostream.
@@ -387,7 +401,7 @@ struct RobotData
 	 * \param[in] robotData	Object for output.
 	 * \return				A reference to the original ostream object.
 	 */
-	friend std::ostream& operator <<(std::ostream& out, const RobotData& robotData);
+	friend std::ostream& operator<<(std::ostream& out, const RobotData& robotData);
 };
 
 } // namespace vasily

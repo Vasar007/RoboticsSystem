@@ -6,53 +6,48 @@ namespace clientTests
 
 TestServer::TestServer(const int sendingPort, const int recivingPort, const int backlog)
 	: ServerImitator(sendingPort, recivingPort, backlog),
-	  mHasConnected(false),
-	  mHasFinished(false),
-	  mStorage()
+	  hasConnected(false),
+	  hasFinished(false)
 {
 }
 
 void TestServer::receiveDataNTimes(const int numberOfTimes)
 {
-	std::lock_guard<std::mutex> lockGuard{ mMutex };
+	std::lock_guard<std::mutex> lockGuard{ mutex };
 
 	waitingForConnections();
 	if (_clientReceivingSocket != 0 && _clientSendingSocket != 0)
 	{
-		mHasConnected = true;
+		hasConnected.store(true);
 	}
 
 	for (int step = 0; step < numberOfTimes; ++step)
 	{
-		std::string dataBuffer = receiveData(_clientReceivingSocket);
+		const std::string dataBuffer = receiveData(_clientReceivingSocket, _messageWithIP, _buffer);
 
 		if (!_isRunning)
 		{
 			waitingForConnections();
 		}
 
-		if (!_hasGotCoordSystem && !dataBuffer.empty())
+		if (const auto [value, check] = utils::parseCoordinateSystem(dataBuffer); check)
 		{
-			const std::string coordSystemStr = dataBuffer.substr(0u, 1u);
-			_hasGotCoordSystem = true;
-		}
 
-		if (dataBuffer.size() == 1u)
-		{
+			_coorninateSystem.emplace(value);
 			continue;
 		}
 
 		if (std::count(dataBuffer.begin(), dataBuffer.end(), ' ') > 9)
 		{
-			mStorage = utils::fsplit<std::vector<std::string>>(dataBuffer, " 10 2 0 ");
+			storage = utils::fsplit<std::vector<std::string>>(dataBuffer, " 10 2 0 ");
 		}
 		else
 		{
-			mStorage.push_back(dataBuffer);
+			storage.push_back(dataBuffer);
 		}
 
 
-		std::string toSending = utils::parseFullData(dataBuffer);
+		const std::string toSending = utils::parseFullData(dataBuffer);
 		if (!toSending.empty())
 		{
 			sendData(_clientSendingSocket, toSending);
@@ -60,7 +55,7 @@ void TestServer::receiveDataNTimes(const int numberOfTimes)
 
 	}
 
-	mHasFinished = true;
+	hasFinished.store(true);
 }
 
 } // namespace clientTests

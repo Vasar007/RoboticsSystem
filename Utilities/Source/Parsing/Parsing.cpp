@@ -1,8 +1,10 @@
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 #include "../Utility/Utility.h"
 #include "../Print/Print.h"
+#include "../RobotData/RobotData.h"
 #include "Parsing.h"
 
 
@@ -18,8 +20,7 @@ std::string parseFullData(const std::string& data, const int numberOfCoords,
 		return { "" };
 	}
 
-	std::string result;
-	std::vector<std::string> strStorage = utils::split<std::vector<std::string>>(data);
+	auto strStorage = utils::split<std::vector<std::string>>(data);
 
 	strStorage.erase(std::remove(strStorage.begin(), strStorage.end(), ""), strStorage.end());
 
@@ -28,6 +29,7 @@ std::string parseFullData(const std::string& data, const int numberOfCoords,
 		return { "" };
 	}
 
+	std::string result;
 	int count = 0;
 	for (const auto& str : strStorage)
 	{
@@ -57,21 +59,37 @@ std::string parseFullData(const std::string& data, const int numberOfCoords,
 	return result;
 }
 
-// TODO: finish this function with Danila.
-std::string parseData(const std::string& data) noexcept
+std::deque<vasily::RobotData> parseData(const std::string_view data) noexcept
 {
-	std::vector<std::string> strStorage = utils::split<std::vector<std::string>>(data);
+	std::deque<vasily::RobotData> result;
 
-	int count = 0;
-	for (const auto& str : strStorage)
+	std::stringstream rawData(data.data());
+	vasily::RobotData robotData;
+	while (rawData >> robotData)
 	{
-		if (utils::isCorrectNumber(str))
+		if (!rawData.fail())
 		{
-			++count;
+			result.emplace_back(robotData);
 		}
 	}
+	return result;
+}
 
-	return "";
+std::pair<vasily::CoordinateSystem, bool> parseCoordinateSystem(
+	const std::string_view data) noexcept
+{
+	const bool parsedResult = data.size() == 1u && utils::isCorrectNumber(data);
+
+	if (!parsedResult)
+	{
+		return { vasily::CoordinateSystem::INVALID, parsedResult };
+	}
+	if (const int type = utils::stringToInt(data); 0 <= type && type <= 2)
+	{
+	    return { static_cast<vasily::CoordinateSystem>(type), parsedResult };
+	}
+
+	return { vasily::CoordinateSystem::INVALID, parsedResult };
 }
 
 } // namespace utils

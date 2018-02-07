@@ -7,19 +7,15 @@
 namespace vasily
 {
 
-Client::Client(const int serverPort, const std::string_view serverIP)
-	: WinsockInterface(),
-	  _robotData(),
-	  _serverIP(serverIP),
+Client::Client(const int serverPort, const std::string_view serverIP, const WorkMode workMode)
+	: _serverIP(serverIP),
 	  _serverPort(serverPort),
 	  _serverSendingPort(0),
 	  _serverReceivingPort(0),
-	  _handler(),
 	  _start(std::chrono::steady_clock::now()),
-	  _duration(),
-	  _waitAnswer(),
 	  _isNeedToWait(false),
 	  _circlicState(),
+	  _workMode(workMode),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
 	  isNeedToUpdate(false),
 	  lastSentPoint{ { vasily::RobotData::DEFAULT_CORDINATES },
@@ -27,20 +23,16 @@ Client::Client(const int serverPort, const std::string_view serverIP)
 {
 }
 
-Client::Client(const int serverPortSending, const int serverReceiving,
-			   const std::string_view serverIP)
-	: WinsockInterface(),
-	  _robotData(),
-	  _serverIP(serverIP),
+Client::Client(const int serverSendingPort, const int serverReceivingPort,
+			   const std::string_view serverIP, const WorkMode workMode)
+	: _serverIP(serverIP),
 	  _serverPort(0),
-	  _serverSendingPort(serverPortSending),
-	  _serverReceivingPort(serverReceiving),
-	  _handler(),
+	  _serverSendingPort(serverSendingPort),
+	  _serverReceivingPort(serverReceivingPort),
 	  _start(std::chrono::steady_clock::now()),
-	  _duration(),
-	  _waitAnswer(),
 	  _isNeedToWait(false),
 	  _circlicState(),
+	  _workMode(workMode),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
 	  isNeedToUpdate(false),
 	  lastSentPoint{ { vasily::RobotData::DEFAULT_CORDINATES },
@@ -49,15 +41,15 @@ Client::Client(const int serverPortSending, const int serverReceiving,
 }
 
 Client::Client(Client&& other) noexcept
-	: WinsockInterface(),
-	  _robotData(other._robotData),
-	  _serverIP(other._serverIP),
+	: _robotData(other._robotData),
+	  _serverIP(std::move(other._serverIP)),
 	  _serverPort(other._serverPort),
-	  _handler(other._handler),
+	  _handler(std::move(other._handler)),
 	  _start(other._start),
 	  _waitAnswer(other._waitAnswer),
-	  _isNeedToWait(other._isNeedToWait ? true : false),
+	  _isNeedToWait(other._isNeedToWait.load()),
 	  _circlicState(other._circlicState),
+	  _workMode(other._workMode),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
 	  isNeedToUpdate(false)
 {
@@ -81,25 +73,38 @@ void Client::receive()
 	int count = 0;
 	while (true)
 	{
-		const std::string dataBuffer = receiveData(_receivingSocket);
-		_duration = std::chrono::steady_clock::now() - _start;
+		std::string dataBuffer;
+		switch (_workMode)
+		{
+			case WorkMode::INDIRECT:
+				dataBuffer = receiveData(_sendingSocket, _messageWithIP, _buffer);
+				break;
+			
+			case WorkMode::STRAIGHTFORWARD:
+				dataBuffer = receiveData(_receivingSocket, _messageWithIP, _buffer);
+				break;
+			
+			default:
+				assert(false);
+				break;
+		}
+		 _duration = std::chrono::steady_clock::now() - _start;
 
-		if (!_isRunning)
+		if (!_isRunning.load())
 		{
 			tryReconnect();
 			continue;
 		}
 
-		if (_isNeedToWait)
+		if (_isNeedToWait.load())
 		{
-			// NEED TO DO AFTER DANILA REFACTORING.
 			///RobotData robotData;
 			///bool flag;
 			///robotData = utils::fromString<RobotData>(dataBuffer, flag);
 
 			///if (flag && robotData == _waitAnswer)
 			{
-				_isNeedToWait = false;
+				_isNeedToWait.store(false);
 				switch (_circlicState)
 				{
 					case CirclicState::SEND_FIRST:
@@ -122,13 +127,12 @@ void Client::receive()
 			}
 		}
 
-		isNeedToUpdate = true;
-
+		isNeedToUpdate.store(true);
 		++count;
-   
 		_printer.writeLine(std::cout, count, "Duration:", _duration.count(), "seconds");
 
-		_logger.writeLine(_message, '-', dataBuffer);
+		_start = std::chrono::steady_clock::now();
+		_logger.writeLine(_messageWithIP, '-', dataBuffer);
 		_logger.writeLine(count, "Duration:", _duration.count(), "seconds");
 	}
 }
@@ -141,7 +145,7 @@ void Client::checkConnection(const std::atomic_int64_t& time)
 	{
 		sendCoordinates(_robotData);
 	
-		std::this_thread::sleep_for(std::chrono::milliseconds(time));
+		std::this_thread::sleep_for(std::chrono::milliseconds(time.load()));
 	}
 }
 
@@ -150,25 +154,24 @@ void Client::waitLoop()
 	// Create data for robot.
 	_robotData = _DEFAULT_POSITION;
 
-	sendCoordinateType(CoordinateSystem::WORLD);
+	sendCoordinateSystem(CoordinateSystem::WORLD);
 
 	std::thread reciveThread(&Client::receive, this);
 	reciveThread.detach();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
 
-	// NEED TO DO AFTER DANILA REFACTORING.
 	///constexpr std::atomic_int64_t time = 2000LL;
 	///std::thread checkThread(&Client::checkConnection, this, std::cref(time));
 	///checkThread.detach();
 
 	_printer.writeLine(std::cout, "\n\n\nWaiting for reply...\n");
 
-	std::string input;
 	while (true)
 	{
-		memset(_message, 0, _MAXRECV);
+		memset(_messageWithIP, 0, _MAXRECV);
 
+		std::string input;
 		switch (_handler.getCurrentMode())
 		{
 			case Handler::Mode::READING:
@@ -179,7 +182,7 @@ void Client::waitLoop()
 
 				if (_handler.getCurrentState() == Handler::State::COORDINATE_TYPE)
 				{
-					sendCoordinateType(_handler.getCoordinateSystem());
+					sendCoordinateSystem(_handler.getCoordinateSystem());
 				}
 				else if (_handler.getCurrentState() == Handler::State::FULL_CONTROL)
 				{
@@ -195,19 +198,19 @@ void Client::waitLoop()
 
 				if (_handler.getCurrentState() == Handler::State::COORDINATE_TYPE)
 				{
-					sendCoordinateType(_handler.getCoordinateSystem());
+					sendCoordinateSystem(_handler.getCoordinateSystem());
 				}
 				else if (_handler.getCurrentState() == Handler::State::CIRCLIC)
 				{
 					const ParsedResult parsedResult = _handler.getParsedResult();
-					circlicMovement(parsedResult.mFirstPoint, parsedResult.mSecondPoint,
-									parsedResult.mNumberOfIterations);
+					circlicMovement(parsedResult.firstPoint, parsedResult.secondPoint,
+									parsedResult.numberOfIterations);
 				}
 				else if (_handler.getCurrentState() == Handler::State::PARTIAL)
 				{
 					const ParsedResult parsedResult = _handler.getParsedResult();
-					partialMovement(parsedResult.mFirstPoint, parsedResult.mSecondPoint,
-									parsedResult.mNumberOfIterations);
+					partialMovement(parsedResult.firstPoint, parsedResult.secondPoint,
+									parsedResult.numberOfIterations);
 				}
 				else if (_handler.getCurrentState() == Handler::State::HOME)
 				{
@@ -215,14 +218,14 @@ void Client::waitLoop()
 				}
 				else if (_handler.getCurrentState() == Handler::State::FROM_FILE)
 				{
-					_robotData = _logger.read<RobotData>();
+					_robotData = _logger.readLine<RobotData>();
 					if (!_logger.hasAnyInputErrors())
 					{
 						sendCoordinates(_robotData);
 					}
 					else
 					{
-						_printer.writeLine(std::cout, "ERROR 06: Some error occurred in input "
+						_printer.writeLine(std::cout, "ERROR 05: Some error occurred in input "
 										   "stream! Input stream will be restarted.");
 						_logger.restartStream(logger::Logger::TypeStream::INPUT_STREAM);
 					}
@@ -234,12 +237,12 @@ void Client::waitLoop()
 				else if (input == "test")
 				{
 					_robotData = _DEFAULT_POSITION;
-					for (int i = 1; i <= 1'000; ++i)
+					for (int i = 1; i <= 1000; ++i)
 					{
 						_robotData.coordinates.at(Handler::Y) += 100 * i * (i & 1 ? 1 : -1);
 						sendCoordinates(_robotData);
-						_isNeedToWait = true;
-						while (_isNeedToWait)
+						_isNeedToWait.store(true);
+						while (_isNeedToWait.load())
 						{
 							std::this_thread::sleep_for(std::chrono::milliseconds(1LL));
 						}
@@ -274,21 +277,36 @@ RobotData Client::getRobotData() const
 	return _robotData;
 }
 
-// NEED TO CHANGE THIS FUNCTION AFTER DANILA REFACTORING.
 void Client::tryReconnect()
 {
-	while (!_isRunning)
+	while (!_isRunning.load())
 	{
-		closesocket(_sendingSocket);
-		closesocket(_receivingSocket);
-
+		closeSocket(_sendingSocket);
 		initSocket(_sendingSocket);
-		initSocket(_receivingSocket);
+		switch (_workMode)
+		{
+			case WorkMode::STRAIGHTFORWARD:
+			{
+				closeSocket(_receivingSocket);
+				initSocket(_receivingSocket);
 
-		///_isRunning = tryConnect(_serverPort, _serverIP, _socketSend, _socketSendAddress);
-		_isRunning = tryConnect(_serverSendingPort, _serverIP, _sendingSocket, _sendingSocketAddress)
-					&& tryConnect(_serverReceivingPort, _serverIP, _receivingSocket,
-								  _receivingSocketAddress);
+				const bool reconnect = tryConnect(_serverSendingPort, _serverIP, _sendingSocket, 
+												  _sendingSocketAddress)
+										&& tryConnect(_serverReceivingPort, _serverIP,
+													  _receivingSocket, _receivingSocketAddress);
+				_isRunning.store(reconnect);
+				break;
+			}
+			
+			case WorkMode::INDIRECT:
+				_isRunning.store(tryConnect(_serverPort, _serverIP, _sendingSocket,
+											_sendingSocketAddress));
+				break;
+			
+			default:
+				assert(false);
+				break;
+		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000LL));
 	}
@@ -296,30 +314,38 @@ void Client::tryReconnect()
 
 void Client::run()
 {
-	_isRunning = true;
+	_isRunning.store(true);
 	waitLoop();
 }
 
 void Client::launch()
 {
-	// NEED TO SWAP THIS CODE AFTER DANILA REFACTORING.
-	///tryConnect(_serverPort, _serverIP, _socketSend, _socketSendAddress);
-	///setTimeout(_socketSend, 1000, 0);
-	tryConnect(_serverSendingPort, _serverIP, _sendingSocket, _sendingSocketAddress);
-	tryConnect(_serverReceivingPort, _serverIP, _receivingSocket, _receivingSocketAddress);
+	switch (_workMode)
+	{
+		case WorkMode::STRAIGHTFORWARD:
+			tryConnect(_serverSendingPort, _serverIP, _sendingSocket, _sendingSocketAddress);
+			tryConnect(_serverReceivingPort, _serverIP, _receivingSocket, _receivingSocketAddress);
+			break;
+
+		case WorkMode::INDIRECT:
+			tryConnect(_serverPort, _serverIP, _sendingSocket, _sendingSocketAddress);
+			break;
+
+		default:
+			assert(false);
+			break;
+	}
 }
 
-void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& secondPoint, 
-							   const int numberOfIterations)
+void Client::circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint,
+							 const int numberOfIterations)
 {
 	assert(numberOfIterations > 0);
 
 	_circlicState = CirclicState::SEND_FIRST;
 
 	int counterIterations = 0;
-
 	bool flag = true;
-
 	while (flag)
 	{
 		switch (_circlicState)
@@ -332,7 +358,7 @@ void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& sec
 				}
 				++counterIterations;
 
-				_isNeedToWait	= true;
+				_isNeedToWait.store(true);
 				_waitAnswer		= firstPoint;
 				_circlicState	= CirclicState::WAIT_FIRST_ANSWER;
 
@@ -349,7 +375,7 @@ void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& sec
 			}
 
 			case CirclicState::SEND_SECOND:
-				_isNeedToWait	= true;
+				_isNeedToWait.store(true);
 				_waitAnswer		= secondPoint;
 				_circlicState	= CirclicState::WAIT_SECOND_ANSWER;
 
@@ -374,8 +400,8 @@ void Client::circlicProcessing(const RobotData& firstPoint, const RobotData& sec
 	sendCoordinates(firstPoint);
 }
 
-void Client::partialProcessing(const RobotData& firstPoint, const RobotData& secondPoint,
-							   const int numberOfSteps)
+void Client::partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
+							 const int numberOfSteps)
 {
 	assert(numberOfSteps > 0);
 
@@ -427,51 +453,41 @@ bool Client::sendCoordinates(const RobotData& robotData)
 {
 	if (checkCoordinates(robotData))
 	{
-		lastSentPoint = robotData;
-		_robotData = robotData;
-		_logger.writeLine(robotData);
-		_start = std::chrono::steady_clock::now();
+		_start          = std::chrono::steady_clock::now();
 		sendData(_sendingSocket, robotData.toString());
+		lastSentPoint   = robotData;
+		_robotData      = robotData;
+		_logger.writeLine(robotData);
 		return true;
 	}
 	
 	_robotData = lastSentPoint;
-	_printer.writeLine(std::cout, "ERROR 04: Incorrect coordinates to send!", robotData);
+	_printer.writeLine(std::cout, "ERROR 03: Incorrect coordinates to send!", robotData);
 	return false;
 }
 
-void Client::sendCoordinateType(const CoordinateSystem coordinateType) const
+void Client::sendCoordinateSystem(const CoordinateSystem coordinateSystem) const
 {
-	switch (coordinateType)
+	switch (coordinateSystem)
 	{
 		case CoordinateSystem::JOINT:
-			sendData(_sendingSocket, "1");
+			sendData(_sendingSocket, "0");
+			break;
+
+		case CoordinateSystem::JGFRM:
+			_printer.writeLine(std::cout, "Not supported yet!");
 			break;
 		
 		case CoordinateSystem::WORLD:
 			sendData(_sendingSocket, "2");
 			break;
-		
+
+		case CoordinateSystem::INVALID:
+			[[fallthrough]];
 		default:
-			_printer.writeLine(std::cout, "ERROR 05: Incorrect coordinate system to send!");
+			_printer.writeLine(std::cout, "ERROR 04: Incorrect coordinate system to send!");
 			break;
 	}
 }
 
-void Client::circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
-							 const int numberOfIterations)
-{
-	std::thread circlicThread(&Client::circlicProcessing, this, std::cref(firstPoint), 
-							  std::cref(secondPoint), numberOfIterations);
-	circlicThread.join();
-}
-
-void Client::partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
-							 const int numberOfSteps)
-{
-	std::thread partialThread(&Client::partialProcessing, this, std::cref(firstPoint), 
-							  std::cref(secondPoint), numberOfSteps);
-	partialThread.join();
-}
-
-}
+} // namespace vasily

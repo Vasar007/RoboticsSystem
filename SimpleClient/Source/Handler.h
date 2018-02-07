@@ -18,27 +18,27 @@ struct ParsedResult
 	/**
 	 * \brief Number used to change coordinates.
 	 */
-	int			mCoefficient		= 1;
+	int			coefficient		    = 1;
 
 	/**
 	 * \brief Number of iterations for circlic movement.
 	 */
-	int	        mNumberOfIterations	= 1;
+	int	        numberOfIterations	= 1;
 
 	/**
 	 * \brief Additional flag to check correctness of coordinates.
 	 */
-	bool		mIsCorrect			= true;
+	bool		isCorrect			= true;
 
 	/**
 	 * \brief First point of interval.
 	 */
-	RobotData	mFirstPoint			= {};
+	RobotData	firstPoint			= {};
 
 	/**
 	 * \brief Second point of interval.
 	 */
-	RobotData	mSecondPoint		= {};
+	RobotData	secondPoint		    = {};
 };
 
 /**
@@ -78,15 +78,6 @@ public:
 
 		YAW_PLUS,
 		YAW_MINUS
-	};
-
-	/**
-	* \brief Array of coordinates type.
-	*/
-	enum class CoordinateSystem
-	{
-		JOINT = 0,
-		WORLD = 2
 	};
 
 	/**
@@ -195,7 +186,7 @@ private:
 	 * \param[in] letter	String for parsing.
 	 * \return				True if mode is changed, false otherwise.
 	 */
-	bool checkChangingMode(const std::string& letter);
+	bool checkChangingMode(const std::string_view letter);
 
 	/**
 	 * \brief				Check if letter contains command to change current coordinate
@@ -203,7 +194,7 @@ private:
 	 * \param[in] letter	String for parsing.
 	 * \return				True if system is changed, false otherwise.
 	 */
-	bool checkChangingCoordinateSysytem(const std::string& letter);
+	bool checkChangingCoordinateSysytem(const std::string_view letter);
 
 
 public:
@@ -281,6 +272,6 @@ public:
 	ParsedResult getParsedResult() const;
 };
 
-}
+} // namespace vasily
 
 #endif // HANDLER_H

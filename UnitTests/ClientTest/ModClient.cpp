@@ -5,24 +5,23 @@ namespace clientTests
 {
 
 ModClient::ModClient(const int serverPortSending, const int serverReceiving, 
-					 const std::string_view serverIP)
-	: Client(serverPortSending, serverReceiving, serverIP),
-	  mHasFinished(),
-	  mStorage()
+					 const std::string_view serverIP, const Client::WorkMode workMode)
+	: Client(serverPortSending, serverReceiving, serverIP, workMode),
+	  hasFinished(false)
 {
 }
 
 void ModClient::receiveDataNTimes(const int numberOfTimes)
 {
-	std::lock_guard<std::mutex> lockGuard{ mMutex };
+	std::lock_guard<std::mutex> lockGuard{ mutex };
 
 	for (int step = 0; step < numberOfTimes; ++step)
 	{
-		receiveData(_receivingSocket);
+		receiveData(_receivingSocket, _messageWithIP, _buffer);
 
-		if (_isNeedToWait)
+		if (_isNeedToWait.load())
 		{
-			_isNeedToWait = false;
+			_isNeedToWait.store(false);
 			switch (_circlicState)
 			{
 				case ModClient::CirclicState::SEND_FIRST:
@@ -45,14 +44,14 @@ void ModClient::receiveDataNTimes(const int numberOfTimes)
 		}
 	}
 
-	mHasFinished = true;
+	hasFinished.store(true);
 }
 
 void ModClient::sendCoordinatesMod(const vasily::RobotData& robotData)
 {
 	if (checkCoordinates(robotData))
 	{
-		mStorage.push_back(robotData.toString());
+		storage.push_back(robotData.toString());
 	}
 
 	sendCoordinates(robotData);
@@ -69,7 +68,7 @@ void ModClient::circlicMovementMod(const vasily::RobotData& firstPoint,
 	{
 		if (checkFirst)
 		{
-			mStorage.push_back(firstPoint.toString());
+			storage.push_back(firstPoint.toString());
 		}
 		else
 		{
@@ -78,7 +77,7 @@ void ModClient::circlicMovementMod(const vasily::RobotData& firstPoint,
 
 		if (checkSecond)
 		{
-			mStorage.push_back(secondPoint.toString());
+			storage.push_back(secondPoint.toString());
 		}
 		else
 		{
@@ -88,7 +87,7 @@ void ModClient::circlicMovementMod(const vasily::RobotData& firstPoint,
 
 	if (checkFirst && checkSecond)
 	{
-		mStorage.push_back(firstPoint.toString());
+		storage.push_back(firstPoint.toString());
 	}
 	
 
@@ -106,7 +105,7 @@ void ModClient::partialMovementMod(const vasily::RobotData& firstPoint,
 
 	if (checkCoordinates(firstPoint))
 	{
-		mStorage.push_back(firstPoint.toString());
+		storage.push_back(firstPoint.toString());
 		isRight = true;
 	}
 
@@ -116,7 +115,7 @@ void ModClient::partialMovementMod(const vasily::RobotData& firstPoint,
 
 		if (checkCoordinates(robotData) && isRight)
 		{
-			mStorage.push_back(robotData.toString());
+			storage.push_back(robotData.toString());
 		}
 		else
 		{
@@ -127,7 +126,7 @@ void ModClient::partialMovementMod(const vasily::RobotData& firstPoint,
 
 	if (isRight &&  checkCoordinates(secondPoint) && robotData != secondPoint)
 	{
-		mStorage.push_back(secondPoint.toString());
+		storage.push_back(secondPoint.toString());
 	}
 
 	partialMovement(firstPoint, secondPoint, numberOfSteps);
