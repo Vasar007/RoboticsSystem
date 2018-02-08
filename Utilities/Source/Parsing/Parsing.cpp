@@ -2,9 +2,9 @@
 #include <algorithm>
 #include <sstream>
 
-#include "../Utility/Utility.h"
-#include "../Print/Print.h"
-#include "../RobotData/RobotData.h"
+#include "Utility/Utility.h"
+#include "Print/Print.h"
+#include "RobotData/RobotData.h"
 #include "Parsing.h"
 
 

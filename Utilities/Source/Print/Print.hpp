@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-#include "../Utility/ValidExpression.hpp"
+#include "Utility/ValidExpression.hpp"
 
 
 /*

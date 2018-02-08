@@ -6,7 +6,7 @@
 
 namespace vasily
 {
-
+    
 Client::Client(const int serverPort, const std::string_view serverIP, const WorkMode workMode)
 	: _serverIP(serverIP),
 	  _serverPort(serverPort),
