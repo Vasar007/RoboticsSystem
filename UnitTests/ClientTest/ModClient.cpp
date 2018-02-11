@@ -5,24 +5,23 @@ namespace clientTests
 {
 
 ModClient::ModClient(const int serverPortSending, const int serverReceiving, 
-					 const std::string_view serverIP)
-	: Client(serverPortSending, serverReceiving, serverIP),
-	  mHasFinished(),
-	  mStorage()
+					 const std::string_view serverIP, const Client::WorkMode workMode)
+	: Client(serverPortSending, serverReceiving, serverIP, workMode),
+	  hasFinished(false)
 {
 }
 
-void ModClient::receiveDataNTimes(const std::size_t numberOfTimes)
+void ModClient::receiveDataNTimes(const int numberOfTimes)
 {
-	std::lock_guard<std::mutex> lockGuard(mMutex);
+	std::lock_guard<std::mutex> lockGuard{ mutex };
 
-	for (std::size_t step = 0u; step < numberOfTimes; ++step)
+	for (int step = 0; step < numberOfTimes; ++step)
 	{
-		receiveData(_receivingSocket);
+		receiveData(_receivingSocket, _messageWithIP, _buffer);
 
-		if (_isNeedToWait)
+		if (_isNeedToWait.load())
 		{
-			_isNeedToWait = false;
+			_isNeedToWait.store(false);
 			switch (_circlicState)
 			{
 				case ModClient::CirclicState::SEND_FIRST:
@@ -45,14 +44,14 @@ void ModClient::receiveDataNTimes(const std::size_t numberOfTimes)
 		}
 	}
 
-	mHasFinished = true;
+	hasFinished.store(true);
 }
 
 void ModClient::sendCoordinatesMod(const vasily::RobotData& robotData)
 {
 	if (checkCoordinates(robotData))
 	{
-		mStorage.push_back(robotData.toString());
+		storage.push_back(robotData.toString());
 	}
 
 	sendCoordinates(robotData);
@@ -60,16 +59,16 @@ void ModClient::sendCoordinatesMod(const vasily::RobotData& robotData)
 
 void ModClient::circlicMovementMod(const vasily::RobotData& firstPoint,
 								   const vasily::RobotData& secondPoint, 
-								   const std::size_t numberOfIterations)
+								   const int numberOfIterations)
 {
 	const bool checkFirst	= checkCoordinates(firstPoint);
 	const bool checkSecond	= checkCoordinates(secondPoint);
 
-	for (std::size_t i = 0u; i < numberOfIterations; ++i)
+	for (int i = 0; i < numberOfIterations; ++i)
 	{
 		if (checkFirst)
 		{
-			mStorage.push_back(firstPoint.toString());
+			storage.push_back(firstPoint.toString());
 		}
 		else
 		{
@@ -78,7 +77,7 @@ void ModClient::circlicMovementMod(const vasily::RobotData& firstPoint,
 
 		if (checkSecond)
 		{
-			mStorage.push_back(secondPoint.toString());
+			storage.push_back(secondPoint.toString());
 		}
 		else
 		{
@@ -88,7 +87,7 @@ void ModClient::circlicMovementMod(const vasily::RobotData& firstPoint,
 
 	if (checkFirst && checkSecond)
 	{
-		mStorage.push_back(firstPoint.toString());
+		storage.push_back(firstPoint.toString());
 	}
 	
 
@@ -97,7 +96,7 @@ void ModClient::circlicMovementMod(const vasily::RobotData& firstPoint,
 
 void ModClient::partialMovementMod(const vasily::RobotData& firstPoint,
 								   const vasily::RobotData& secondPoint, 
-								   const std::size_t numberOfSteps)
+								   const int numberOfSteps)
 {
 	const vasily::RobotData directionalVector = (secondPoint - firstPoint) / numberOfSteps;
 	vasily::RobotData robotData				  = firstPoint;
@@ -106,17 +105,17 @@ void ModClient::partialMovementMod(const vasily::RobotData& firstPoint,
 
 	if (checkCoordinates(firstPoint))
 	{
-		mStorage.push_back(firstPoint.toString());
+		storage.push_back(firstPoint.toString());
 		isRight = true;
 	}
 
-	for (std::size_t i = 0u; i < numberOfSteps; ++i)
+	for (int i = 0; i < numberOfSteps; ++i)
 	{
 		robotData += directionalVector;
 
 		if (checkCoordinates(robotData) && isRight)
 		{
-			mStorage.push_back(robotData.toString());
+			storage.push_back(robotData.toString());
 		}
 		else
 		{
@@ -127,15 +126,15 @@ void ModClient::partialMovementMod(const vasily::RobotData& firstPoint,
 
 	if (isRight &&  checkCoordinates(secondPoint) && robotData != secondPoint)
 	{
-		mStorage.push_back(secondPoint.toString());
+		storage.push_back(secondPoint.toString());
 	}
 
 	partialMovement(firstPoint, secondPoint, numberOfSteps);
 }
 
-std::thread ModClient::spawn(const std::size_t numberOfTimes)
+std::thread ModClient::spawn(const int numberOfTimes)
 {
 	return std::thread(&ModClient::receiveDataNTimes, this, numberOfTimes);
 }
 
-}
+} // namespace clientTests

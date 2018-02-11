@@ -1,7 +1,7 @@
 #ifndef CLIENT_TEST_H
 #define CLIENT_TEST_H
 
-#include "CppUnitTest.h"
+#include <CppUnitTest.h>
 
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -22,24 +22,24 @@ public:
 	/**
 	 * \brief Simple send-receive test.
 	 */
-	TEST_METHOD(testMethod1);
+	TEST_METHOD(sendReceiveAbility);
 	
 	/**
 	 * \brief Test on dangerous zone.
 	 */
-	TEST_METHOD(testMethod2);
+	TEST_METHOD(dangerusZone);
 	
 	/**
 	 * \brief Circlic movement test.
 	 */
-	TEST_METHOD(testMethod3);
+	TEST_METHOD(circlicMovement);
 	
 	/**
 	 * \brief Partial movement test.
 	 */
-	TEST_METHOD(testMethod4);
+	TEST_METHOD(partialMovement);
 };
 
-}
+} // namespace clientTests
 
 #endif // CLIENT_TEST_H

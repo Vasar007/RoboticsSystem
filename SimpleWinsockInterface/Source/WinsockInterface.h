@@ -8,6 +8,8 @@
 #include <winsock2.h>
 #include <Ws2tcpip.h>
 
+#include "Utilities.h"
+
 #pragma comment (lib, "ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
@@ -27,12 +29,11 @@ namespace vasily
  * \code
  * int main()
  * {
- *	const int SERVER_PORT	= 9997;
- *	const std::string SERVER_IP = "192.168.0.100";
+ *	constexpr int SERVER_PORT = 9997;
+ *	constexpr char SERVER_IP[] = "192.168.0.100";
  *  
  *	Client client(SERVER_PORT, SERVER_IP);
  *  
- *	client.init();
  *	client.launch();
  *	client.run();
  *	
@@ -107,12 +108,17 @@ protected:
 	/**
 	 * \brief Receive buffer that is used to keep answers from clients.
 	 */
-	char							_buffer[_MAXRECV];
+	char		                    _buffer[_MAXRECV];
 
 	/**
 	 * \brief Buffer that is used to keep clients addresses.
 	 */
-	char							_message[_MAXRECV];
+	char		                    _messageWithIP[_MAXRECV];
+
+	/**
+	 * \brief Implementation of type-safe output printer.
+	 */
+	printer::Printer&               _printer = printer::Printer::getInstance();
 
 	/**
 	 * \brief Table of WinSock errors, which you can get from function WSAGetLastError().
@@ -136,6 +142,12 @@ protected:
 	 *							specified. 
 	 */
 	void			initSocket(SOCKET& socketToInit, const int aiProtocol = 6) const;
+
+	/**
+	 * \brief                       Close socket.
+	 * \param[out] socketToClose    Descriptor referencing socket.
+	 */
+	void			closeSocket(SOCKET& socketToClose) const;
 				 
 	/**
 	 * \brief						Associate a local address with a socket.
@@ -160,13 +172,14 @@ protected:
 	 * \param[in] listeningSocket   A descriptor that identifies a socket that has been placed in
 	 *                              a listening state with the listen function. The connection is
 	 *                              actually made with the socket that is returned by accept.
+	 * \param[out] messageWithIP    Buffer to write accepted IP address.
 	 * \return                      If no error occurs, accept returns a value of type SOCKET 
 	 *                              that is a descriptor for the new socket. This returned value is
 	 *                              a handle for the socket on which the actual connection is made. 
 	 *                              Otherwise, a value of INVALID_SOCKET is returned, and a specific
 	 *                              error code can be retrieved by calling WSAGetLastError.
 	 */
-	SOCKET          acceptSocket(const SOCKET& listeningSocket);
+	SOCKET          acceptSocket(const SOCKET& listeningSocket, char* messageWithIP) const;
 
 	/**
 	 * \brief						Establishe a connection to a specified socket.
@@ -192,15 +205,21 @@ protected:
 	/**
 	 * \brief						    Receive data from receiving socket.
 	 * \param[in] socketForReceiving	A descriptor identifying a receiving socket.
+	 * \param[out] messageWithIP	    Buffer to write accepted IP address.
+	 * \param[out] buffer	            Buffer to write received data.
 	 * \return						    Received data from receiving socket.
 	 */
-	std::string		receiveData(const SOCKET socketForReceiving);
+	std::string		receiveData(const SOCKET& socketForReceiving, char* messageWithIP,
+								char* buffer);
 
 	/**
 	 * \brief					    Set timeout for socket.
 	 * \param[in] socketToChange	A descriptor identifying a socket.
 	 * \param[in] seconds		    Time interval, in seconds.
 	 * \param[in] microseconds	    Time interval, in microseconds.
+	 * \code
+	 * Example: setTimeout(_sendingSocket, 1000, 0);
+	 * \endcode
 	 */
 	void			setTimeout(const SOCKET& socketToChange,
 							   const long seconds, const long microseconds) const;
@@ -275,6 +294,6 @@ public:
 	virtual void		launch() = 0;
 };
 
-}
+} // namespace vasily
 
 #endif // WINSOCK_INTERFACE_H

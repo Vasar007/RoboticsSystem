@@ -17,18 +17,20 @@ namespace statistic
 /**
  * \brief Class draw dependencies from client data.
  */
-class Transmitter : public sf::Drawable
+class Transmitter final : public sf::Drawable
 {
 private:
+	static constexpr std::size_t _NUMBER_FOR_RESERVE = 1000u;
+
 	/**
 	 * \brief Max width to draw.
 	 */
-	const int _limitX;
+	const int           _limitX;
 
 	/**
 	 * \brief Max height to draw.
 	 */
-	const int _limitY;
+	const int           _limitY;
 
 	/**
 	 * \brief Container that keeps distance between every two last points.
@@ -68,7 +70,7 @@ private:
 	/**
 	 * \brief The marks on the coordinate axes.
 	 */
-	sf::VertexArray _shapes;
+	sf::VertexArray     _shapes;
 
 
 	/**
@@ -100,6 +102,6 @@ public:
 	void clear();
 };
 
-}
+} // namespace statistic
 
 #endif // TRANSMITTER_H

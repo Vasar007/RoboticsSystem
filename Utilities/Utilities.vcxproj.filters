@@ -18,50 +18,71 @@
     <ClInclude Include="Source\Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Extension Functions\Parsing.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Extension Functions\Print.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Extension Functions\Utility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Logger\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\RobotData\RobotData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Printer\Printer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utility\Utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utility\ValidExpression.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Parsing\Parsing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Print\Print.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Print\Print.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\NetworkInterface\NetworkInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Source\Extension Functions\Parsing.inl">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="Source\Extension Functions\Print.inl">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="Source\Extension Functions\Utility.inl">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="Source\Logger\Logger.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="Source\Printer\Printer.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Source\Utility\Utility.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Source\Parsing\Parsing.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Source\Print\Print.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Extension Functions\Parsing.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Extension Functions\Print.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Extension Functions\Utility.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Logger\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\RobotData\RobotData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Printer\Printer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utility\Utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Parsing\Parsing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Print\Print.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\NetworkInterface\NetworkInterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

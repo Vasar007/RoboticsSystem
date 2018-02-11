@@ -3,14 +3,14 @@
 
 
 template <class Stream>
-void Logger::restart(Stream& stream)
+void Logger::restart(Stream& stream) noexcept
 {
-    if constexpr (utils::isSame<Stream, std::ifstream>())
+    if constexpr (std::is_same<Stream, std::ifstream>::value)
     {
         stream.clear();
         stream.seekg(0, std::ios::beg);
     }
-    else if constexpr (utils::isSame<Stream, std::ofstream>())
+    else if constexpr (std::is_same<Stream, std::ofstream>::value)
     {
         stream.clear();
         stream.seekp(0, std::ios::beg);
@@ -22,35 +22,105 @@ void Logger::restart(Stream& stream)
 }
 
 template <typename T>
-void Logger::write(const T& t)
+void Logger::writeImpl(const T& t) noexcept
 {
-    // std::endl because it is necessary to flush buffer here.
-    outFile << t << std::endl;
-    _hasNotAnyOutputErrors = outFile.good();
+    // It is necessary to flush buffer here.
+    outFile << t << ' ' << std::flush;
+    _hasNotAnyOutputErrors = !outFile.fail();
 }
 
 template <typename T, typename ...Args>
-void Logger::write(const T& t, const Args&... args)
+void Logger::writeImpl(const T& t, const Args&... args) noexcept
 {
     outFile << t << ' ';
-    _hasNotAnyOutputErrors = outFile.good();
+    _hasNotAnyOutputErrors = !outFile.fail();
 
-    write(args...);
+    writeImpl(args...);
 }
 
 template <typename T>
-T Logger::read()
-{  
-    std::string readedData;
-    if (!inFile.eof())
+void Logger::writeLineImpl(const T& t) noexcept
+{
+    // std::endl because it is necessary to flush buffer here.
+    outFile << t << std::endl;
+    _hasNotAnyOutputErrors = !outFile.fail();
+}
+
+template <typename T, typename ...Args>
+void Logger::writeLineImpl(const T& t, const Args&... args) noexcept
+{
+    outFile << t << ' ';
+    _hasNotAnyOutputErrors = !outFile.fail();
+
+    writeLineImpl(args...);
+}
+
+template <typename ...Args>
+void Logger::write(const Args&... args) noexcept
+{
+    std::lock_guard<std::mutex> lockGuard{ _mutex };
+    if (outFile)
     {
-        std::getline(inFile, readedData);
+        writeImpl(args...);
+    }
+    else
+    {
+        repoortError("Data could not be written to file!");
+    }
+}
+
+template <typename ...Args>
+void Logger::writeLine(const Args&... args) noexcept
+{
+    std::lock_guard<std::mutex> lockGuard{ _mutex };
+    if (outFile)
+    {
+        writeLineImpl(args...);
+    }
+    else
+    {
+        repoortError("Data could not be written to file!");
+    }
+}
+
+template <typename T>
+T Logger::read() noexcept
+{
+    std::string readedData;
+    if (inFile)
+    {
+        inFile >> readedData;
+    }
+    else
+    {
+        repoortError("File could not be opened!");
     }
 
     bool flag;
     T t = utils::fromString<T>(readedData, flag);
 
-    _hasNotAnyInputErrors = inFile.good() && flag;
+    _hasNotAnyInputErrors = !inFile.fail() && flag;
+
+    return t;
+}
+
+template <typename T>
+T Logger::readLine() noexcept
+{  
+    std::string readedData;
+    if (inFile)
+    {
+        std::getline(inFile, readedData);
+    }
+    else
+    {
+        repoortError("File could not be opened!");
+    }
+
+    bool flag;
+    T t = utils::fromString<T>(readedData, flag);
+
+    _hasNotAnyInputErrors = !inFile.fail() && flag;
 
     return t;
 }

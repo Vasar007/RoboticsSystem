@@ -12,10 +12,8 @@ Handler::Handler()
 	: _state(State::DEFAULT),
 	  _mode(Mode::COMMAND),
 	  _coorninateSystem(CoordinateSystem::WORLD),
-	  _data(),
 	  _coefficient(10'000),
-	  _numberOfIterations(0u),
-	  _parsedResult(),
+	  _numberOfIterations(0),
 	  _mapping({
 		{ "q", State::FORWARD },		{ "a", State::BACK },
 		{ "w", State::LEFT },			{ "s", State::RIGHT },
@@ -28,7 +26,7 @@ Handler::Handler()
 {
 }
 
-bool Handler::checkChangingMode(const std::string& letter)
+bool Handler::checkChangingMode(const std::string_view letter)
 {
 	if (letter == "=")
 	{
@@ -53,25 +51,11 @@ bool Handler::checkChangingMode(const std::string& letter)
 	return false;
 }
 
-bool Handler::checkChangingCoordinateSysytem(const std::string& letter)
+bool Handler::checkChangingCoordinateSysytem(const std::string_view letter)
 {
-	if (const int type = utils::stringToInt(letter); type > 0)
+	if (const auto [value, check] = utils::parseCoordinateSystem(letter); check)
 	{
-		switch (type)
-		{
-			case 1:
-				setCoordinateSystem(CoordinateSystem::JOINT);
-				break;
-
-			case 2:
-				setCoordinateSystem(CoordinateSystem::WORLD);
-				break;
-
-			default:
-				utils::println(std::cout, "ERROR 01: Incorrect coordinate system!");
-				return false;
-		}
-
+		setCoordinateSystem(value);
 		return true;
 	}
 
@@ -98,7 +82,7 @@ Handler::State Handler::parseCommand(const std::string_view command)
 
 	if (!checkChangingMode(letter))
 	{
-		utils::println(std::cout, "ERROR 03: Incorrect input data!");
+		_printer.writeLine(std::cout, "ERROR 02: Incorrect input data!");
 	}
 
 	return State::DEFAULT;
@@ -138,16 +122,16 @@ ParsedResult Handler::parseDataAfterCommand()
 				std::string strToParse = _data.substr(findPosZero + 1u, 
 													  foundPosFirst - findPosZero - 1u);
 				bool flag1;
-				result.mFirstPoint = utils::fromString<RobotData>(strToParse, flag1);
+				result.firstPoint = utils::fromString<RobotData>(strToParse, flag1);
 
 				const std::size_t foundPosSecond = _data.find('|', foundPosFirst + 1u);
 				strToParse = _data.substr(foundPosFirst + 1u, foundPosSecond - foundPosFirst - 1u);
 				bool flag2;
-				result.mSecondPoint = utils::fromString<RobotData>(strToParse, flag2);
+				result.secondPoint = utils::fromString<RobotData>(strToParse, flag2);
 
 				strToParse = _data.substr(foundPosSecond + 1u);
 				bool flag3;
-				result.mNumberOfIterations = utils::fromString<std::size_t>(strToParse, flag3);
+				result.numberOfIterations = utils::fromString<std::size_t>(strToParse, flag3);
 
 				if (flag1 && flag2 && flag3)
 				{
@@ -190,9 +174,9 @@ ParsedResult Handler::parseDataAfterCommand()
 		case State::YAW_MINUS:
 			if (_data.size() > 1u)
 			{
-				if (const int coefficient = utils::stringToInt(_data.substr(1)); coefficient > 0)
+				if (const int coefficient = utils::stringToInt(_data.substr(1u)); coefficient > 0)
 				{
-					result.mCoefficient = coefficient;
+					result.coefficient = coefficient;
 					setCoefficient(coefficient);
 					return result;
 				}
@@ -210,16 +194,22 @@ ParsedResult Handler::parseDataAfterCommand()
 			break;
 	}
 
-	utils::println(std::cout, "ERROR 02: Incorrect input data after literal!");
-	result.mIsCorrect = false;
+	_printer.writeLine(std::cout, "ERROR 01: Incorrect input data after literal!");
+	result.isCorrect = false;
 	return result;
 }
 
 void Handler::parseRawData(const std::string& data, RobotData& robotData)
 {
+	if (data.empty())
+	{
+		_state = State::DEFAULT;
+		return;
+	}
+
 	std::string copiedData = data;
 
-	const std::string letter = data.substr(0u, 1u);
+	const std::string_view letter = data.substr(0u, 1u);
 
 	if (checkChangingMode(letter))
 	{
@@ -239,11 +229,16 @@ void Handler::parseRawData(const std::string& data, RobotData& robotData)
 
 void Handler::appendCommand(const std::string_view command, RobotData& robotData)
 {
-	_state = parseCommand(command);
+	if (command.empty())
+	{
+		_state = State::DEFAULT;
+		return;
+	}
 
-	_parsedResult = parseDataAfterCommand();
+	_state          = parseCommand(command);
+	_parsedResult   = parseDataAfterCommand();
 
-	if (!_parsedResult.mIsCorrect)
+	if (!_parsedResult.isCorrect)
 	{
 		_state = State::DEFAULT;
 	}
@@ -347,14 +342,14 @@ void Handler::setMode(const Mode mode)
 	_mode = mode;
 }
 
-Handler::CoordinateSystem Handler::getCoordinateSystem() const
+CoordinateSystem Handler::getCoordinateSystem() const
 {
 	return _coorninateSystem;
 }
 
-void Handler::setCoordinateSystem(const CoordinateSystem coorninateType)
+void Handler::setCoordinateSystem(const CoordinateSystem coordninateSystem)
 {
-	_coorninateSystem = coorninateType;
+	_coorninateSystem = coordninateSystem;
 }
 
 int Handler::getNumberOfIterations() const
@@ -367,4 +362,4 @@ ParsedResult Handler::getParsedResult() const
 	return _parsedResult;
 }
 
-}
+} // namespace vasily

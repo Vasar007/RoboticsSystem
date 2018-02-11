@@ -2,6 +2,7 @@
 #define SERVER_H
 
 #include <chrono>
+#include <optional>
 
 #include "WinsockInterface.h"
 #include "Utilities.h"
@@ -9,7 +10,7 @@
 
 namespace vasily
 {
-
+	
 /**
  * \brief Pretty simple imitator FanucM20iA.
  */
@@ -19,12 +20,12 @@ protected:
 	/**
 	 * \brief Variable used to keep sending port.
 	 */
-	int					    _sendingPort;
+	int					    _clientSendingPort;
 					
 	/**
 	 * \brief Variable used to keep reciving port.
 	 */
-	int					    _receivingPort;
+	int					    _clientReceivingPort;
 					
 	/**
 	 * \brief The maximum length of the queue of pending connections.
@@ -42,9 +43,9 @@ protected:
 	SOCKET				    _clientReceivingSocket;
 
 	/**
-	 * \brief Additional flag used to define coordinate type from client data.
+	 * \brief Variable used to keep coordinate type from client.
 	 */
-	std::atomic_bool	    _hasGotCoordSystem;
+	std::optional<CoordinateSystem>	_coorninateSystem;
 
 	/**
 	 * \brief Logger used to write received data to file.
@@ -99,18 +100,19 @@ protected:
 
 public:
 	/**
-	 * \brief					Constructor which initializes sockets and bindes ports to them.
-	 * \param[in] sendingPort	Port for connection.
-	 * \param[in] recivingPort	Port for connection.
-	 * \param[in] backlog		Number of connections allowed on the incoming queue.
+	 * \brief					        Constructor which initializes sockets and bindes ports to
+	 *                                  them.
+	 * \param[in] clientSendingPort	    Port for connection.
+	 * \param[in] clientRecivingPort	Port for connection.
+	 * \param[in] backlog		        Number of connections allowed on the incoming queue.
 	 */
-	explicit		ServerImitator(const int sendingPort, const int recivingPort, 
+	explicit		ServerImitator(const int clientSendingPort, const int clientRecivingPort,
 								   const int backlog = 10);
 
 	/**
 	 * \brief Default destructor.
 	 */
-					~ServerImitator()							= default;
+	virtual         ~ServerImitator() noexcept					= default;
 
 	/**
 	 * \brief			Deleted copy constructor.
@@ -154,6 +156,6 @@ public:
 	friend void utils::swap(T& first, T& second) noexcept;
 };
 
-}
+} // namespace vasily
 
 #endif // SERVER_H
