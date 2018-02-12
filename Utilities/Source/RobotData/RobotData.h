@@ -172,6 +172,16 @@ struct RobotData
 		parameters  = DEFAULT_PARAMETERS;
 	}
 
+	constexpr std::array<double, NUMBER_OF_COORDINATES> toDoubleCoords() const
+	{
+		std::array<double, 6> convert{};
+		for (std::size_t i = 0; i < coordinates.size(); ++i)
+		{
+			convert.at(i) = static_cast<double>(coordinates.at(i)) / 1000.0;
+		}
+		return convert;
+	}
+
 
 	/**
 	 * \brief			Check coordinate arrays of two structures on equality.

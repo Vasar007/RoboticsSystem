@@ -21,7 +21,7 @@ namespace
 	
 	auto RANDOM_ENGINE = createRandomEngine();
 
-} // anonymous namespace
+} // namespace
 
 [[nodiscard]]
 int randomInt(const int exclusiveMax) noexcept
@@ -92,7 +92,7 @@ bool almostEqual2Complement(float a, float b, const int maxUlps) noexcept
 	// maxUlps must not be negative and not too large to NaN was not equal to any number.
 	assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
 
-	int aInt = *reinterpret_cast<int*>(&a);
+	int aInt = *DOUBLE_STATIC_CAST(int*, a);
 	// Remove sign in aInt, if you have to get the correct ordered sequence.
 	if (aInt < 0)
 	{
@@ -101,7 +101,7 @@ bool almostEqual2Complement(float a, float b, const int maxUlps) noexcept
 	}
 
 	// Similarly for bInt.
-	int bInt = *reinterpret_cast<int*>(&b);
+	int bInt = *DOUBLE_STATIC_CAST(int*, b);
 	if (bInt < 0)
 	{
 		// bInt &= 0x7fffffff;

@@ -12,7 +12,7 @@ Container split(const std::string& str, const std::string_view delims) noexcept
 		return Container{};
 	}
 
-	int counter             = 0;
+	std::size_t counter     = 0u;
 	for (const auto& ch : delims)
 	{
 		counter += std::count(str.begin(), str.end(), ch);
@@ -43,7 +43,7 @@ Container fsplit(const std::string& str, const std::string_view delim) noexcept
 		return Container{};
 	}
 
-	int counter                 = 0;
+	std::size_t counter         = 0u;
 	const char* ptrToStr        = str.c_str();
 	ptrToStr                    = strstr(ptrToStr, delim.data());
 	while (ptrToStr != nullptr)

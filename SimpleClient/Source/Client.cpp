@@ -6,7 +6,7 @@
 
 namespace vasily
 {
-    
+	
 Client::Client(const int serverPort, const std::string_view serverIP, const WorkMode workMode)
 	: _serverIP(serverIP),
 	  _serverPort(serverPort),
@@ -154,7 +154,7 @@ void Client::waitLoop()
 	// Create data for robot.
 	_robotData = _DEFAULT_POSITION;
 
-	sendCoordinateSystem(CoordinateSystem::WORLD);
+	sendCoordinateSystem(CoordinateSystem::JOINT);
 
 	std::thread reciveThread(&Client::receive, this);
 	reciveThread.detach();
@@ -247,6 +247,11 @@ void Client::waitLoop()
 							std::this_thread::sleep_for(std::chrono::milliseconds(1LL));
 						}
 					}
+				}
+				else if (input == "tenzo")
+				{
+					tenzoCalibration();
+					//workWithTenzo();
 				}
 				break;
 			
@@ -487,6 +492,33 @@ void Client::sendCoordinateSystem(const CoordinateSystem coordinateSystem) const
 		default:
 			_printer.writeLine(std::cout, "ERROR 04: Incorrect coordinate system to send!");
 			break;
+	}
+}
+
+void Client::tenzoCalibration()
+{
+	constexpr std::size_t NUMBER_OF_POSITIONS = 6u;
+	for (std::size_t index = 0u; index < NUMBER_OF_POSITIONS; ++index)
+	{
+		const RobotData robotData{ _tenzoMath.getPosition(index), RobotData::DEFAULT_PARAMETERS };
+		sendCoordinates(robotData);
+
+		_tenzoMath.collectData(index);
+		_tenzoMath.doCalibration();
+	}
+}
+
+void Client::workWithTenzo()
+{
+	_tenzoMath.loadCalibData();
+
+	RobotData robotData{};
+	while (true)
+	{
+		auto doubleCoords = robotData.toDoubleCoords();
+		_tenzoMath.calculatePos(doubleCoords);
+
+		sendData(_sendingSocket, _tenzoMath.getCoordToMove());
 	}
 }
 

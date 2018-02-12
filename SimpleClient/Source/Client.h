@@ -6,6 +6,7 @@
 #include "WinsockInterface.h"
 #include "Utilities.h"
 #include "Handler.h"
+#include "tenzoMath.h"
 
 
 namespace vasily
@@ -104,6 +105,8 @@ protected:
 	 * \brief Logger used to write received data to file.
 	 */
 	logger::Logger      _logger;
+
+	TenzoMath           _tenzoMath;
 
 	/**
 	 * \brief Default file name for input.
@@ -321,6 +324,10 @@ public:
 	 * \param[in] coordinateSystem	Coordinate system to send.
 	 */
 	void		sendCoordinateSystem(const CoordinateSystem coordinateSystem) const;
+
+	void tenzoCalibration();
+
+	void workWithTenzo();
 
 
 	// Friendly swapping fuction.

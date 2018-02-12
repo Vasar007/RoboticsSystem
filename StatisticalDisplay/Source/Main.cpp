@@ -31,7 +31,7 @@ int main()
 	constexpr int	SERVER_PORT				= 8888;
 	constexpr int	SERVER_PORT_SENDING		= 9999;
 	constexpr int	SERVER_PORT_RECEIVING	= 9998;
-	constexpr char	SERVER_IP[]				= "192.168.0.101";
+	constexpr char	SERVER_IP[]				= "192.168.1.108";
 
 	constexpr int	ROBOT_SENDING_PORT_TO_SERVER      = 59002;
 	constexpr int	ROBOT_RECEIVING_PORT_FROM_SERVER  = 59003;
