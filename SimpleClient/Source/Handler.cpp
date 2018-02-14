@@ -131,7 +131,7 @@ ParsedResult Handler::parseDataAfterCommand()
 
 				strToParse = _data.substr(foundPosSecond + 1u);
 				bool flag3;
-				result.numberOfIterations = utils::fromString<std::size_t>(strToParse, flag3);
+				result.numberOfIterations = utils::fromString<int>(strToParse, flag3);
 
 				if (flag1 && flag2 && flag3)
 				{

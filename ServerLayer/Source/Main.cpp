@@ -10,7 +10,7 @@ int main()
 
     constexpr int	SERVER_SENDING_PORT     = 9999;
     constexpr int	SERVER_RECEIVING_PORT   = 9998;
-    constexpr char	SERVER_IP[]             = "192.168.1.108"; 
+    constexpr char	SERVER_IP[]             = "192.168.0.103"; 
     constexpr int   LAYER_PORT              = 8888;
     constexpr int   BACKLOG                 = 10;
 

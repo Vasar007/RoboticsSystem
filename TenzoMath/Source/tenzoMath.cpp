@@ -37,7 +37,7 @@ TenzoMath::TenzoMath()
       _xMax ( 1380.),
       _yMax ( 465.),
       _zMax ( 1300.),
-      _tenzoData(_T("COM13"))
+      _tenzoData(_T("COM15"))
 {
     _positions = {
         {
@@ -49,6 +49,23 @@ TenzoMath::TenzoMath()
             { 0, 0, 0, 0, 0, 90 }
         }
     };
+
+    _posCartesian = {{
+        {   985,    0,   940,  -180,     0,      0 },
+        { 1'085,    0, 1'040,   135,   -90,     45 },
+        { 1'085,    0, 1'040,   135,    90,    135 },
+        {   985,    0, 1'140,     0,     0,      0 },
+        { 1'085,    0, 1'040,   -90,     0,    -90 },
+        { 1'085,    0, 1'040,    90,     0,     90 }
+    }};
+    //_posCartesian = {{
+    //    {   985'000,    0,   940'000,  -180'000,         0,          0 },
+    //    { 1'085'000,    0, 1'040'000,   135'000,   -90'000,     45'000 },
+    //    { 1'085'000,    0, 1'040'000,   135'000,    90'000,    135'000 },
+    //    {   985'000,    0, 1'140000,          0,         0,          0 },
+    //    { 1'085'000,    0, 1'040'000,   -90'000,         0,    -90'000 },
+    //    { 1'085'000,    0, 1'040'000,    90'000,         0,     90'000 }
+    //}};
 
     _g = cv::Mat(3, 1, cv::DataType<double>::type);
     _g.at<double>(0, 0) = 0.;
@@ -188,6 +205,10 @@ void TenzoMath::doCalibration()
 
     out << _forcesBias[0] << ' ' << _forcesBias[1] << ' ' << _forcesBias[2] << ' ' << _torquesBias[0] << ' ' 
         << _torquesBias[1] << ' ' << _torquesBias[2] << '\n';
+
+    std::cout << _forcesBias[0] << ' ' << _forcesBias[1] << ' ' << _forcesBias[2] << ' ' << _torquesBias[0] << ' '
+        << _torquesBias[1] << ' ' << _torquesBias[2] << '\n';
+
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
             out << _fgmax.at<double>(i, j) << ' ';
@@ -340,6 +361,17 @@ void TenzoMath::calculatePos(std::array<double, 6>& curPos)
     curPos[5] -= torques.at<double>(0, 2);
 
     _coordToMove = toString(curPos);
+}
+
+std::array<double, 6> TenzoMath::jointsToWorld(const std::array<double, 6>& joints)
+{
+    cv::Mat tmp = _model.fanucForwardTask(joints);
+    std::array<double, 3> tmptmp = FanucModel::anglesFromMat(tmp);
+    return std::array<double, 6>{
+        tmp.at<double>(0, 3), tmp.at<double>(1, 3), tmp.at<double>(2, 3), tmptmp[0] * 180. / FanucModel::PI,
+            tmptmp[1] * 180. / FanucModel::PI, tmptmp[2] * 180. / FanucModel::PI
+    };
+
 }
 
 void TenzoMath::ftControlCartesianCoord()

@@ -43,6 +43,8 @@ class TenzoMath
      */
     std::array<std::array<double, 6>, 6> _positions;
 
+    std::array<std::array<double, 6>, 6> _posCartesian;
+
     /**
      * \brief local gravity acceleration
      */
@@ -136,9 +138,10 @@ public:
     /**
      * \brief calculates new position in cartesian coords and stores it in string
      * \param[in] curPos current position in cartesian coords
-     * \param[in] ftReadings force-torque readings from sensor
      */
     void calculatePos(std::array<double, 6>& curPos); /// 3
+
+    std::array<double, 6> jointsToWorld(const std::array<double, 6>& joints);
 
     void newJointsControl();
 

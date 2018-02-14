@@ -154,7 +154,7 @@ void Client::waitLoop()
 	// Create data for robot.
 	_robotData = _DEFAULT_POSITION;
 
-	sendCoordinateSystem(CoordinateSystem::JOINT);
+	sendCoordinateSystem(CoordinateSystem::WORLD);
 
 	std::thread reciveThread(&Client::receive, this);
 	reciveThread.detach();
@@ -456,7 +456,7 @@ bool Client::checkCoordinates(const RobotData& robotData) const
 
 bool Client::sendCoordinates(const RobotData& robotData)
 {
-	if (checkCoordinates(robotData))
+	//if (checkCoordinates(robotData))
 	{
 		_start          = std::chrono::steady_clock::now();
 		sendData(_sendingSocket, robotData.toString());
@@ -500,7 +500,9 @@ void Client::tenzoCalibration()
 	constexpr std::size_t NUMBER_OF_POSITIONS = 6u;
 	for (std::size_t index = 0u; index < NUMBER_OF_POSITIONS; ++index)
 	{
-		const RobotData robotData{ _tenzoMath.getPosition(index), RobotData::DEFAULT_PARAMETERS };
+		RobotData robotData{ _tenzoMath.getPosition(index), RobotData::DEFAULT_PARAMETERS };
+		robotData = { TenzoMath::convertToInt(_tenzoMath.jointsToWorld(robotData.toDoubleCoords())),
+					  RobotData::DEFAULT_PARAMETERS };
 		sendCoordinates(robotData);
 
 		_tenzoMath.collectData(index);
@@ -517,8 +519,11 @@ void Client::workWithTenzo()
 	{
 		auto doubleCoords = robotData.toDoubleCoords();
 		_tenzoMath.calculatePos(doubleCoords);
+		robotData = { TenzoMath::convertToInt(_tenzoMath.jointsToWorld(doubleCoords)),
+					  RobotData::DEFAULT_PARAMETERS };
 
-		sendData(_sendingSocket, _tenzoMath.getCoordToMove());
+		//sendData(_sendingSocket, _tenzoMath.getCoordToMove());
+		sendCoordinates(robotData);
 	}
 }
 
