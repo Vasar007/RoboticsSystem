@@ -65,7 +65,7 @@ class TenzoMath
     /**
     * \brief object for reading from force-torque sensor
     */
-    //Tenzo _tenzoData;
+    StrainGauge _tenzoData;
 
     /**
     * \brief collected forces and torques measurements
@@ -135,7 +135,7 @@ public:
     * \brief
     * \param[in] index
     */
-    void collectData(const std::size_t index, StrainGauge& tenzo);
+    void collectData(const std::size_t index);
 
     std::array<int, 6> getPosition(const std::size_t index) const;
 
@@ -143,7 +143,7 @@ public:
     * \brief calculates new position in cartesian coords and stores it in string
     * \param[in] curPos current position in cartesian coords in int * 1000.0
     */
-    void calculatePos(std::array<int, 6>& curPos, StrainGauge& tenzo);
+    void calculatePos(std::array<int, 6>& curPos);
 
     std::array<double, 6> jointsToWorld(const std::array<double, 6>& joints);
 };

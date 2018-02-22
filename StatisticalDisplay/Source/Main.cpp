@@ -31,7 +31,7 @@ int main()
 	constexpr int	kServerPort				= 8888;
 	constexpr int	kServerPortSending		= 9999;
 	constexpr int	kServerPortReceiving	= 9998;
-	constexpr char	kServerIP[]				= "192.168.1.108";
+	constexpr char	kServerIP[]				= "192.168.0.101";
 
 	constexpr int	kRobotSendingPortToServer       = 59002;
 	constexpr int	kRobotReceivingPortFromServer   = 59003;

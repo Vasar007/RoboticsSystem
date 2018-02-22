@@ -275,8 +275,8 @@ void WinsockInterface::sendData(const SOCKET& socketForSending, const std::strin
 	_printer.writeLine(std::cout, "Sent data:", data, "successfully.\n");
 }
 
-std::string WinsockInterface::receiveData(const SOCKET& socketForReceiving, char* messageWithIP,
-										  char* buffer, bool& flag) const
+std::pair<std::string, bool> WinsockInterface::receiveData(const SOCKET& socketForReceiving,
+														   char* messageWithIP, char* buffer) const
 {
 	int addrlen = sizeof(SOCKADDR_IN);
 
@@ -310,16 +310,14 @@ std::string WinsockInterface::receiveData(const SOCKET& socketForReceiving, char
 			_printer.writeLine(std::cout, "recv failed with error code:", errorCode);
 		}
 
-		flag = false;
-		return { "" };
+		return { "", false };
 	}
 	if (valRead == 0)
 	{
 		// Node disconnected, get his details and print.
 		_printer.writeLine(std::cout, "Node disconnected, IP", messageWithIP, ", PORT", port);
 
-		flag = false;
-		return { "" };
+		return { "", false };
 	}
 	// Process message that came in.
 	if (0 < valRead && valRead < static_cast<int>(_MAXRECV))
@@ -330,10 +328,10 @@ std::string WinsockInterface::receiveData(const SOCKET& socketForReceiving, char
 
 		_printer.writeLine(std::cout, messageWithIP, ':', port, '-', buffer);
 
-		return { buffer };
+		return { buffer, true };
 	}
 
-	return { "" };
+	return { "", false };
 }
 
 void WinsockInterface::setTimeout(const SOCKET& socketToChange, const long seconds,

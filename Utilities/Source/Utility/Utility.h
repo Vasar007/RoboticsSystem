@@ -43,7 +43,7 @@ std::string			toString(const T& value) noexcept;
  * \return			Converted filled data or empty data.
  */
 template <typename T>
-T					fromString(const std::string& str, bool& ok) noexcept;
+T	                fromString(const std::string& str, bool& ok) noexcept;
 
 
 /**
@@ -53,7 +53,7 @@ T					fromString(const std::string& str, bool& ok) noexcept;
  * \return			Exact same string which forwards into function.
  */
 template <>
-inline std::string	fromString(const std::string& str, bool& ok) noexcept;
+inline std::string fromString(const std::string& str, bool& ok) noexcept;
 
 
 /**

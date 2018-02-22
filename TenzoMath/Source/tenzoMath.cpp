@@ -1,5 +1,3 @@
-#include <tchar.h>
-
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -28,8 +26,8 @@ TenzoMath::TenzoMath()
             { 985'000,      0, 1'140'000,         0,         0,           0 },
             { 1'085'000,    0, 1'040'000,   -90'000,         0,     -90'000 },
             { 1'085'000,    0, 1'040'000,    90'000,         0,      90'000 }
-      }})
-      //_tenzoData(L"COM13")
+      }}),
+      _tenzoData(L"COM13")
 {
     _g = cv::Mat(3, 1, cv::DataType<double>::type);
     _g.at<double>(0, 0) = 0.;
@@ -83,11 +81,11 @@ std::string TenzoMath::toString(const std::array<double, 6>& coord) const
     return stringStream.str();
 }
 
-void TenzoMath::collectData(const std::size_t index, StrainGauge& tenzo)
+void TenzoMath::collectData(const std::size_t index)
 {
     getchar();
 
-    std::array<double, 6> tmp = swapData(tenzo.readComStrain()); // _tenzoData
+    std::array<double, 6> tmp = swapData(_tenzoData.readComStrain());
     for (std::size_t i = 0; i < 6; ++i)
     {
         std::cout << tmp[i] << ' ';
@@ -295,7 +293,7 @@ void TenzoMath::loadCalibData()
     input.close();
 }
 
-void TenzoMath::calculatePos(std::array<int, 6>& curPos, StrainGauge& tenzo)
+void TenzoMath::calculatePos(std::array<int, 6>& curPos)
 {
     cv::Mat currRot = FanucModel::rotMatrix(curPos[3] / 180'000.0 * FanucModel::PI, curPos[4] / 180'000.0 * FanucModel::PI,
         curPos[5] / 180'000.0 * FanucModel::PI);
@@ -307,7 +305,7 @@ void TenzoMath::calculatePos(std::array<int, 6>& curPos, StrainGauge& tenzo)
     cv::Mat forces(1, 3, cv::DataType<double>::type);
     cv::Mat torques(1, 3, cv::DataType<double>::type);
 
-    std::array<double, 6> ftReadings = swapData(tenzo.readComStrain()); //_tenzoData
+    std::array<double, 6> ftReadings = swapData(_tenzoData.readComStrain());
     std::array<double, 6> newData = gravCompensation(currRot, ftReadings);
     forces.at<double>(0, 0) = (abs(newData[0]) < threshold ? 0 : newData[0] * coefForces);
     forces.at<double>(0, 1) = (abs(newData[1]) < threshold ? 0 : newData[1] * coefForces);

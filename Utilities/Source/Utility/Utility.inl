@@ -20,7 +20,6 @@ T fromString(const std::string& str, bool& ok) noexcept
 
 	ss >> t;
 	ok = !ss.fail();
-
 	return t;
 }
 

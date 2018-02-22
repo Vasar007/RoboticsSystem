@@ -23,7 +23,9 @@ void TestServer::receiveDataNTimes(const int numberOfTimes)
 
 	for (int step = 0; step < numberOfTimes; ++step)
 	{
-		const std::string dataBuffer = receiveData(_clientReceivingSocket, _messageWithIP, _buffer);
+		const auto [dataBuffer, flag] = receiveData(_clientReceivingSocket, _messageWithIP,
+													_buffer);
+		_isRunning.store(flag);
 
 		if (!_isRunning)
 		{
@@ -32,7 +34,6 @@ void TestServer::receiveDataNTimes(const int numberOfTimes)
 
 		if (const auto [value, check] = utils::parseCoordinateSystem(dataBuffer); check)
 		{
-
 			_coorninateSystem.emplace(value);
 			continue;
 		}

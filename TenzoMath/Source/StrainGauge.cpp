@@ -25,7 +25,8 @@ StrainGauge::StrainGauge(const LPCWSTR port)
     : _sPortName(port),
       _sSendChar{ 0x1, 0x0, 0x0, 0x0, 0x0 }
 {
-    !initializeCom() ? throw std::runtime_error("OLEGOFREN") : std::puts("OK\n");
+    initializeCom();
+    connect();
 }
 
 bool StrainGauge::connect()

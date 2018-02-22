@@ -57,6 +57,69 @@ public:
 	};
 
 
+	/**
+	  * \brief Default constructor that initializes protected fields (except sockets).
+	  */
+						WinsockInterface();
+
+	/**
+	 * \brief Default destructor (close all sockets and WinSock data).
+	 */
+	virtual				~WinsockInterface() noexcept;
+
+	/**
+	 * \brief			Deleted copy constructor.
+	 * \param[in] other Other object.
+	 */
+						WinsockInterface(const WinsockInterface& other)		= delete;
+
+	/**
+	 * \brief			Deleted copy assignment operator.
+	 * \param[in] other Other object.
+	 * \return			Return nothing because it's deleted.
+	 */
+	WinsockInterface&	operator=(const WinsockInterface& other)			= delete;
+
+	/**
+	 * \brief				Deleted move constructor.
+	 * \param[out] other	Other object.
+	 */
+						WinsockInterface(WinsockInterface&& other) noexcept = delete;
+
+	/**
+	 * \brief				Deleted move assignment operator.
+	 * \param[out] other	Other object.
+	 * \return				Return nothing because it's deleted.
+	 */
+	WinsockInterface&	operator=(WinsockInterface&& other) noexcept		= delete;
+
+	/**
+	 * \brief	Displaying cuurent network interactions.
+	 * \return	True if interface running, false otherwise.
+	 */
+	bool				isRun() const;
+
+	/**
+	 * \brief Initialize WSDATA and sockets.
+	 */
+	void				init();
+
+	/**
+	 * \brief Close all initialized data.
+	 */
+	void				close();
+
+	/**
+	 * \brief Main method which starts infinite working loop.
+	 */
+	virtual void		run() = 0;
+
+	/**
+	 * \brief Process sockets.
+	 */
+	virtual void		launch() = 0;
+
+
 protected:
 	/**
 	 * \brief Structure contains information about the Windows Sockets implementation.
@@ -205,11 +268,11 @@ protected:
 	 * \param[in] socketForReceiving	A descriptor identifying a receiving socket.
 	 * \param[out] messageWithIP	    Buffer to write accepted IP address.
 	 * \param[out] buffer	            Buffer to write received data.
-	 * \param[out] flag                 Flag to put status of connection.
-	 * \return						    Received data from receiving socket.
+	 * \return						    Received data from receiving socket and
+	 *                                  flag to put status of connection.
 	 */
-	std::string		receiveData(const SOCKET& socketForReceiving, char* messageWithIP,
-								char* buffer, bool& flag) const;
+	std::pair<std::string, bool> receiveData(const SOCKET& socketForReceiving, char* messageWithIP,
+								             char* buffer) const;
 
 	/**
 	 * \brief					    Set timeout for socket.
@@ -227,70 +290,6 @@ protected:
 	 * \brief Main infinite working loop. All network logic should be placed here.
 	 */
 	virtual void	waitLoop() = 0;
-
-
-public:
-	/**
-	  * \brief Default constructor that initializes protected fields (except sockets).
-	  */
-						WinsockInterface();
-
-	/**
-	 * \brief Default destructor (close all sockets and WinSock data).
-	 */
-	virtual				~WinsockInterface() noexcept;
-
-	/**
-	 * \brief			Deleted copy constructor.
-	 * \param[in] other Other object.
-	 */
-						WinsockInterface(const WinsockInterface& other)		= delete;
-
-	/**
-	 * \brief			Deleted copy assignment operator.
-	 * \param[in] other Other object.
-	 * \return			Return nothing because it's deleted.
-	 */
-	WinsockInterface&	operator=(const WinsockInterface& other)			= delete;
-
-	/**
-	 * \brief				Deleted move constructor.
-	 * \param[out] other	Other object.
-	 */
-						WinsockInterface(WinsockInterface&& other) noexcept = delete;
-
-	/**
-	 * \brief				Deleted move assignment operator.
-	 * \param[out] other	Other object.
-	 * \return				Return nothing because it's deleted.
-	 */
-	WinsockInterface&	operator=(WinsockInterface&& other) noexcept		= delete;
-
-	/**
-	 * \brief	Displaying cuurent network interactions.
-	 * \return	True if interface running, false otherwise.
-	 */
-	bool				isRun() const;
-
-	/**
-	 * \brief Initialize WSDATA and sockets.
-	 */
-	void				init();
-
-	/**
-	 * \brief Close all initialized data.
-	 */
-	void				close();
-
-	/**
-	 * \brief Main method which starts infinite working loop.
-	 */
-	virtual void		run() = 0;
-
-	/**
-	 * \brief Process sockets.
-	 */
-	virtual void		launch() = 0;
 };
 
 } // namespace vasily

@@ -70,9 +70,9 @@ void ServerImitator::waitLoop()
 
 	while (true)
 	{
-		bool status = _isRunning.load();
-		const std::string dataBuffer = receiveData(_clientReceivingSocket, _messageWithIP, _buffer,
-												   status);
+
+		const auto [dataBuffer, status] = receiveData(_clientReceivingSocket, _messageWithIP,
+													  _buffer);
 		_isRunning.store(status);
 
 		if (!_isRunning.load())

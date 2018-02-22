@@ -51,8 +51,7 @@ void ServerLayer::receiveFromServer()
 
 	while (true)
 	{
-		bool flag = _isRunning.load();
-		const std::string dataBuffer = receiveData(_receivingSocket, _messageWithIP, _buffer, flag);
+		const auto [dataBuffer, flag] = receiveData(_receivingSocket, _messageWithIP, _buffer);
 		_isRunning.store(flag);
 
 		if (!_isRunning.load())
@@ -61,19 +60,16 @@ void ServerLayer::receiveFromServer()
 			continue;
 		}
 
-		_logger.writeLine(_messageWithIP, '-', dataBuffer);
-
 		if (!dataBuffer.empty())
 		{
 			sendData(_clientSocket, dataBuffer);
 		}
+		_logger.writeLine(_messageWithIP, '-', dataBuffer);
 	}
 }
 
 void ServerLayer::checkConnectionToServer(const long long& time)
 {
-	std::this_thread::sleep_for(std::chrono::milliseconds(1000LL));
-
 	while (true)
 	{
 		_logger.writeLine(_lastReceivedPoint);
@@ -130,20 +126,26 @@ void ServerLayer::receiveFromClients()
 
 	while (true)
 	{
-		bool flag = _isRunningForClient.load();
-		const std::string dataBuffer = receiveData(_clientSocket, _messageWithIPForClient,
-												   _bufferForClient, flag);
+		const auto [dataBuffer, status] = receiveData(_clientSocket, _messageWithIPForClient,
+													  _bufferForClient);
 		_logger.writeLine(_messageWithIPForClient, '-', dataBuffer);
-		_isRunningForClient.store(flag);
+		_isRunningForClient.store(status);
 
 		if (!_isRunningForClient.load())
 		{
 			waitingForConnections();
 			continue;
 		}
-
 		if (dataBuffer.empty())
 		{
+			continue;
+		}
+
+		bool flag;
+		const auto robotData = utils::fromString<RobotData>(dataBuffer, flag);
+		if (!flag || !checkCoordinates(robotData))
+		{
+			sendData(_clientSocket, "INCORRECT COORDINATES: " + dataBuffer);
 			continue;
 		}
 
@@ -165,6 +167,21 @@ void ServerLayer::receiveFromClients()
 			}
 		}
 	}
+}
+
+bool ServerLayer::checkCoordinates(const RobotData& robotData) const
+{
+	for (std::size_t i = 0u; i < _MAIN_COORDINATES; ++i)
+	{
+		if (robotData.coordinates.at(i) < _MIN_COORDS.at(i)
+			|| robotData.coordinates.at(i) > _MAX_COORDS.at(i))
+		{
+			_printer.writeLine(std::cout, "ERROR 03: Incorrect coordinates to send!", robotData);
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void ServerLayer::process()
