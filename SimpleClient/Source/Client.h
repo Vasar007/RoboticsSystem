@@ -6,7 +6,7 @@
 #include "WinsockInterface.h"
 #include "Utilities.h"
 #include "Handler.h"
-#include "tenzoMath.h"
+#include "TenzoMath.h"
 
 
 namespace vasily
@@ -106,7 +106,10 @@ protected:
 	 */
 	logger::Logger      _logger;
 
-	TenzoMath           _tenzoMath;
+	/**
+	 * \brief Class-wrapper used to work with strain gauge. 
+	 */
+	nikita::TenzoMath   _tenzoMath;
 
 	/**
 	 * \brief Default file name for input.
@@ -141,8 +144,8 @@ protected:
 	/**
 	 * \brief Default (beginning) robot position.
 	 */
-	static constexpr RobotData	_DEFAULT_POSITION{ { RobotData::DEFAULT_CORDINATES },
-												   { RobotData::DEFAULT_PARAMETERS } };
+	static constexpr RobotData	_DEFAULT_POSITION{ RobotData::DEFAULT_CORDINATES,
+												   RobotData::DEFAULT_PARAMETERS };
 
 	/**
 	 * \brief Array contains minimum value for first 3 coordinates (x, y, z).
@@ -325,9 +328,15 @@ public:
 	 */
 	void		sendCoordinateSystem(const CoordinateSystem coordinateSystem) const;
 
-	void tenzoCalibration();
+	/**
+	 * \brief Calibrate strain gauge.
+	 */
+	void        tenzoCalibration();
 
-	void workWithTenzo();
+	/**
+	 * \brief Do work with strain gauge.
+	 */
+	void        workWithTenzo();
 
 
 	// Friendly swapping fuction.

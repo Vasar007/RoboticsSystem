@@ -61,13 +61,17 @@ struct RobotData
 
 
 	/**
-	 * \brief Default constructor for default position.
+	 * \brief                       Constructor for creating structure from two arrays.
+	 * \param[in] initCoordinates   Array that contains coordinates.
+	 * \param[in] initParameters    Array that contains parameters.
 	 */
-	constexpr	RobotData() noexcept
-					: coordinates(DEFAULT_CORDINATES),
-					  parameters(DEFAULT_PARAMETERS)
-				{
-				}
+	constexpr   RobotData(
+		const std::array<int, NUMBER_OF_COORDINATES>& initCoordinates = DEFAULT_CORDINATES,
+		const std::array<int, NUMBER_OF_PARAMETERS>& initParameters = DEFAULT_PARAMETERS) noexcept
+					: coordinates(initCoordinates),
+					  parameters(initParameters)
+	{
+	}
 
 	/**
 	 * \brief					Constructor for creating structure from 9 numbers.
@@ -86,18 +90,6 @@ struct RobotData
 						  const int lastCommand) noexcept
 					: coordinates{ x, y, z, w, p, r },
 					  parameters{ segtime, movingType, lastCommand }
-	{
-	}
-
-	/**
-	 * \brief                       Constructor for creating structure from two arrays.
-	 * \param[in] initCoordinates   Array that contains coordinates.
-	 * \param[in] initParameters    Array that contains parameters.
-	 */
-	constexpr	RobotData(const std::array<int, NUMBER_OF_COORDINATES>& initCoordinates,
-						  const std::array<int, NUMBER_OF_PARAMETERS>& initParameters) noexcept
-					: coordinates(initCoordinates),
-					  parameters(initParameters)
 	{
 	}
 

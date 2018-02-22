@@ -15,8 +15,8 @@ DhParameters(const double d, const double q, const double a, const double alpha)
 RoboModel::RoboModel(std::vector<std::array<double, 4>> input)
 {
     _kinematicChain.reserve(input.size());
-    for (int i = 0; i < input.size(); ++i)
-        _kinematicChain.push_back(DhParameters(input[i][0], input[i][1], input[i][2], input[i][3]));
+    for (auto& i : input)
+        _kinematicChain.emplace_back(i[0], i[1], i[2], i[3]);
 }
 
 cv::Mat RoboModel::prevMatTransform(const int i)
@@ -47,7 +47,7 @@ cv::Mat RoboModel::forwardTask(std::vector<double> inputq)
 {
     _kinematicChain[0]._qParam = inputq[0];
     cv::Mat transformMatrix = prevMatTransform(0);
-    for (int i = 1; i < inputq.size(); ++i)
+    for (std::size_t i = 1; i < inputq.size(); ++i)
     {
         _kinematicChain[i]._qParam = inputq[i];
         transformMatrix = transformMatrix * prevMatTransform(i);

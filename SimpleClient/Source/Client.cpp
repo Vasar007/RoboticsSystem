@@ -1,3 +1,5 @@
+#include <tchar.h>
+
 #include <cassert>
 #include <thread>
 
@@ -18,8 +20,7 @@ Client::Client(const int serverPort, const std::string_view serverIP, const Work
 	  _workMode(workMode),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
 	  isNeedToUpdate(false),
-	  lastSentPoint{ { vasily::RobotData::DEFAULT_CORDINATES },
-					 { vasily::RobotData::DEFAULT_PARAMETERS } }
+	  lastSentPoint{ RobotData::DEFAULT_CORDINATES, RobotData::DEFAULT_PARAMETERS }
 {
 }
 
@@ -35,8 +36,7 @@ Client::Client(const int serverSendingPort, const int serverReceivingPort,
 	  _workMode(workMode),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
 	  isNeedToUpdate(false),
-	  lastSentPoint{ { vasily::RobotData::DEFAULT_CORDINATES },
-					 { vasily::RobotData::DEFAULT_PARAMETERS } }
+	  lastSentPoint{ RobotData::DEFAULT_CORDINATES, RobotData::DEFAULT_PARAMETERS }
 {
 }
 
@@ -77,12 +77,20 @@ void Client::receive()
 		switch (_workMode)
 		{
 			case WorkMode::INDIRECT:
-				dataBuffer = receiveData(_sendingSocket, _messageWithIP, _buffer);
+			{
+				bool flag = _isRunning.load();
+				dataBuffer = receiveData(_sendingSocket, _messageWithIP, _buffer, flag);
+				_isRunning.store(flag);
 				break;
+			}
 			
 			case WorkMode::STRAIGHTFORWARD:
-				dataBuffer = receiveData(_receivingSocket, _messageWithIP, _buffer);
+			{
+				bool flag = _isRunning.load();
+				dataBuffer = receiveData(_receivingSocket, _messageWithIP, _buffer, flag);
+				_isRunning.store(flag);
 				break;
+			}
 			
 			default:
 				assert(false);
@@ -154,14 +162,14 @@ void Client::waitLoop()
 	// Create data for robot.
 	_robotData = _DEFAULT_POSITION;
 
-	sendCoordinateSystem(CoordinateSystem::WORLD);
+	sendCoordinateSystem(CoordinateSystem::JOINT);
 
 	std::thread reciveThread(&Client::receive, this);
 	reciveThread.detach();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
 
-	///constexpr std::atomic_int64_t time = 2000LL;
+	///constexpr long long time = 2000LL;
 	///std::thread checkThread(&Client::checkConnection, this, std::cref(time));
 	///checkThread.detach();
 
@@ -237,9 +245,12 @@ void Client::waitLoop()
 				else if (input == "test")
 				{
 					_robotData = _DEFAULT_POSITION;
-					for (int i = 1; i <= 1000; ++i)
+					constexpr int kNumberOfIterations = 1000;
+					constexpr int kDefaultMultiplier  = 100;
+					for (int i = 1; i <= kNumberOfIterations; ++i)
 					{
-						_robotData.coordinates.at(Handler::Y) += 100 * i * (i & 1 ? 1 : -1);
+						_robotData.coordinates.at(Handler::Y) += kDefaultMultiplier * i
+																* (i & 1 ? 1 : -1);
 						sendCoordinates(_robotData);
 						_isNeedToWait.store(true);
 						while (_isNeedToWait.load())
@@ -253,12 +264,52 @@ void Client::waitLoop()
 					tenzoCalibration();
 					//workWithTenzo();
 				}
+				else if (input == "tzTest")
+				{
+					StrainGauge tenzo(L"COM13");
+					while (true)
+					{
+						std::array<double, 6> tmp = tenzo.readComStrain();
+						std::array<double, 6> collectedData{ tmp[1], -tmp[0], -tmp[2],
+															 tmp[4], -tmp[3],  tmp[5] };
+						std::copy(collectedData.begin(), collectedData.end(),
+								  std::ostream_iterator<double>(std::cout, "\t"));
+					}
+				}
 				break;
 			
 			default:
 				assert(false);
 				break;
 		}
+	}
+}
+
+void Client::launch()
+{
+	switch (_workMode)
+	{
+		case WorkMode::STRAIGHTFORWARD:
+		{
+			const bool connectStatus = tryConnect(_serverSendingPort, _serverIP, _sendingSocket, 
+												  _sendingSocketAddress)
+									&& tryConnect(_serverReceivingPort, _serverIP,
+												  _receivingSocket, _receivingSocketAddress);
+			_isRunning.store(connectStatus);
+			break;
+		}
+
+		case WorkMode::INDIRECT:
+		{
+			const bool connectStatus = tryConnect(_serverPort, _serverIP, _sendingSocket,
+												  _sendingSocketAddress);
+			_isRunning.store(connectStatus);
+			break;
+		}
+
+		default:
+			assert(false);
+			break;
 	}
 }
 
@@ -291,27 +342,18 @@ void Client::tryReconnect()
 		switch (_workMode)
 		{
 			case WorkMode::STRAIGHTFORWARD:
-			{
 				closeSocket(_receivingSocket);
 				initSocket(_receivingSocket);
-
-				const bool reconnect = tryConnect(_serverSendingPort, _serverIP, _sendingSocket, 
-												  _sendingSocketAddress)
-										&& tryConnect(_serverReceivingPort, _serverIP,
-													  _receivingSocket, _receivingSocketAddress);
-				_isRunning.store(reconnect);
 				break;
-			}
 			
 			case WorkMode::INDIRECT:
-				_isRunning.store(tryConnect(_serverPort, _serverIP, _sendingSocket,
-											_sendingSocketAddress));
 				break;
 			
 			default:
 				assert(false);
 				break;
 		}
+		launch();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000LL));
 	}
@@ -323,34 +365,14 @@ void Client::run()
 	waitLoop();
 }
 
-void Client::launch()
-{
-	switch (_workMode)
-	{
-		case WorkMode::STRAIGHTFORWARD:
-			tryConnect(_serverSendingPort, _serverIP, _sendingSocket, _sendingSocketAddress);
-			tryConnect(_serverReceivingPort, _serverIP, _receivingSocket, _receivingSocketAddress);
-			break;
-
-		case WorkMode::INDIRECT:
-			tryConnect(_serverPort, _serverIP, _sendingSocket, _sendingSocketAddress);
-			break;
-
-		default:
-			assert(false);
-			break;
-	}
-}
-
 void Client::circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint,
 							 const int numberOfIterations)
 {
 	assert(numberOfIterations > 0);
 
-	_circlicState = CirclicState::SEND_FIRST;
-
-	int counterIterations = 0;
-	bool flag = true;
+	_circlicState           = CirclicState::SEND_FIRST;
+	int counterIterations   = 0;
+	bool flag               = true;
 	while (flag)
 	{
 		switch (_circlicState)
@@ -497,31 +519,31 @@ void Client::sendCoordinateSystem(const CoordinateSystem coordinateSystem) const
 
 void Client::tenzoCalibration()
 {
-	constexpr std::size_t NUMBER_OF_POSITIONS = 6u;
-	for (std::size_t index = 0u; index < NUMBER_OF_POSITIONS; ++index)
+	StrainGauge tenzoData(L"COM17");
+
+	constexpr std::size_t kNumberOfPositions = 6u;
+	for (std::size_t index = 0u; index < kNumberOfPositions; ++index)
 	{
-		RobotData robotData{ _tenzoMath.getPosition(index), RobotData::DEFAULT_PARAMETERS };
-		robotData = { TenzoMath::convertToInt(_tenzoMath.jointsToWorld(robotData.toDoubleCoords())),
-					  RobotData::DEFAULT_PARAMETERS };
+		const RobotData robotData(_tenzoMath.getPosition(index));
 		sendCoordinates(robotData);
 
-		_tenzoMath.collectData(index);
-		_tenzoMath.doCalibration();
+		_tenzoMath.collectData(index, tenzoData);
 	}
+	_tenzoMath.doCalibration();
+
+	const RobotData startPos({ 0, 0, 0, 0, -90'000, 0 });
+	sendCoordinates(startPos);
 }
 
 void Client::workWithTenzo()
 {
 	_tenzoMath.loadCalibData();
 
+	StrainGauge tenzoData(L"COM13");
 	RobotData robotData{};
 	while (true)
 	{
-		auto doubleCoords = robotData.toDoubleCoords();
-		_tenzoMath.calculatePos(doubleCoords);
-		robotData = { TenzoMath::convertToInt(_tenzoMath.jointsToWorld(doubleCoords)),
-					  RobotData::DEFAULT_PARAMETERS };
-
+		_tenzoMath.calculatePos(robotData.coordinates, tenzoData);
 		//sendData(_sendingSocket, _tenzoMath.getCoordToMove());
 		sendCoordinates(robotData);
 	}

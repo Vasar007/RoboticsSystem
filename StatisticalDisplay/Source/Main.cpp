@@ -28,32 +28,32 @@ void init(vasily::Client& client)
 
 int main()
 {
-	constexpr int	SERVER_PORT				= 8888;
-	constexpr int	SERVER_PORT_SENDING		= 9999;
-	constexpr int	SERVER_PORT_RECEIVING	= 9998;
-	constexpr char	SERVER_IP[]				= "192.168.1.108";
+	constexpr int	kServerPort				= 8888;
+	constexpr int	kServerPortSending		= 9999;
+	constexpr int	kServerPortReceiving	= 9998;
+	constexpr char	kServerIP[]				= "192.168.1.108";
 
-	constexpr int	ROBOT_SENDING_PORT_TO_SERVER      = 59002;
-	constexpr int	ROBOT_RECEIVING_PORT_FROM_SERVER  = 59003;
-	constexpr char	ROBOT_SERVER_IP[]                 = "192.168.1.21";
+	constexpr int	kRobotSendingPortToServer       = 59002;
+	constexpr int	kRobotReceivingPortFromServer   = 59003;
+	constexpr char	kRobotServerIP[]                = "192.168.1.21";
 
 	// MAKE SURE THAT YOU USE RIGHT CLIENT: 2 — DEBUG, 3 — WORKING WITH ROBOT, 1 — UNIVERSAL.
-	vasily::Client client(SERVER_PORT, SERVER_IP, vasily::Client::WorkMode::INDIRECT);
-	///vasily::Client client(SERVER_PORT_SENDING, SERVER_PORT_RECEIVING, SERVER_IP,
-	///				      vasily::Client::WorkMode::INDIRECT);
-	///vasily::Client client(ROBOT_SENDING_PORT_TO_SERVER, ROBOT_RECEIVING_PORT_FROM_SERVER,
-	///					  ROBOT_SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
+	vasily::Client client(kServerPort, kServerIP, vasily::Client::WorkMode::INDIRECT);
+	///vasily::Client client(kServerPortSending, kServerPortReceiving, kServerIP,
+	///				      vasily::Client::WorkMode::STRAIGHTFORWARD);
+	///vasily::Client client(kRobotSendingPortToServer, kRobotReceivingPortFromServer,
+	///					  kRobotServerIP, vasily::Client::WorkMode::STRAIGHTFORWARD);
 
 	std::thread clientThread(vasily::init, std::ref(client));
 	clientThread.detach();
 
-	constexpr unsigned int WIDTH	= 1280u;
-	constexpr unsigned int HEIGHT	= 720u;
+	constexpr unsigned int kWidth	= 1280u;
+	constexpr unsigned int kHeight	= 720u;
 
-	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Fanuc Diagram Interface");
+	sf::RenderWindow window(sf::VideoMode(kWidth, kHeight), "Fanuc Diagram Interface");
 	window.setFramerateLimit(60u);
 
-	statistic::Transmitter transmitter(WIDTH, HEIGHT);
+	statistic::Transmitter transmitter(kWidth, kHeight);
 
 	while (window.isOpen())
 	{

@@ -14,7 +14,7 @@ ServerImitator::ServerImitator(const int clientSendingPort, const int clientReci
 	  _clientSendingSocket(0),
 	  _clientReceivingSocket(0),
 	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
-	  _lastReceivedData{ { RobotData::DEFAULT_CORDINATES }, { RobotData::DEFAULT_PARAMETERS } }
+	  _lastReceivedData{ RobotData::DEFAULT_CORDINATES, RobotData::DEFAULT_PARAMETERS }
 {
 }
 
@@ -70,7 +70,10 @@ void ServerImitator::waitLoop()
 
 	while (true)
 	{
-		const std::string dataBuffer = receiveData(_clientReceivingSocket, _messageWithIP, _buffer);
+		bool status = _isRunning.load();
+		const std::string dataBuffer = receiveData(_clientReceivingSocket, _messageWithIP, _buffer,
+												   status);
+		_isRunning.store(status);
 
 		if (!_isRunning.load())
 		{

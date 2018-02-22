@@ -1,8 +1,11 @@
-#include "fanucModel.h"
-#include <iostream>
-#include <opencv2/core.hpp>
-#include <vector>
+#include "FanucModel.h"
+
 #include "poly34.h"
+#include <opencv2/core.hpp>
+
+#include <iostream>
+#include <vector>
+
 
 FanucModel::FanucModel()
     : RoboModel(std::vector<std::array<double, 4>>{
@@ -52,7 +55,7 @@ cv::Mat FanucModel::fanucForwardTask(const std::array<double, 6> inputJoints)
 
 std::array<double, 3> FanucModel::anglesFromMat(const cv::Mat p6)
 {
-    std::array<double, 3> angleVector;
+    std::array<double, 3> angleVector{};
     angleVector.at(0) = atan2(p6.at<double>(2, 1), p6.at<double>(2, 2));
     angleVector.at(1) = atan2(-p6.at<double>(2, 0),
                               sqrt(p6.at<double>(2, 1) * p6.at<double>(2, 1) + p6.at<double>(2, 2) * p6.at<double>(2, 2)));
@@ -64,7 +67,7 @@ std::array<double, 6> FanucModel::getCoordsFromMat(cv::Mat transformMatrix)
 {
     std::array<double, 3> wprAngles = anglesFromMat(transformMatrix);
 
-    std::array<double, 6> res;
+    std::array<double, 6> res{};
     res.at(0) = transformMatrix.at<double>(0, 3);
     res.at(1) = transformMatrix.at<double>(1, 3);
     res.at(2) = transformMatrix.at<double>(2, 3);
@@ -263,7 +266,7 @@ cv::Mat FanucModel::fanucInverseTask(const std::array<double, 6> coord) const
     for (int it = 0; it < thetaRes.rows; ++it)
     {
         cv::Mat r36(3, 3, cv::DataType<double>::type), r03(3, 3, cv::DataType<double>::type);
-        std::array<double, 6> q;
+        std::array<double, 6> q{};
         q[0] = thetaRes.at<double>(it, 0);
         q[1] = -thetaRes.at<double>(it, 1) + PI / 2;
         q[2] = thetaRes.at<double>(it, 2) + thetaRes.at<double>(it, 1);

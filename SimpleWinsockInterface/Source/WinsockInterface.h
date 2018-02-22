@@ -11,8 +11,6 @@
 #include "Utilities.h"
 
 #pragma comment (lib, "ws2_32.lib")
-#pragma comment (lib, "Mswsock.lib")
-#pragma comment (lib, "AdvApi32.lib")
 
 
 /**
@@ -29,10 +27,10 @@ namespace vasily
  * \code
  * int main()
  * {
- *	constexpr int SERVER_PORT = 9997;
- *	constexpr char SERVER_IP[] = "192.168.0.100";
+ *	constexpr int kServerPort = 9997;
+ *	constexpr char kServerIP[] = "192.168.0.100";
  *  
- *	Client client(SERVER_PORT, SERVER_IP);
+ *	Client client(kServerPort, kServerIP);
  *  
  *	client.launch();
  *	client.run();
@@ -147,7 +145,7 @@ protected:
 	 * \brief                       Close socket.
 	 * \param[out] socketToClose    Descriptor referencing socket.
 	 */
-	void			closeSocket(SOCKET& socketToClose) const;
+	void			closeSocket(SOCKET& socketToClose) const noexcept;
 				 
 	/**
 	 * \brief						Associate a local address with a socket.
@@ -207,10 +205,11 @@ protected:
 	 * \param[in] socketForReceiving	A descriptor identifying a receiving socket.
 	 * \param[out] messageWithIP	    Buffer to write accepted IP address.
 	 * \param[out] buffer	            Buffer to write received data.
+	 * \param[out] flag                 Flag to put status of connection.
 	 * \return						    Received data from receiving socket.
 	 */
 	std::string		receiveData(const SOCKET& socketForReceiving, char* messageWithIP,
-								char* buffer);
+								char* buffer, bool& flag) const;
 
 	/**
 	 * \brief					    Set timeout for socket.

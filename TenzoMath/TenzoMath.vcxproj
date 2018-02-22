@@ -29,27 +29,27 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -139,17 +139,18 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\fanucModel.cpp" />
-    <ClCompile Include="Source\newRM.cpp" />
+    <ClCompile Include="Source\FanucModel.cpp" />
+    <ClCompile Include="Source\NewRM.cpp" />
     <ClCompile Include="Source\poly34.cpp" />
-    <ClCompile Include="Source\tenzoMath.cpp" />
+    <ClCompile Include="Source\StrainGauge.cpp" />
+    <ClCompile Include="Source\TenzoMath.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\fanucModel.h" />
-    <ClInclude Include="Source\newRM.h" />
+    <ClInclude Include="Source\FanucModel.h" />
+    <ClInclude Include="Source\NewRM.h" />
     <ClInclude Include="Source\poly34.h" />
-    <ClInclude Include="Source\Tenzo.h" />
-    <ClInclude Include="Source\tenzoMath.h" />
+    <ClInclude Include="Source\StrainGauge.h" />
+    <ClInclude Include="Source\TenzoMath.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

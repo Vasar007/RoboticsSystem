@@ -11,8 +11,7 @@ void stdOutput(const std::string_view str) noexcept
 
 void fastOutput(const std::string& str) noexcept
 {
-    const int rc = std::puts(str.c_str());
-    if (rc == EOF)
+    if (const int returnValue = std::puts(str.c_str()); returnValue == EOF)
     {
         // POSIX requires that errno is set.
         std::perror("puts()");

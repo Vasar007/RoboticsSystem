@@ -2,8 +2,9 @@
 #define NEW_RM
 
 #include <vector>
-#include <opencv2/core.hpp>
 #include <array>
+
+#include <opencv2/core.hpp>
 
 
 /**

@@ -41,29 +41,29 @@ void ClientTest::sendReceiveAbility()
 {
 	TestServer testServer;
 
-	constexpr long long STANDART_DELAY      = 25LL;
-	constexpr int RECEIVE_COORDINATE_TYPE   = 1;
-	constexpr int RECEIVE_COORDINATES       = 1;
+	constexpr long long kStandartDelay      = 25LL;
+	constexpr int kReceiveCoordinateType    = 1;
+	constexpr int kReceiveCoordinates       = 1;
 
-	constexpr int NUMBER_OF_TIMES_TO_RECEIVE_DATA = RECEIVE_COORDINATE_TYPE + RECEIVE_COORDINATES;
+	constexpr int kNumberOfTimesToReceiveData = kReceiveCoordinateType + kReceiveCoordinates;
 
-	std::thread serverThread(initTestServer, std::ref(testServer), NUMBER_OF_TIMES_TO_RECEIVE_DATA);
+	std::thread serverThread(initTestServer, std::ref(testServer), kNumberOfTimesToReceiveData);
 	serverThread.detach();
 	
 	ModClient client(ModClient::SERVER_PORT_SENDING, ModClient::SERVER_PORT_RECEIVING,
 					 ModClient::SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
-	initClient(client, [&client, &STANDART_DELAY]()
+	initClient(client, [&client, &kStandartDelay]()
 	{	
 		client.sendCoordinateSystem(vasily::CoordinateSystem::WORLD);
-		std::this_thread::sleep_for(std::chrono::milliseconds(STANDART_DELAY));
+		std::this_thread::sleep_for(std::chrono::milliseconds(kStandartDelay));
 
 		client.sendCoordinatesMod({ 985'000, 0, 940'000, -180'000, 0, 0, 10, 2, 0 });
-	}, RECEIVE_COORDINATES);
+	}, kReceiveCoordinates);
 
 
 	do
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(STANDART_DELAY));
+		std::this_thread::sleep_for(std::chrono::milliseconds(kStandartDelay));
 	}
 	while (!testServer.hasFinished.load() && !client.hasFinished.load());
 
@@ -79,21 +79,21 @@ void ClientTest::dangerusZone()
 {
 	TestServer testServer;
 
-	constexpr long long STANDART_DELAY      = 25LL;
-	constexpr int RECEIVE_COORDINATE_TYPE   = 1;
-	constexpr int RECEIVE_COORDINATES       = 0;
+	constexpr long long kStandartDelay      = 25LL;
+	constexpr int kReceiveCoordinateType    = 1;
+	constexpr int kReceiveCoordinates       = 0;
 
-	constexpr int NUMBER_OF_TIMES_TO_RECEIVE_DATA = RECEIVE_COORDINATE_TYPE + RECEIVE_COORDINATES;
+	constexpr int kNumberOfTimesToReceiveData = kReceiveCoordinateType + kReceiveCoordinates;
 
-	std::thread serverThread(initTestServer, std::ref(testServer), NUMBER_OF_TIMES_TO_RECEIVE_DATA);
+	std::thread serverThread(initTestServer, std::ref(testServer), kNumberOfTimesToReceiveData);
 	serverThread.detach();
 
 	ModClient client(ModClient::SERVER_PORT_SENDING, ModClient::SERVER_PORT_RECEIVING,
 					 ModClient::SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
-	initClient(client, [&client, &STANDART_DELAY]()
+	initClient(client, [&client, &kStandartDelay]()
 	{
 		client.sendCoordinateSystem(vasily::CoordinateSystem::WORLD);
-		std::this_thread::sleep_for(std::chrono::milliseconds(STANDART_DELAY));
+		std::this_thread::sleep_for(std::chrono::milliseconds(kStandartDelay));
 
 		client.sendCoordinatesMod({ 829'000,	0,			940'000, -180'000, 0, 0, 10, 2, 0 });
 		client.sendCoordinatesMod({ 985'000,   -401'000,	940'000, -180'000, 0, 0, 10, 2, 0 });
@@ -108,12 +108,12 @@ void ClientTest::dangerusZone()
 		client.sendCoordinatesMod({ 1'320'001,  0,			940'000, -180'000, 0, 0, 10, 2, 0 });
 		client.sendCoordinatesMod({ 985'000,	400'001,	940'000, -180'000, 0, 0, 10, 2, 0 });
 		client.sendCoordinatesMod({ 985'000,	0,			960'001, -180'000, 0, 0, 10, 2, 0 });
-	}, RECEIVE_COORDINATES);
+	}, kReceiveCoordinates);
 
 
 	do
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(STANDART_DELAY));
+		std::this_thread::sleep_for(std::chrono::milliseconds(kStandartDelay));
 	}
 	while (!testServer.hasFinished.load() && !client.hasFinished.load());
 
@@ -127,38 +127,38 @@ void ClientTest::circlicMovement()
 {
 	TestServer testServer;
 	
-	constexpr long long STANDART_DELAY      = 25LL;
-	constexpr int RECEIVE_COORDINATE_TYPE   = 1;
-	constexpr int RECEIVE_CORDINATES_FIRST  = 5;
-	constexpr int RECEIVE_CORDINATES_SECOND = 1;
+	constexpr long long kStandartDelay      = 25LL;
+	constexpr int kReceiveCoordinateType    = 1;
+	constexpr int kReceiveCordinatesFirst   = 5;
+	constexpr int kReceiveCordinatesSecond  = 1;
 
-	constexpr int RECEIVE_COORDINATES = RECEIVE_CORDINATES_FIRST + RECEIVE_CORDINATES_SECOND;
-	constexpr int NUMBER_OF_TIMES_TO_RECEIVE_DATA = RECEIVE_COORDINATE_TYPE + RECEIVE_COORDINATES;
+	constexpr int kReceiveCoordinates = kReceiveCordinatesFirst + kReceiveCordinatesSecond;
+	constexpr int kNumberOfTimesToReceiveData = kReceiveCoordinateType + kReceiveCoordinates;
 
-	std::thread serverThread(initTestServer, std::ref(testServer), NUMBER_OF_TIMES_TO_RECEIVE_DATA);
+	std::thread serverThread(initTestServer, std::ref(testServer), kNumberOfTimesToReceiveData);
 	serverThread.detach();
 	
 	ModClient client(ModClient::SERVER_PORT_SENDING, ModClient::SERVER_PORT_RECEIVING,
 					 ModClient::SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
-	initClient(client, [&client, &STANDART_DELAY]()
+	initClient(client, [&client, &kStandartDelay]()
 	{
 		client.sendCoordinateSystem(vasily::CoordinateSystem::WORLD);
-		std::this_thread::sleep_for(std::chrono::milliseconds(STANDART_DELAY));
+		std::this_thread::sleep_for(std::chrono::milliseconds(kStandartDelay));
 	
-		constexpr int NUMBER_OF_TIMES = 2;
+		constexpr int kNumberOfTimes = 2;
 		client.circlicMovementMod({ 985'000, 0,			940'000, -180'000, 0,	0, 10, 2, 0 },
 								  { 900'000, 100'000,	800'000, -150'000, 10,	0, 10, 2, 0 }, 
-								  NUMBER_OF_TIMES);
+								  kNumberOfTimes);
 
 		client.circlicMovementMod({ 985'000, 0,			940'000, -180'000, 0,	0, 10, 2, 0 },
 								  { 800'000, 100'000,	800'000, -150'000, 10,	0, 10, 2, 0 },
-								  NUMBER_OF_TIMES);
-	}, RECEIVE_COORDINATES);
+								  kNumberOfTimes);
+	}, kReceiveCoordinates);
 	
 	
 	do
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(STANDART_DELAY));
+		std::this_thread::sleep_for(std::chrono::milliseconds(kStandartDelay));
 	}
 	while (!testServer.hasFinished.load() && !client.hasFinished.load());
 	
@@ -168,10 +168,10 @@ void ClientTest::circlicMovement()
 	Assert::IsFalse(client.storage.empty(), L"There are not sent coordinates on client!");
 	
 	std::wstring message = L"Incorrect data at 0!";
-	constexpr std::size_t NUMBER_PLACE = 18u;
+	constexpr std::size_t kNumberPlace = 18u;
 	for (std::size_t i = 0u; i < client.storage.size(); ++i)
 	{
-		message.replace(NUMBER_PLACE, 1u, std::to_wstring(i + 1u));
+		message.replace(kNumberPlace, 1u, std::to_wstring(i + 1u));
 		Assert::AreEqual(client.storage.at(i), testServer.storage.at(i), message.c_str());
 	}
 }
@@ -180,38 +180,38 @@ void ClientTest::partialMovement()
 {
 	TestServer testServer;
 
-	constexpr long long STANDART_DELAY      = 25LL;
-	constexpr int RECEIVE_COORDINATE_TYPE   = 1;
-	constexpr int RECEIVE_CORDINATES_FIRST  = 6;
-	constexpr int RECEIVE_CORDINATES_SECOND = 5;
+	constexpr long long kStandartDelay      = 25LL;
+	constexpr int kReceiveCoordinateType   = 1;
+	constexpr int kReceiveCordinatesFirst  = 6;
+	constexpr int kReceiveCordinatesSecond = 5;
 
-	constexpr int RECEIVE_COORDINATES = RECEIVE_CORDINATES_FIRST + RECEIVE_CORDINATES_SECOND;
-	constexpr int NUMBER_OF_TIMES_TO_RECEIVE_DATA = RECEIVE_COORDINATE_TYPE + RECEIVE_COORDINATES;
+	constexpr int kReceiveCoordinates = kReceiveCordinatesFirst + kReceiveCordinatesSecond;
+	constexpr int kNumberOfTimesToReceiveData = kReceiveCoordinateType + kReceiveCoordinates;
 
-	std::thread serverThread(initTestServer, std::ref(testServer), NUMBER_OF_TIMES_TO_RECEIVE_DATA);
+	std::thread serverThread(initTestServer, std::ref(testServer), kNumberOfTimesToReceiveData);
 	serverThread.detach();
 
 	ModClient client(ModClient::SERVER_PORT_SENDING, ModClient::SERVER_PORT_RECEIVING,
 					 ModClient::SERVER_IP, vasily::Client::WorkMode::STRAIGHTFORWARD);
-	initClient(client, [&client, &STANDART_DELAY]()
+	initClient(client, [&client, &kStandartDelay]()
 	{
 		client.sendCoordinateSystem(vasily::CoordinateSystem::WORLD);
-		std::this_thread::sleep_for(std::chrono::milliseconds(STANDART_DELAY));
+		std::this_thread::sleep_for(std::chrono::milliseconds(kStandartDelay));
 
-		constexpr int NUMBER_OF_STEPS = 5;
+		constexpr int kNumberOfSteps = 5;
 		client.partialMovementMod({ 985'000, 0,			940'000, -180'000, 0,	0, 10, 2, 0 },
 								  { 900'000, 100'000,	800'000, -150'000, 10,	0, 10, 2, 0 },
-								  NUMBER_OF_STEPS);
+								  kNumberOfSteps);
 
 		client.partialMovementMod({ 985'000, 0,			940'000, -180'000, 0,	0, 10, 2, 0 },
 								  { 800'000, 100'000,	800'000, -150'000, 10,	0, 10, 2, 0 },
-								  NUMBER_OF_STEPS);
-	}, RECEIVE_COORDINATES);
+								  kNumberOfSteps);
+	}, kReceiveCoordinates);
 
 
 	do
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(STANDART_DELAY));
+		std::this_thread::sleep_for(std::chrono::milliseconds(kStandartDelay));
 	}
 	while (!testServer.hasFinished.load() && !client.hasFinished.load());
 
@@ -221,10 +221,10 @@ void ClientTest::partialMovement()
 	Assert::IsFalse(client.storage.empty(), L"There are not sent coordinates on client!");
 
 	std::wstring message = L"Incorrect data at 0!";
-	constexpr std::size_t NUMBER_PLACE = 18u;
+	constexpr std::size_t kNumberPlace = 18u;
 	for (std::size_t i = 0u; i < client.storage.size(); ++i)
 	{
-		message.replace(NUMBER_PLACE, 1u, std::to_wstring(i + 1u));
+		message.replace(kNumberPlace, 1u, std::to_wstring(i + 1u));
 		Assert::AreEqual(client.storage.at(i), testServer.storage.at(i), message.c_str());
 	}
 }

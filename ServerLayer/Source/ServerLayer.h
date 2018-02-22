@@ -34,6 +34,11 @@ protected:
 	char		_messageWithIPForClient[_MAXRECV];
 
 	/**
+	 * \brief Flag used to define active connection to client.
+	 */
+	std::atomic_bool _isRunningForClient;
+
+	/**
 	 * \brief Variable used to keep server IP address.
 	 */
 	std::string _serverIP;
@@ -171,6 +176,11 @@ protected:
 	 * \brief Main infinite working loop. All network logic should be placed here.
 	 */
 	void waitLoop() override;
+
+	/**
+	 * \brief Additional method which contains all connection calls. 
+	 */
+	void doConnection();
 
 	
 public:

@@ -154,7 +154,7 @@ void WinsockInterface::initSocket(SOCKET& socketToInit, const int aiProtocol) co
 	_printer.writeLine(std::cout, "Socket created.");
 }
 
-void WinsockInterface::closeSocket(SOCKET& socketToClose) const
+void WinsockInterface::closeSocket(SOCKET& socketToClose) const noexcept
 {
 	closesocket(socketToClose);
 	socketToClose = 0;
@@ -173,7 +173,7 @@ void WinsockInterface::bindSocket(const SOCKET& socketToBind, SOCKADDR_IN& socke
 
 	// Binding to a specific address and port. 
 	if (bind(socketToBind, DOUBLE_STATIC_CAST(SOCKADDR*, socketAddress),
-		sizeof socketAddress) == SOCKET_ERROR)
+		sizeof(socketAddress)) == SOCKET_ERROR)
 	{
 		_printer.writeLine(std::cout, "\nBIND FAILED.");
 		std::cin.get();
@@ -243,7 +243,7 @@ bool WinsockInterface::tryConnect(const int port, const std::string& ip,
 
 	// The connection to the server. 
 	if (connect(socketToConnect, DOUBLE_STATIC_CAST(SOCKADDR*, socketAddress),
-		sizeof socketAddress) == SOCKET_ERROR)
+		sizeof(socketAddress)) == SOCKET_ERROR)
 	{
 		_printer.writeLine(std::cout, "\nCONNECTION TO SERVER WAS FAILED.");
 
@@ -262,10 +262,11 @@ bool WinsockInterface::isRun() const
 
 void WinsockInterface::sendData(const SOCKET& socketForSending, const std::string& data) const
 {
-	const char* dataChar = data.c_str();
+	const char* dataChar    = data.c_str();
+	const auto strLen       = static_cast<int>(data.size());
 
 	// Sending data on socket.
-	if (send(socketForSending, dataChar, strlen(dataChar), 0) == SOCKET_ERROR)
+	if (send(socketForSending, dataChar, strLen, 0) == SOCKET_ERROR)
 	{
 		_printer.writeLine(std::cout, "SEND FAILED.");
 		return;
@@ -275,7 +276,7 @@ void WinsockInterface::sendData(const SOCKET& socketForSending, const std::strin
 }
 
 std::string WinsockInterface::receiveData(const SOCKET& socketForReceiving, char* messageWithIP,
-										  char* buffer)
+										  char* buffer, bool& flag) const
 {
 	int addrlen = sizeof(SOCKADDR_IN);
 
@@ -309,7 +310,7 @@ std::string WinsockInterface::receiveData(const SOCKET& socketForReceiving, char
 			_printer.writeLine(std::cout, "recv failed with error code:", errorCode);
 		}
 
-		_isRunning.store(false);
+		flag = false;
 		return { "" };
 	}
 	if (valRead == 0)
@@ -317,7 +318,7 @@ std::string WinsockInterface::receiveData(const SOCKET& socketForReceiving, char
 		// Node disconnected, get his details and print.
 		_printer.writeLine(std::cout, "Node disconnected, IP", messageWithIP, ", PORT", port);
 
-		_isRunning.store(false);
+		flag = false;
 		return { "" };
 	}
 	// Process message that came in.
@@ -342,7 +343,7 @@ void WinsockInterface::setTimeout(const SOCKET& socketToChange, const long secon
 	timeout.tv_sec  = seconds;
 	timeout.tv_usec = microseconds;
 	setsockopt(socketToChange, SOL_SOCKET, SO_RCVTIMEO,
-			   DOUBLE_STATIC_CAST(char*, timeout), sizeof timeout);
+			   DOUBLE_STATIC_CAST(char*, timeout), sizeof(timeout));
 }
 
 } // namespace vasily

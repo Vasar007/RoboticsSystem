@@ -46,9 +46,7 @@ void TestServer::receiveDataNTimes(const int numberOfTimes)
 			storage.push_back(dataBuffer);
 		}
 
-
-		const std::string toSending = utils::parseFullData(dataBuffer);
-		if (!toSending.empty())
+		if (const std::string toSending = utils::parseFullData(dataBuffer); !toSending.empty())
 		{
 			sendData(_clientSendingSocket, toSending);
 		}

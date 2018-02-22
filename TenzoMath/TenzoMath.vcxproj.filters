@@ -15,33 +15,36 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\fanucModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\newRM.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\poly34.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\tenzoMath.cpp">
+    <ClCompile Include="Source\StrainGauge.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TenzoMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\NewRM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FanucModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\fanucModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\newRM.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\poly34.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Tenzo.h">
+    <ClInclude Include="Source\StrainGauge.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\tenzoMath.h">
+    <ClInclude Include="Source\TenzoMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\NewRM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\FanucModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
