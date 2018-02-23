@@ -41,6 +41,9 @@ public:
 
 
 private:
+	/**
+	 * \brief Number of points in vector to reserve.
+	 */
 	static constexpr std::size_t _NUMBER_FOR_RESERVE = 1000u;
 
 	/**
