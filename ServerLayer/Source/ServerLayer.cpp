@@ -8,6 +8,7 @@ ServerLayer::ServerLayer(const int serverSendingPort, const int serverRecivingPo
 						 const std::string_view serverIP, const int layerPort, const int backlog)
 	: _bufferForClient(),
 	  _messageWithIPForClient(),
+	  _isRunningForClient(false),
 	  _serverIP(serverIP),
 	  _layerPort(layerPort),
 	  _backlog(backlog),
@@ -50,7 +51,8 @@ void ServerLayer::receiveFromServer()
 
 	while (true)
 	{
-		const std::string dataBuffer = receiveData(_receivingSocket, _messageWithIP, _buffer);
+		const auto [dataBuffer, flag] = receiveData(_receivingSocket, _messageWithIP, _buffer);
+		_isRunning.store(flag);
 
 		if (!_isRunning.load())
 		{
@@ -58,19 +60,16 @@ void ServerLayer::receiveFromServer()
 			continue;
 		}
 
-		_logger.writeLine(_messageWithIP, '-', dataBuffer);
-
 		if (!dataBuffer.empty())
 		{
 			sendData(_clientSocket, dataBuffer);
 		}
+		_logger.writeLine(_messageWithIP, '-', dataBuffer);
 	}
 }
 
 void ServerLayer::checkConnectionToServer(const long long& time)
 {
-	std::this_thread::sleep_for(std::chrono::milliseconds(1000LL));
-
 	while (true)
 	{
 		_logger.writeLine(_lastReceivedPoint);
@@ -127,20 +126,28 @@ void ServerLayer::receiveFromClients()
 
 	while (true)
 	{
-		const std::string dataBuffer = receiveData(_clientSocket, _messageWithIPForClient,
-												   _bufferForClient);
+		const auto [dataBuffer, status] = receiveData(_clientSocket, _messageWithIPForClient,
+													  _bufferForClient);
 		_logger.writeLine(_messageWithIPForClient, '-', dataBuffer);
+		_isRunningForClient.store(status);
 
-		if (!_isRunning.load())
+		if (!_isRunningForClient.load())
 		{
 			waitingForConnections();
 			continue;
 		}
-
 		if (dataBuffer.empty())
 		{
 			continue;
 		}
+
+		/*bool flag;
+		const auto robotData = utils::fromString<RobotData>(dataBuffer, flag);
+		if (!flag || !checkCoordinates(robotData))
+		{
+			sendData(_clientSocket, "INCORRECT COORDINATES: " + dataBuffer);
+			continue;
+		}*/
 
 		std::lock_guard<std::mutex> lockGuard{ _mutex };
 		if (const auto [value, check] = utils::parseCoordinateSystem(dataBuffer); check)
@@ -162,19 +169,30 @@ void ServerLayer::receiveFromClients()
 	}
 }
 
+bool ServerLayer::checkCoordinates(const RobotData& robotData) const
+{
+	for (std::size_t i = 0u; i < _MAIN_COORDINATES; ++i)
+	{
+		if (robotData.coordinates.at(i) < _MIN_COORDS.at(i)
+			|| robotData.coordinates.at(i) > _MAX_COORDS.at(i))
+		{
+			_printer.writeLine(std::cout, "ERROR 03: Incorrect coordinates to send!", robotData);
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void ServerLayer::process()
 {
 	_printer.writeLine(std::cout, "\nWaiting for connections...\n");
 	_logger.writeLine("\nServer layer waiting for connections at", utils::getCurrentSystemTime());
 
-	while (!_isRunning.load())
+	while (!_isRunningForClient.load())
 	{
 		_clientSocket = acceptSocket(_layerSocket, _messageWithIPForClient);
-
-		if (!_isRunning.load())
-		{
-			_isRunning.store(true);
-		}
+		_isRunningForClient.store(true);
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(10LL));
 	}
@@ -208,28 +226,35 @@ void ServerLayer::waitLoop()
 	}
 }
 
+void ServerLayer::doConnection()
+{
+	const bool connectStatus = tryConnect(_serverSendingPort, _serverIP, _sendingSocket,
+										  _sendingSocketAddress)
+								&& tryConnect(_serverReceivingPort, _serverIP, _receivingSocket,
+											  _receivingSocketAddress);
+	_isRunning.store(connectStatus);
+}
+
 void ServerLayer::run()
 {
 	_isRunning.store(true);
+	_isRunningForClient.store(true);
 	waitLoop();
 }
 
 void ServerLayer::launch()
 {
 	initSocket(_layerSocket);
-
 	bindSocket(_layerSocket, _layerSocketAddress, _layerPort);
 
 	listenOn(_layerSocket, _backlog);
-	
-	tryConnect(_serverSendingPort, _serverIP, _sendingSocket, _sendingSocketAddress);
-	tryConnect(_serverReceivingPort, _serverIP, _receivingSocket, _receivingSocketAddress);
+	doConnection();
 }
 
 void ServerLayer::waitingForConnections()
 {
 	closeSocket(_clientSocket);
-	_isRunning.store(false);
+	_isRunningForClient.store(false);
 	process();
 }
 
@@ -253,11 +278,7 @@ void ServerLayer::tryReconnectToServer()
 		initSocket(_sendingSocket);
 		initSocket(_receivingSocket);
 
-		const bool reconnect = tryConnect(_serverSendingPort, _serverIP, _sendingSocket, 
-										  _sendingSocketAddress)
-								&& tryConnect(_serverReceivingPort, _serverIP, _receivingSocket,
-											  _receivingSocketAddress);
-		_isRunning.store(reconnect);
+		doConnection();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000LL));
 	}

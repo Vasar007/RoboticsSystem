@@ -3,7 +3,7 @@
 
 #include <mutex>
 
-#include "../Print/Print.h"
+#include "Print/Print.h"
 
 
 /**
@@ -44,19 +44,6 @@ namespace item
  */
 class Printer
 {
-private:
-    /**
-     * \brief Mutex to lock thread for safety.
-     */
-    std::mutex _mutex;
-
-
-    /**
-     * \brief Default constructor.
-     */
-    Printer()                                       = default;
-
-
 public:
     /**
      * \brief   Get the instance of singleton.
@@ -124,6 +111,19 @@ public:
      */
     template<class OutputStream, typename... Args>
     void writeLine(OutputStream& out, const Args&... args) noexcept;
+
+
+private:
+    /**
+     * \brief Mutex to lock thread for safety.
+     */
+    std::mutex _mutex;
+
+
+    /**
+     * \brief Default constructor.
+     */
+    Printer()                                       = default;
 };
 
 #include "Printer.inl"

@@ -1,10 +1,11 @@
-#include <vector>
 #include <algorithm>
 #include <sstream>
+#include <vector>
 
-#include "../Utility/Utility.h"
-#include "../Print/Print.h"
-#include "../RobotData/RobotData.h"
+#include "Print/Print.h"
+#include "RobotData/RobotData.h"
+#include "Utility/Utility.h"
+
 #include "Parsing.h"
 
 

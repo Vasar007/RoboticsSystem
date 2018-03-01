@@ -130,7 +130,7 @@ void WinsockInterface::initWinsock(WSADATA& wsaData) const
 		_printer.writeLine(std::cout, "\n\nFAILED. ERROR CODE:", WSAGetLastError());
 		std::cin.get();
 		assert(false);
-		exit(static_cast<int>(ErrorType::FAILED_INITIALIZE_WSDATA));
+		std::exit(static_cast<int>(ErrorType::FAILED_INITIALIZE_WSDATA));
 	}
 
 	_printer.writeLine(std::cout, " done.");
@@ -148,13 +148,13 @@ void WinsockInterface::initSocket(SOCKET& socketToInit, const int aiProtocol) co
 		_printer.writeLine(std::cout, "\nCOULD NOT CREATE SOCKET.");
 		std::cin.get();
 		assert(false);
-		exit(static_cast<int>(ErrorType::FAILED_CREATE_SOCKET));
+		std::exit(static_cast<int>(ErrorType::FAILED_CREATE_SOCKET));
 	}
 
 	_printer.writeLine(std::cout, "Socket created.");
 }
 
-void WinsockInterface::closeSocket(SOCKET& socketToClose) const
+void WinsockInterface::closeSocket(SOCKET& socketToClose) const noexcept
 {
 	closesocket(socketToClose);
 	socketToClose = 0;
@@ -171,14 +171,14 @@ void WinsockInterface::bindSocket(const SOCKET& socketToBind, SOCKADDR_IN& socke
 	socketAddress.sin_addr.S_un.S_addr	= INADDR_ANY;
 	socketAddress.sin_port				= htons(usPort);
 
-	// Binding to a specific address and port.
-	if (bind(socketToBind, reinterpret_cast<SOCKADDR*>(&socketAddress),
-		sizeof socketAddress) == SOCKET_ERROR)
+	// Binding to a specific address and port. 
+	if (bind(socketToBind, DOUBLE_STATIC_CAST(SOCKADDR*, socketAddress),
+		sizeof(socketAddress)) == SOCKET_ERROR)
 	{
 		_printer.writeLine(std::cout, "\nBIND FAILED.");
 		std::cin.get();
 		assert(false);
-		exit(static_cast<int>(ErrorType::FAILED_BIND));
+		std::exit(static_cast<int>(ErrorType::FAILED_BIND));
 	}
 
 	_printer.writeLine(std::cout, "Bind done.");
@@ -195,7 +195,7 @@ void WinsockInterface::listenOn(const SOCKET& socketToList, const int backlog) c
 		_printer.writeLine(std::cout, "\nLISTEN FAILED.");
 		std::cin.get();
 		assert(false);
-		exit(static_cast<int>(ErrorType::FAILED_LISTEN));
+		std::exit(static_cast<int>(ErrorType::FAILED_LISTEN));
 	}
 
 	_printer.writeLine(std::cout, "Enabled listening.");
@@ -211,13 +211,13 @@ SOCKET WinsockInterface::acceptSocket(const SOCKET& listeningSocket, char* messa
 
 	memset(messageWithIP, 0, _MAXRECV);
 
-	const SOCKET socket = accept(listeningSocket, reinterpret_cast<SOCKADDR*>(&address), &addrLen);
+	const SOCKET socket = accept(listeningSocket, DOUBLE_STATIC_CAST(SOCKADDR*, address), &addrLen);
 	if (socket == SOCKET_ERROR)
 	{
-		perror("Accept failed.");
+		std::perror("Accept failed.");
 		std::cin.get();
 		assert(false);
-		exit(static_cast<int>(ErrorType::FAILED_ACCEPT_NEW_CLIENT));
+		std::exit(static_cast<int>(ErrorType::FAILED_ACCEPT_NEW_CLIENT));
 	}
 
 	// Get IP address back and print it.
@@ -241,9 +241,9 @@ bool WinsockInterface::tryConnect(const int port, const std::string& ip,
 	socketAddress.sin_port		= htons(usPort);
 	inet_pton(AF_INET, serverIP, &socketAddress.sin_addr);
 
-	// The connection to the server.
-	if (connect(socketToConnect, reinterpret_cast<SOCKADDR*>(&socketAddress),
-		sizeof socketAddress) == SOCKET_ERROR)
+	// The connection to the server. 
+	if (connect(socketToConnect, DOUBLE_STATIC_CAST(SOCKADDR*, socketAddress),
+		sizeof(socketAddress)) == SOCKET_ERROR)
 	{
 		_printer.writeLine(std::cout, "\nCONNECTION TO SERVER WAS FAILED.");
 
@@ -262,10 +262,11 @@ bool WinsockInterface::isRun() const
 
 void WinsockInterface::sendData(const SOCKET& socketForSending, const std::string& data) const
 {
-	const char* dataChar = data.c_str();
+	const char* dataChar    = data.c_str();
+	const auto strLen       = static_cast<int>(data.size());
 
 	// Sending data on socket.
-	if (send(socketForSending, dataChar, strlen(dataChar), 0) == SOCKET_ERROR)
+	if (send(socketForSending, dataChar, strLen, 0) == SOCKET_ERROR)
 	{
 		_printer.writeLine(std::cout, "SEND FAILED.");
 		return;
@@ -274,8 +275,8 @@ void WinsockInterface::sendData(const SOCKET& socketForSending, const std::strin
 	_printer.writeLine(std::cout, "Sent data:", data, "successfully.\n");
 }
 
-std::string WinsockInterface::receiveData(const SOCKET& socketForReceiving, char* messageWithIP,
-										  char* buffer)
+std::pair<std::string, bool> WinsockInterface::receiveData(const SOCKET& socketForReceiving,
+														   char* messageWithIP, char* buffer) const
 {
 	int addrlen = sizeof(SOCKADDR_IN);
 
@@ -285,7 +286,7 @@ std::string WinsockInterface::receiveData(const SOCKET& socketForReceiving, char
 	memset(buffer, 0, _MAXRECV);
 
 	// Get details of the client.
-	getpeername(socketForReceiving, reinterpret_cast<SOCKADDR*>(&address),
+	getpeername(socketForReceiving, DOUBLE_STATIC_CAST(SOCKADDR*, address),
 				static_cast<int*>(&addrlen));
 
 	const int valRead	= recv(socketForReceiving, buffer, _MAXRECV, 0);
@@ -309,19 +310,17 @@ std::string WinsockInterface::receiveData(const SOCKET& socketForReceiving, char
 			_printer.writeLine(std::cout, "recv failed with error code:", errorCode);
 		}
 
-		_isRunning.store(false);
-		return { "" };
+		return { "", false };
 	}
 	if (valRead == 0)
 	{
 		// Node disconnected, get his details and print.
 		_printer.writeLine(std::cout, "Node disconnected, IP", messageWithIP, ", PORT", port);
 
-		_isRunning.store(false);
-		return { "" };
+		return { "", false };
 	}
 	// Process message that came in.
-	if (0 < valRead && valRead < _MAXRECV)
+	if (0 < valRead && valRead < static_cast<int>(_MAXRECV))
 	{
 		// Add null character, if you want to use with printf/puts or other string 
 		// handling functions.
@@ -329,10 +328,10 @@ std::string WinsockInterface::receiveData(const SOCKET& socketForReceiving, char
 
 		_printer.writeLine(std::cout, messageWithIP, ':', port, '-', buffer);
 
-		return { buffer };
+		return { buffer, true };
 	}
 
-	return { "" };
+	return { "", false };
 }
 
 void WinsockInterface::setTimeout(const SOCKET& socketToChange, const long seconds,
@@ -342,7 +341,7 @@ void WinsockInterface::setTimeout(const SOCKET& socketToChange, const long secon
 	timeout.tv_sec  = seconds;
 	timeout.tv_usec = microseconds;
 	setsockopt(socketToChange, SOL_SOCKET, SO_RCVTIMEO,
-			   reinterpret_cast<char*>(&timeout), sizeof timeout);
+			   DOUBLE_STATIC_CAST(char*, timeout), sizeof(timeout));
 }
 
 } // namespace vasily

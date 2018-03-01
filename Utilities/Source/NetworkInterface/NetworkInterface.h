@@ -7,7 +7,7 @@ namespace utility::exerimental
 
 class NetworkInterface
 {
-    // TODO(vasily): portable network interface.
+    // TODO(Vasily): portable network interface.
 };
 
 }

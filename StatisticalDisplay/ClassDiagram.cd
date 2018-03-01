@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="statistic::Transmitter">
+    <Position X="0.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>QEAAAAAAAAIgAAAQAAIQAEAAgCAAAAAAICAAAADAIAA=</HashCode>
+      <FileName>Source\Transmitter.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FanucModel">
+    <Position X="2.75" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAABBIAAAAAAFEgAAAAAAAAEAAAJAAIAEABBBCAAAA=</HashCode>
+      <FileName>c:\Users\vasar\Documents\Visual Studio 2017\Projects\FANUC\TenzoMath\Source\FanucModel.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RoboModel">
+    <Position X="5.5" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Struct Name="RoboModel::DhParameters">
+        <TypeIdentifier>
+          <NewMemberFileName>c:\Users\vasar\Documents\Visual Studio 2017\Projects\FANUC\TenzoMath\Source\NewRM.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAACAAAABAAAAAAAAAAAAAAAAEABAAA=</HashCode>
+      <FileName>c:\Users\vasar\Documents\Visual Studio 2017\Projects\FANUC\TenzoMath\Source\NewRM.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StrainGauge">
+    <Position X="10.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAICACAAEAAAAADAgAAAAAgCAAAIAAAAACAgABAAAAA=</HashCode>
+      <FileName>c:\Users\vasar\Documents\Visual Studio 2017\Projects\FANUC\TenzoMath\Source\StrainGauge.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="nikita::TenzoMath">
+    <Position X="7.75" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>QACQIBgAAApAgAAAEgQABBAAAKEUQAogAIAgAAQAgAA=</HashCode>
+      <FileName>c:\Users\vasar\Documents\Visual Studio 2017\Projects\FANUC\TenzoMath\Source\TenzoMath.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

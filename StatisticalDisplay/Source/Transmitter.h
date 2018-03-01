@@ -19,7 +19,31 @@ namespace statistic
  */
 class Transmitter final : public sf::Drawable
 {
+public:
+	/**
+	 * \brief           Constructor.
+	 * \param[in] maxX  Window width.
+	 * \param[in] maxY  Window height.
+	 */
+	Transmitter(const int maxX, const int maxY);
+
+	/**
+	 * \brief               Update vertices depend on sent time.
+	 * \param[in] time      Current duration time.
+	 * \param[in] robotData Current received data.
+	 */
+	void updateVertices(const double time, const vasily::RobotData& robotData);
+
+	/**
+	 * \brief Cleat all containers.
+	 */
+	void clear();
+
+
 private:
+	/**
+	 * \brief Number of points in vector to reserve.
+	 */
 	static constexpr std::size_t _NUMBER_FOR_RESERVE = 1000u;
 
 	/**
@@ -79,27 +103,6 @@ private:
 	 * \param[in] states    Additional drawing parameteres.
 	 */
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-
-
-public:
-	/**
-	 * \brief           Constructor.
-	 * \param[in] maxX  Window width.
-	 * \param[in] maxY  Window height.
-	 */
-	Transmitter(const int maxX, const int maxY);
-
-	/**
-	 * \brief               Update vertices depend on sent time.
-	 * \param[in] time      Current duration time.
-	 * \param[in] robotData Current received data.
-	 */
-	void updateVertices(const double time, const vasily::RobotData& robotData);
-
-	/**
-	 * \brief Cleat all containers.
-	 */
-	void clear();
 };
 
 } // namespace statistic

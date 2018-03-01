@@ -1,7 +1,7 @@
-#include <sstream>
+#include <algorithm>
 #include <iostream>
 #include <iterator>
-#include <algorithm>
+#include <sstream>
 
 #include "RobotData.h"
 

@@ -11,15 +11,13 @@ namespace utils
 namespace detail
 {
 
-    template <template<class...> typename E, typename C, typename... T>
-    struct ValidExpressionT
-        : public std::false_type
+    template <template <class...> typename E, typename C, typename... T>
+    struct ValidExpressionT : public std::false_type
     {
     };
 
-    template <template<class...> typename E, typename... T>
-    struct ValidExpressionT<E, std::void_t<E<T...>>, T...>
-        : public std::true_type
+    template <template <class...> typename E, typename... T>
+    struct ValidExpressionT<E, std::void_t<E<T...>>, T...> : public std::true_type
     {
     };
 
@@ -32,7 +30,7 @@ constexpr decltype(auto) templatize(O&& value) noexcept
 }
 
 // The final templated boolean.
-template <template<typename...> typename Expr, typename... Args>
+template <template <typename...> typename Expr, typename... Args>
 constexpr auto VALID_EXPRESSION = detail::ValidExpressionT<Expr, void, Args...>::value;
 
 } // namespace utils

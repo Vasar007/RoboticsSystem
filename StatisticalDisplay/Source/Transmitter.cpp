@@ -1,4 +1,3 @@
-#include <iostream>
 #include <iomanip>
 
 #include "Transmitter.h"
@@ -57,10 +56,6 @@ void Transmitter::updateVertices(const double time, const vasily::RobotData& rob
 	{
 		_velocity.emplace_back(_distance.back() / time);
 	}
-
-	///auto& printer = printer::Printer::getInstance();
-	///printer.writeLine(std::cout, std::setw(5), "1st ===> ", _lastReachedPoint, " <=== END");
-	///printer.writeLine(std::cout, std::setw(5), "2nd ===> ", robotData, " <=== END");
 
 	_time.emplace_back(time);
 	_lastReachedPoint = robotData;

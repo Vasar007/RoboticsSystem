@@ -6,9 +6,11 @@
 
 namespace vasily
 {
-
+	
 Client::Client(const int serverPort, const std::string_view serverIP, const WorkMode workMode)
-	: _serverIP(serverIP),
+	: isNeedToUpdate(false),
+	  lastSentPoint{ RobotData::DEFAULT_CORDINATES, RobotData::DEFAULT_PARAMETERS },
+	  _serverIP(serverIP),
 	  _serverPort(serverPort),
 	  _serverSendingPort(0),
 	  _serverReceivingPort(0),
@@ -16,16 +18,15 @@ Client::Client(const int serverPort, const std::string_view serverIP, const Work
 	  _isNeedToWait(false),
 	  _circlicState(),
 	  _workMode(workMode),
-	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
-	  isNeedToUpdate(false),
-	  lastSentPoint{ { vasily::RobotData::DEFAULT_CORDINATES },
-					 { vasily::RobotData::DEFAULT_PARAMETERS } }
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
 {
 }
 
 Client::Client(const int serverSendingPort, const int serverReceivingPort,
 			   const std::string_view serverIP, const WorkMode workMode)
-	: _serverIP(serverIP),
+	: isNeedToUpdate(false),
+	  lastSentPoint{ RobotData::DEFAULT_CORDINATES, RobotData::DEFAULT_PARAMETERS },
+	  _serverIP(serverIP),
 	  _serverPort(0),
 	  _serverSendingPort(serverSendingPort),
 	  _serverReceivingPort(serverReceivingPort),
@@ -33,15 +34,13 @@ Client::Client(const int serverSendingPort, const int serverReceivingPort,
 	  _isNeedToWait(false),
 	  _circlicState(),
 	  _workMode(workMode),
-	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
-	  isNeedToUpdate(false),
-	  lastSentPoint{ { vasily::RobotData::DEFAULT_CORDINATES },
-					 { vasily::RobotData::DEFAULT_PARAMETERS } }
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
 {
 }
 
 Client::Client(Client&& other) noexcept
-	: _robotData(other._robotData),
+	: isNeedToUpdate(false),
+	  _robotData(other._robotData),
 	  _serverIP(std::move(other._serverIP)),
 	  _serverPort(other._serverPort),
 	  _handler(std::move(other._handler)),
@@ -50,8 +49,7 @@ Client::Client(Client&& other) noexcept
 	  _isNeedToWait(other._isNeedToWait.load()),
 	  _circlicState(other._circlicState),
 	  _workMode(other._workMode),
-	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME),
-	  isNeedToUpdate(false)
+	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
 {
 	utils::swap(*this, other);
 }
@@ -77,18 +75,27 @@ void Client::receive()
 		switch (_workMode)
 		{
 			case WorkMode::INDIRECT:
-				dataBuffer = receiveData(_sendingSocket, _messageWithIP, _buffer);
+			{
+				auto [message, flag] = receiveData(_sendingSocket, _messageWithIP, _buffer);
+				dataBuffer = std::move(message);
+				_isRunning.store(flag);
 				break;
+			}
 			
 			case WorkMode::STRAIGHTFORWARD:
-				dataBuffer = receiveData(_receivingSocket, _messageWithIP, _buffer);
+			{
+				auto [message, flag] = receiveData(_receivingSocket, _messageWithIP, _buffer);
+				dataBuffer = std::move(message);
+				_isRunning.store(flag);
 				break;
+			}
 			
 			default:
 				assert(false);
 				break;
 		}
 		 _duration = std::chrono::steady_clock::now() - _start;
+		 _start = std::chrono::steady_clock::now();
 
 		if (!_isRunning.load())
 		{
@@ -131,21 +138,17 @@ void Client::receive()
 		++count;
 		_printer.writeLine(std::cout, count, "Duration:", _duration.count(), "seconds");
 
-		_start = std::chrono::steady_clock::now();
 		_logger.writeLine(_messageWithIP, '-', dataBuffer);
 		_logger.writeLine(count, "Duration:", _duration.count(), "seconds");
 	}
 }
 
-void Client::checkConnection(const std::atomic_int64_t& time)
+void Client::checkConnection(const long long time)
 {
-	std::this_thread::sleep_for(std::chrono::milliseconds(1000LL));
-
 	while (true)
 	{
 		sendCoordinates(_robotData);
-	
-		std::this_thread::sleep_for(std::chrono::milliseconds(time.load()));
+		std::this_thread::sleep_for(std::chrono::milliseconds(time));
 	}
 }
 
@@ -154,14 +157,14 @@ void Client::waitLoop()
 	// Create data for robot.
 	_robotData = _DEFAULT_POSITION;
 
-	sendCoordinateSystem(CoordinateSystem::WORLD);
+	sendCoordinateSystem(CoordinateSystem::JOINT);
 
 	std::thread reciveThread(&Client::receive, this);
 	reciveThread.detach();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
 
-	///constexpr std::atomic_int64_t time = 2000LL;
+	///constexpr long long time = 2000LL;
 	///std::thread checkThread(&Client::checkConnection, this, std::cref(time));
 	///checkThread.detach();
 
@@ -237,9 +240,12 @@ void Client::waitLoop()
 				else if (input == "test")
 				{
 					_robotData = _DEFAULT_POSITION;
-					for (int i = 1; i <= 1000; ++i)
+					constexpr int kNumberOfIterations = 1000;
+					constexpr int kDefaultMultiplier  = 100;
+					for (int i = 1; i <= kNumberOfIterations; ++i)
 					{
-						_robotData.coordinates.at(Handler::Y) += 100 * i * (i & 1 ? 1 : -1);
+						_robotData.coordinates.at(Handler::Y) += kDefaultMultiplier * i
+																* (i & 1 ? 1 : -1);
 						sendCoordinates(_robotData);
 						_isNeedToWait.store(true);
 						while (_isNeedToWait.load())
@@ -248,12 +254,57 @@ void Client::waitLoop()
 						}
 					}
 				}
+				else if (input == "tenzo")
+				{
+					tenzoCalibration();
+					//workWithTenzo();
+				}
+				else if (input == "tzTest")
+				{
+					StrainGauge tenzo(L"COM13");
+					while (true)
+					{
+						std::array<double, 6> tmp = tenzo.readComStrain();
+						std::array<double, 6> collectedData{ tmp[1], -tmp[0], -tmp[2],
+															 tmp[4], -tmp[3],  tmp[5] };
+						std::copy(collectedData.begin(), collectedData.end(),
+								  std::ostream_iterator<double>(std::cout, "\t"));
+					}
+				}
 				break;
 			
 			default:
 				assert(false);
 				break;
 		}
+	}
+}
+
+void Client::launch()
+{
+	switch (_workMode)
+	{
+		case WorkMode::STRAIGHTFORWARD:
+		{
+			const bool connectStatus = tryConnect(_serverSendingPort, _serverIP, _sendingSocket, 
+												  _sendingSocketAddress)
+									&& tryConnect(_serverReceivingPort, _serverIP,
+												  _receivingSocket, _receivingSocketAddress);
+			_isRunning.store(connectStatus);
+			break;
+		}
+
+		case WorkMode::INDIRECT:
+		{
+			const bool connectStatus = tryConnect(_serverPort, _serverIP, _sendingSocket,
+												  _sendingSocketAddress);
+			_isRunning.store(connectStatus);
+			break;
+		}
+
+		default:
+			assert(false);
+			break;
 	}
 }
 
@@ -286,27 +337,18 @@ void Client::tryReconnect()
 		switch (_workMode)
 		{
 			case WorkMode::STRAIGHTFORWARD:
-			{
 				closeSocket(_receivingSocket);
 				initSocket(_receivingSocket);
-
-				const bool reconnect = tryConnect(_serverSendingPort, _serverIP, _sendingSocket, 
-												  _sendingSocketAddress)
-										&& tryConnect(_serverReceivingPort, _serverIP,
-													  _receivingSocket, _receivingSocketAddress);
-				_isRunning.store(reconnect);
 				break;
-			}
 			
 			case WorkMode::INDIRECT:
-				_isRunning.store(tryConnect(_serverPort, _serverIP, _sendingSocket,
-											_sendingSocketAddress));
 				break;
 			
 			default:
 				assert(false);
 				break;
 		}
+		launch();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000LL));
 	}
@@ -318,34 +360,14 @@ void Client::run()
 	waitLoop();
 }
 
-void Client::launch()
-{
-	switch (_workMode)
-	{
-		case WorkMode::STRAIGHTFORWARD:
-			tryConnect(_serverSendingPort, _serverIP, _sendingSocket, _sendingSocketAddress);
-			tryConnect(_serverReceivingPort, _serverIP, _receivingSocket, _receivingSocketAddress);
-			break;
-
-		case WorkMode::INDIRECT:
-			tryConnect(_serverPort, _serverIP, _sendingSocket, _sendingSocketAddress);
-			break;
-
-		default:
-			assert(false);
-			break;
-	}
-}
-
 void Client::circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint,
 							 const int numberOfIterations)
 {
 	assert(numberOfIterations > 0);
 
-	_circlicState = CirclicState::SEND_FIRST;
-
-	int counterIterations = 0;
-	bool flag = true;
+	_circlicState           = CirclicState::SEND_FIRST;
+	int counterIterations   = 0;
+	bool flag               = true;
 	while (flag)
 	{
 		switch (_circlicState)
@@ -362,10 +384,8 @@ void Client::circlicMovement(const RobotData& firstPoint, const RobotData& secon
 				_waitAnswer		= firstPoint;
 				_circlicState	= CirclicState::WAIT_FIRST_ANSWER;
 
-				if (!sendCoordinates(firstPoint))
-				{
-					return;
-				}
+				sendCoordinates(firstPoint);
+				//if (!sendCoordinates(firstPoint)) return;
 				break;
 
 			case CirclicState::WAIT_FIRST_ANSWER:
@@ -379,10 +399,8 @@ void Client::circlicMovement(const RobotData& firstPoint, const RobotData& secon
 				_waitAnswer		= secondPoint;
 				_circlicState	= CirclicState::WAIT_SECOND_ANSWER;
 
-				if (!sendCoordinates(secondPoint))
-				{
-					return;
-				}
+				sendCoordinates(secondPoint);
+				//if (!sendCoordinates(secondPoint)) return;
 				break;
 
 			case CirclicState::WAIT_SECOND_ANSWER:
@@ -408,10 +426,8 @@ void Client::partialMovement(const RobotData& firstPoint, const RobotData& secon
 	const RobotData directionalVector	= (secondPoint - firstPoint) / numberOfSteps;
 	RobotData robotData					= firstPoint;
 
-	if (!sendCoordinates(firstPoint))
-	{
-		return;
-	}
+	sendCoordinates(firstPoint);
+	//if (!sendCoordinates(firstPoint)) return;
 
 	for (int i = 0; i < numberOfSteps; ++i)
 	{
@@ -419,10 +435,8 @@ void Client::partialMovement(const RobotData& firstPoint, const RobotData& secon
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
 
-		if (!sendCoordinates(robotData))
-		{
-			return;
-		}
+		sendCoordinates(robotData);
+		//if (!sendCoordinates(robotData)) return;
 	}
 
 	if (robotData != secondPoint)
@@ -431,39 +445,13 @@ void Client::partialMovement(const RobotData& firstPoint, const RobotData& secon
 	}
 }
 
-bool Client::checkCoordinates(const RobotData& robotData) const
+void Client::sendCoordinates(const RobotData& robotData)
 {
-	for (std::size_t i = 0u; i < _MAIN_COORDINATES; ++i)
-	{
-		if (robotData.coordinates.at(i) < _MIN_COORDS.at(i))
-		{
-			return false;
-		}
-
-		if (robotData.coordinates.at(i) > _MAX_COORDS.at(i))
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
-bool Client::sendCoordinates(const RobotData& robotData)
-{
-	if (checkCoordinates(robotData))
-	{
-		_start          = std::chrono::steady_clock::now();
-		sendData(_sendingSocket, robotData.toString());
-		lastSentPoint   = robotData;
-		_robotData      = robotData;
-		_logger.writeLine(robotData);
-		return true;
-	}
-	
-	_robotData = lastSentPoint;
-	_printer.writeLine(std::cout, "ERROR 03: Incorrect coordinates to send!", robotData);
-	return false;
+	_start          = std::chrono::steady_clock::now();
+	sendData(_sendingSocket, robotData.toString());
+	lastSentPoint   = robotData;
+	_robotData      = robotData;
+	_logger.writeLine(robotData);
 }
 
 void Client::sendCoordinateSystem(const CoordinateSystem coordinateSystem) const
@@ -487,6 +475,34 @@ void Client::sendCoordinateSystem(const CoordinateSystem coordinateSystem) const
 		default:
 			_printer.writeLine(std::cout, "ERROR 04: Incorrect coordinate system to send!");
 			break;
+	}
+}
+
+void Client::tenzoCalibration()
+{
+	constexpr std::size_t kNumberOfPositions = 6u;
+	for (std::size_t index = 0u; index < kNumberOfPositions; ++index)
+	{
+		const RobotData robotData(_tenzoMath.getPosition(index));
+		sendCoordinates(robotData);
+
+		_tenzoMath.collectData(index);
+	}
+	_tenzoMath.doCalibration();
+
+	const RobotData startPos({ 0, 0, 0, 0, -90'000, 0 });
+	sendCoordinates(startPos);
+}
+
+void Client::workWithTenzo()
+{
+	_tenzoMath.loadCalibData();
+
+	RobotData robotData{};
+	while (true)
+	{
+		_tenzoMath.calculatePos(robotData.coordinates);
+		sendCoordinates(robotData); // _tenzoMath.getCoordToMove()
 	}
 }
 
