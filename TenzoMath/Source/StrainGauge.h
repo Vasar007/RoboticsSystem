@@ -11,6 +11,42 @@
 */
 class StrainGauge
 {
+public:
+    /**
+    * \brief Constructor of Strain gauge with port of connection.
+    * \param[in] port Name of the port with sensor in the form: L"COM5".
+    */
+    explicit StrainGauge(const LPCTSTR port);
+
+    /**
+    * \brief Function of the connect to the strain gauge.
+    * \return True if successful.
+    */
+    bool connect();
+
+    /**
+    * \brief Function of the getting data array from the strain gauge.
+    * \return 3 strengths and 3 moments from the sensor in conventional units.
+    */
+    std::array<double, 6> readComStrain();
+
+    /**
+    * \brief Function of getting period of working and writing it on the screen.
+    */
+    void whatsPeriod();
+
+    /**
+    * \brief Destructor with closing of the port connection.
+    */
+    virtual ~StrainGauge();
+
+    StrainGauge(const StrainGauge&) = default;
+    StrainGauge(StrainGauge&&) = default;
+    StrainGauge& operator=(const StrainGauge&) = default;
+    StrainGauge& operator=(StrainGauge&&) = default;
+
+
+private:    
     /**
     * \brief Declaration of serial port.
     */
@@ -46,40 +82,6 @@ class StrainGauge
     * \return True if successful.
     */
     bool initializeCom();
-
-public:
-    /**
-    * \brief Constructor of Strain gauge with port of connection.
-    * \param[in] port Name of the port with sensor in the form: L"COM5".
-    */
-    explicit StrainGauge(const LPCTSTR port);
-
-    /**
-    * \brief Function of the connect to the strain gauge.
-    * \return True if successful.
-    */
-    bool connect();
-
-    /**
-    * \brief Function of the getting data array from the strain gauge.
-    * \return 3 strengths and 3 moments from the sensor in conventional units.
-    */
-    std::array<double, 6> readComStrain();
-
-    /**
-    * \brief Function of getting period of working and writing it on the screen.
-    */
-    void whatsPeriod();
-
-    /**
-    * \brief Destructor with closing of the port connection.
-    */
-    virtual ~StrainGauge();
-
-    StrainGauge(const StrainGauge&) = default;
-    StrainGauge(StrainGauge&&) = default;
-    StrainGauge& operator=(const StrainGauge&) = default;
-    StrainGauge& operator=(StrainGauge&&) = default;
 };
 
 #endif // STRAIN_GAUGE_H

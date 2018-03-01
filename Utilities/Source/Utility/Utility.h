@@ -87,12 +87,13 @@ bool				isCorrectNumber(const std::string_view str, const int flag = 0) noexcept
 
 
 /**
- * \brief					Random number generation.
- * \param[in] exclusiveMax	Exclusive maximum of the interval.
- * \return					Random generated integer in interval.
+ * \brief					    Random number generation.
+ * \details                     Don't use it in multithread contexts.
+ * \param[in] exclusiveBorder	Exclusive border of the interval.
+ * \return					    Random generated integer in interval.
  */
 [[nodiscard]]
-int					randomInt(const int exclusiveMax) noexcept;
+int					randomInt(const int exclusiveBorder) noexcept;
 
 
 /**

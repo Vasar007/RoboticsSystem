@@ -83,7 +83,7 @@ std::string TenzoMath::toString(const std::array<double, 6>& coord) const
 
 void TenzoMath::collectData(const std::size_t index)
 {
-    getchar();
+    std::cin.get();
 
     std::array<double, 6> tmp = swapData(_tenzoData.readComStrain());
     for (std::size_t i = 0; i < 6; ++i)

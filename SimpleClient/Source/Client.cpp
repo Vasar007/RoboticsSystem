@@ -257,7 +257,7 @@ void Client::waitLoop()
 				else if (input == "tenzo")
 				{
 					tenzoCalibration();
-					workWithTenzo();
+					//workWithTenzo();
 				}
 				else if (input == "tzTest")
 				{

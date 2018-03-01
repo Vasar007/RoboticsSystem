@@ -23,10 +23,10 @@ public:
     */
     struct DhParameters
     {
-        double _dParam;
-        double _qParam;
-        double _aParam;
-        double _alphaParam;
+        double dParam;
+        double qParam;
+        double aParam;
+        double alphaParam;
 
         DhParameters(const double d, const double q, const double a, const double alpha);
     };
@@ -49,8 +49,6 @@ protected:
     * \param[in] input vector of secuences d, q, a, alpha
     */
     explicit RoboModel(std::vector<std::array<double, 4>> input);
-
-    ~RoboModel() = default;
 
     /**
     * \brief function for solving forward kinematic task

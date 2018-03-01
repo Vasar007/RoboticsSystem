@@ -141,13 +141,13 @@ void ServerLayer::receiveFromClients()
 			continue;
 		}
 
-		bool flag;
+		/*bool flag;
 		const auto robotData = utils::fromString<RobotData>(dataBuffer, flag);
 		if (!flag || !checkCoordinates(robotData))
 		{
 			sendData(_clientSocket, "INCORRECT COORDINATES: " + dataBuffer);
 			continue;
-		}
+		}*/
 
 		std::lock_guard<std::mutex> lockGuard{ _mutex };
 		if (const auto [value, check] = utils::parseCoordinateSystem(dataBuffer); check)

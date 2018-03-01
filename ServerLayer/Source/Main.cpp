@@ -18,10 +18,10 @@ int main()
     constexpr int	kRobotReceivingPortFromServer   = 59003;
     constexpr char	kRobotServerIP[]                = "192.168.1.21";
 
-    vasily::ServerLayer serverLayer(kServerSendingPort, kServerReceivingPort, kServerIP,
-                                   kLayerPort, kBacklog);
-    ///vasily::ServerLayer serverLayer(kRobotSendingPortToServer, kRobotReceivingPortFromServer,
-    ///                                kRobotServerIP, kLayerPort, kBacklog);
+    ///vasily::ServerLayer serverLayer(kServerSendingPort, kServerReceivingPort, kServerIP,
+    ///                               kLayerPort, kBacklog);
+    vasily::ServerLayer serverLayer(kRobotSendingPortToServer, kRobotReceivingPortFromServer,
+                                    kRobotServerIP, kLayerPort, kBacklog);
 
     serverLayer.launch();
     serverLayer.run();

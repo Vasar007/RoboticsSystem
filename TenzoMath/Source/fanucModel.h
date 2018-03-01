@@ -9,16 +9,6 @@
 */
 class FanucModel : RoboModel
 {
-    /**
-    * \brief function for conversion joints angles to Denavit-Hartenberg generalized angles
-    * \param[in] j joints angles
-    * \return Denavit-Hartenberg generalized angles
-    */
-    static std::vector<double> jointsToQ(std::array<double, 6> j);
-
-    cv::Mat qi(const double& alpha, const double& q) const;
-
-    const cv::Mat _toCamera, _toSixth, _forMovingToCamera;
 public:
     static constexpr double PI = 3.14159265;
     /**
@@ -26,13 +16,12 @@ public:
     */
     FanucModel();
 
-    ~FanucModel() = default;
     /**
     * \brief function for solving forward kinematic task for Fanuc M20ia
-    * \param[in] inputjoints joints angles
+    * \param[in] inputJoints joints angles
     * \return coordinates of end-effector in world frame: x, y, z in mm and w, p, r in radians
     */
-    cv::Mat fanucForwardTask(std::array<double, 6> inputjoints);
+    cv::Mat fanucForwardTask(std::array<double, 6> inputJoints);
 
     cv::Mat getToCamera() const;
 
@@ -61,6 +50,19 @@ public:
     * \return three Tait-Bryan angles
     */
     static std::array<double, 3> anglesFromMat(const cv::Mat p6);
+
+
+private:
+    /**
+    * \brief function for conversion joints angles to Denavit-Hartenberg generalized angles
+    * \param[in] j joints angles
+    * \return Denavit-Hartenberg generalized angles
+    */
+    static std::vector<double> jointsToQ(std::array<double, 6> j);
+
+    cv::Mat qi(const double& alpha, const double& q) const;
+
+    const cv::Mat _toCamera, _toSixth, _forMovingToCamera;
 };
 
 #endif

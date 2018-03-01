@@ -24,14 +24,19 @@ namespace
 } // namespace
 
 [[nodiscard]]
-int randomInt(const int exclusiveMax) noexcept
+int randomInt(const int exclusiveBorder) noexcept
 {
-	if (exclusiveMax <= 0)
+	if (exclusiveBorder == 0)
 	{
 		return 0;
 	}
+	if (exclusiveBorder < 0)
+	{
+		std::uniform_int_distribution<int> distr(exclusiveBorder + 1, 0);
+		return distr(RANDOM_ENGINE);
+	}
 
-	const std::uniform_int_distribution<> distr(0, exclusiveMax - 1);
+	std::uniform_int_distribution<int> distr(0, exclusiveBorder - 1);
 	return distr(RANDOM_ENGINE);
 }
 
