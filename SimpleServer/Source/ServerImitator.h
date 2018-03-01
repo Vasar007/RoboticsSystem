@@ -4,8 +4,8 @@
 #include <chrono>
 #include <optional>
 
-#include "WinsockInterface.h"
 #include "Utilities.h"
+#include "WinsockInterface.h"
 
 
 namespace vasily

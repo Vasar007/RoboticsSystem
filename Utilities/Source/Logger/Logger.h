@@ -1,9 +1,9 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <string>
 #include <fstream>
 #include <mutex>
+#include <string>
 
 #include "Utility/Utility.h"
 

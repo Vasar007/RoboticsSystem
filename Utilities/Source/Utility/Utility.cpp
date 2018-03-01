@@ -1,7 +1,7 @@
-#include <random>
+#include <cassert>
 #include <chrono>
 #include <ctime>
-#include <cassert>
+#include <random>
 
 #include "Print/Print.h"
 #include "Utility.h"

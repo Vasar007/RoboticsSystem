@@ -29,7 +29,7 @@ struct ModClient final : public vasily::Client
 	/**
 	 * \brief Constant number of server IP.
 	 */
-	static constexpr char	SERVER_IP[]				= "192.168.0.101";
+	static constexpr char	SERVER_IP[]				= "192.168.0.102";
 
 	/**
 	 * \brief Mutex to lock thread for safety.

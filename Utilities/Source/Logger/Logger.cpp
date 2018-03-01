@@ -1,6 +1,6 @@
 #include <cassert>
-#include <iostream>
 #include <cstring>
+#include <iostream>
 #include <iterator>
 
 #include "Logger.h"

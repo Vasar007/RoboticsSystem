@@ -1,13 +1,13 @@
 ﻿#ifndef UTILITY_H
 #define UTILITY_H
 
-#include <string>
-#include <sstream>
-#include <memory>
-#include <utility>
-#include <string_view>
-#include <numeric>
 #include <cassert>
+#include <numeric>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <utility>
 
 
 #define DOUBLE_STATIC_CAST(Type, valueToCast) static_cast<Type>(static_cast<void*>(&valueToCast))

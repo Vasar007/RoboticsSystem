@@ -69,7 +69,7 @@ std::array<double, 6> StrainGauge::readComStrain()
     {
         // Recieve 2 bytes of actual data.
         ReadFile(_hSerial, &_sReceivedChar, 2, &_iSize, nullptr);
-        elem = static_cast<double>(_sReceivedChar);
+        elem = static_cast<double>(_sReceivedChar);;
     }
     return data;
 }

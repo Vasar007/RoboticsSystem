@@ -1,9 +1,9 @@
 #ifndef WINSOCK_INTERFACE_H
 #define WINSOCK_INTERFACE_H
 
-#include <unordered_map>
-#include <memory>
 #include <atomic>
+#include <memory>
+#include <unordered_map>
 
 #include <winsock2.h>
 #include <Ws2tcpip.h>

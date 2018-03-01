@@ -24,10 +24,10 @@
     <ClCompile Include="Source\TenzoMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\NewRM.cpp">
+    <ClCompile Include="Source\FanucModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\FanucModel.cpp">
+    <ClCompile Include="Source\RoboModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,10 +41,10 @@
     <ClInclude Include="Source\TenzoMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\NewRM.h">
+    <ClInclude Include="Source\FanucModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\FanucModel.h">
+    <ClInclude Include="Source\RoboModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

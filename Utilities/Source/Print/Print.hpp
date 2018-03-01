@@ -1,9 +1,9 @@
 #ifndef PRINT_HPP
 #define PRINT_HPP
 
-#include <type_traits>
 #include <iostream>
 #include <string>
+#include <type_traits>
 
 #include "Utility/ValidExpression.hpp"
 

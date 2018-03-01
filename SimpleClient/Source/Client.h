@@ -3,10 +3,10 @@
 
 #include <chrono>
 
-#include "WinsockInterface.h"
-#include "Utilities.h"
 #include "Handler.h"
-#include "TenzoMath.h"
+#include "Utilities.h"
+#include "WinsockInterface.h"   // INCLUDE ORDER DEPENDENCY -> 1 (because of "Windows.h")
+#include "TenzoMath.h"          // INCLUDE ORDER DEPENDENCY -> 2
 
 
 namespace vasily

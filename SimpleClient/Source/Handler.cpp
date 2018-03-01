@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <cassert>
 
-#include "Utilities.h"
 #include "Handler.h"
+#include "Utilities.h"
 
 
 namespace vasily

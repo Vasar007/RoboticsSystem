@@ -1,8 +1,10 @@
-#include <math.h>
+#include <cmath>
 
 #include "poly34.h"     // solution of cubic and quartic equation
-constexpr double	TwoPi = 6.28318530717958648;
-constexpr double eps = 1e-14;
+
+
+constexpr double kTwoPi = 6.28318530717958648;
+constexpr double kEps = 1e-14;
 
 static double _root3(double x)
 {
@@ -30,9 +32,13 @@ static double _root3(double x)
 double root3(double x)
 {
     if (x > 0)
+    {
         return _root3(x);
+    }
     if (x < 0)
+    {
         return -_root3(-x);
+    }
     return 0.;
 }
 
@@ -73,28 +79,34 @@ int SolveP3(double* x, double a, double b, double c) // solve cubic equation x^3
     {
         double t = r / sqrt(q3);
         if (t < -1)
+        {
             t = -1;
+        }
         if (t > 1)
+        {
             t = 1;
+        }
         t = acos(t);
         a /= 3;
         q = -2 * sqrt(q);
         x[0] = q * cos(t / 3) - a;
-        x[1] = q * cos((t + TwoPi) / 3) - a;
-        x[2] = q * cos((t - TwoPi) / 3) - a;
+        x[1] = q * cos((t + kTwoPi) / 3) - a;
+        x[2] = q * cos((t - kTwoPi) / 3) - a;
         return (3);
     }
     //A =-pow(fabs(r)+sqrt(r2-q3),1./3); 
     A = -root3(fabs(r) + sqrt(r2 - q3));
     if (r < 0)
+    {
         A = -A;
+    }
     B = A == 0 ? 0 : B = q / A;
 
     a /= 3;
     x[0] = (A + B) - a;
     x[1] = -0.5 * (A + B) - a;
     x[2] = 0.5 * sqrt(3.) * (A - B);
-    if (fabs(x[2]) < eps)
+    if (fabs(x[2]) < kEps)
     {
         x[2] = x[1];
         return (2);
@@ -180,7 +192,9 @@ static void dblSort3(double& a, double& b, double& c) // make: a <= b <= c
 {
     double t;
     if (a > b)
-    SWAP(a,b); // now a<=b
+    {
+    	SWAP(a,b); // now a<=b
+    }
     if (c < b)
     {
         SWAP(b,c); // now a<=b, b<=c
@@ -194,7 +208,9 @@ int SolveP4De(double* x, double b, double c, double d) // solve equation x^4 + b
 {
     //if( c==0 ) return SolveP4Bi(x,b,d); // After that, c!=0
     if (fabs(c) < 1e-14 * (fabs(b) + fabs(d)))
+    {
         return SolveP4Bi(x, b, d); // After that, c!=0
+    }
 
     int res3 = SolveP3(x, 2 * b, b * b - 4 * d, -c * c); // solve resolvent
     // by Viet theorem:  x1*x2*x3=-c*c not equals to 0, so x1!=0, x2!=0, x3!=0
@@ -249,7 +265,9 @@ int SolveP4De(double* x, double b, double c, double d) // solve equation x^4 + b
     // x[1]±i*x[2] - complex roots, 
     // x[0] must be >=0. But one times x[0]=~ 1e-17, so:
     if (x[0] < 0)
+    {
         x[0] = 0;
+    }
     double sz1 = sqrt(x[0]);
     double szr, szi;
     CSqrt(x[1], x[2], szr, szi); // (szr+i*szi)^2 = x[1]+i*x[2]
@@ -273,7 +291,9 @@ double N4Step(double x, double a, double b, double c, double d) // one Newton st
 {
     double fxs = ((4 * x + 3 * a) * x + 2 * b) * x + c; // f'(x)
     if (fxs == 0)
+    {
         return 1e99;
+    }
     double fx = (((x + a) * x + b) * x + c) * x + d; // f(x)
     return x - fx / fxs;
 }

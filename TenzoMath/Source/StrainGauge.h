@@ -46,7 +46,7 @@ public:
     StrainGauge& operator=(StrainGauge&&) = default;
 
 
-private:    
+private:
     /**
     * \brief Declaration of serial port.
     */

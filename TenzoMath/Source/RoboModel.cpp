@@ -1,5 +1,4 @@
-#include "newRM.h"
-#define PI 3.14159265
+#include "RoboModel.h"
 
 
 RoboModel::DhParameters::
@@ -11,7 +10,6 @@ DhParameters(const double d, const double q, const double a, const double alpha)
 {
 }
 
-
 RoboModel::RoboModel(std::vector<std::array<double, 4>> input)
 {
     _kinematicChain.reserve(input.size());
@@ -21,7 +19,7 @@ RoboModel::RoboModel(std::vector<std::array<double, 4>> input)
     }
 }
 
-cv::Mat RoboModel::prevMatTransform(const int i)
+cv::Mat RoboModel::prevMatTransform(const std::size_t i)
 {
     cv::Mat result(4, 4, CV_64F);
     result.at<double>(0, 0) = cos(_kinematicChain[i].qParam);
@@ -52,7 +50,7 @@ cv::Mat RoboModel::forwardTask(std::vector<double> inputq)
     for (std::size_t i = 1; i < inputq.size(); ++i)
     {
         _kinematicChain[i].qParam = inputq[i];
-        transformMatrix = transformMatrix * prevMatTransform(static_cast<int>(i));
+        transformMatrix = transformMatrix * prevMatTransform(i);
     }
 
     return transformMatrix;

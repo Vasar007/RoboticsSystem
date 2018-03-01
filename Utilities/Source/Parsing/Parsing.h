@@ -1,9 +1,9 @@
 #ifndef PARSING_H
 #define PARSING_H
 
-#include <string>
 #include <deque>
 #include <functional>
+#include <string>
 
 
 // Forward declaration.

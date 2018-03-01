@@ -1,5 +1,6 @@
-#include "TestServer.h"
 #include "ModClient.h"
+#include "TestServer.h"
+
 #include "ClientTest.h"
 
 
