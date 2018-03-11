@@ -9,9 +9,8 @@
 namespace clientTests
 {
 
-class ModClient final : public vasily::Client
+struct ModClient final : public vasily::Client
 {
-public:
 	/**
 	 * \brief Constant number of server port.
 	 */
@@ -30,7 +29,7 @@ public:
 	/**
 	 * \brief Constant number of server IP.
 	 */
-	static constexpr char	SERVER_IP[]				= "192.168.0.101";
+	static constexpr char	SERVER_IP[]				= "192.168.0.102";
 
 	/**
 	 * \brief Mutex to lock thread for safety.
@@ -45,7 +44,7 @@ public:
 	/**
 	 * \brief Array of sent data to server to check.
 	 */
-	std::vector<std::string>	storage;
+	std::vector<std::string>	storage{};
 
 
 	/**

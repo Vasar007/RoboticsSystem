@@ -49,11 +49,7 @@ void ModClient::receiveDataNTimes(const int numberOfTimes)
 
 void ModClient::sendCoordinatesMod(const vasily::RobotData& robotData)
 {
-	if (checkCoordinates(robotData))
-	{
-		storage.push_back(robotData.toString());
-	}
-
+	storage.push_back(robotData.toString());
 	sendCoordinates(robotData);
 }
 
@@ -61,35 +57,12 @@ void ModClient::circlicMovementMod(const vasily::RobotData& firstPoint,
 								   const vasily::RobotData& secondPoint, 
 								   const int numberOfIterations)
 {
-	const bool checkFirst	= checkCoordinates(firstPoint);
-	const bool checkSecond	= checkCoordinates(secondPoint);
-
 	for (int i = 0; i < numberOfIterations; ++i)
 	{
-		if (checkFirst)
-		{
-			storage.push_back(firstPoint.toString());
-		}
-		else
-		{
-			break;
-		}
-
-		if (checkSecond)
-		{
-			storage.push_back(secondPoint.toString());
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	if (checkFirst && checkSecond)
-	{
 		storage.push_back(firstPoint.toString());
+		storage.push_back(secondPoint.toString());
 	}
-	
+	storage.push_back(firstPoint.toString());
 
 	circlicMovement(firstPoint, secondPoint, numberOfIterations);
 }
@@ -101,30 +74,15 @@ void ModClient::partialMovementMod(const vasily::RobotData& firstPoint,
 	const vasily::RobotData directionalVector = (secondPoint - firstPoint) / numberOfSteps;
 	vasily::RobotData robotData				  = firstPoint;
 
-	bool isRight = false;
-
-	if (checkCoordinates(firstPoint))
-	{
-		storage.push_back(firstPoint.toString());
-		isRight = true;
-	}
+	storage.push_back(firstPoint.toString());
 
 	for (int i = 0; i < numberOfSteps; ++i)
 	{
 		robotData += directionalVector;
-
-		if (checkCoordinates(robotData) && isRight)
-		{
-			storage.push_back(robotData.toString());
-		}
-		else
-		{
-			isRight = false;
-			break;
-		}
+		storage.push_back(robotData.toString());
 	}
 
-	if (isRight &&  checkCoordinates(secondPoint) && robotData != secondPoint)
+	if (robotData != secondPoint)
 	{
 		storage.push_back(secondPoint.toString());
 	}

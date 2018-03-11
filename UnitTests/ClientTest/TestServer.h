@@ -12,9 +12,8 @@ namespace clientTests
 /**
  * \brief Simple test server for client.
  */
-class TestServer final : public vasily::ServerImitator
+struct TestServer final : public vasily::ServerImitator
 {
-public:
 	/**
 	 * \brief Constant number of server port to send.
 	 */

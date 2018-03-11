@@ -1,14 +1,16 @@
 ﻿#ifndef UTILITY_H
 #define UTILITY_H
 
-#include <string>
-#include <sstream>
-#include <memory>
-#include <utility>
-#include <string_view>
-#include <numeric>
 #include <cassert>
+#include <numeric>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <utility>
 
+
+#define DOUBLE_STATIC_CAST(Type, valueToCast) static_cast<Type>(static_cast<void*>(&valueToCast))
 
 // Forward declaration.
 class Client;
@@ -41,7 +43,7 @@ std::string			toString(const T& value) noexcept;
  * \return			Converted filled data or empty data.
  */
 template <typename T>
-T					fromString(const std::string& str, bool& ok) noexcept;
+T	                fromString(const std::string& str, bool& ok) noexcept;
 
 
 /**
@@ -51,7 +53,7 @@ T					fromString(const std::string& str, bool& ok) noexcept;
  * \return			Exact same string which forwards into function.
  */
 template <>
-inline std::string	fromString(const std::string& str, bool& ok) noexcept;
+inline std::string fromString(const std::string& str, bool& ok) noexcept;
 
 
 /**
@@ -85,12 +87,13 @@ bool				isCorrectNumber(const std::string_view str, const int flag = 0) noexcept
 
 
 /**
- * \brief					Random number generation.
- * \param[in] exclusiveMax	Exclusive maximum of the interval.
- * \return					Random generated integer in interval.
+ * \brief					    Random number generation.
+ * \details                     Don't use it in multithread contexts.
+ * \param[in] exclusiveBorder	Exclusive border of the interval.
+ * \return					    Random generated integer in interval.
  */
 [[nodiscard]]
-int					randomInt(const int exclusiveMax) noexcept;
+int					randomInt(const int exclusiveBorder) noexcept;
 
 
 /**

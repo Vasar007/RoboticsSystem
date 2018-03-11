@@ -1,11 +1,11 @@
 #ifndef PRINT_HPP
 #define PRINT_HPP
 
-#include <type_traits>
 #include <iostream>
 #include <string>
+#include <type_traits>
 
-#include "../Utility/ValidExpression.hpp"
+#include "Utility/ValidExpression.hpp"
 
 
 /*
@@ -87,13 +87,13 @@ using Ostream   = decltype(std::cout << std::declval<T>());
 template <typename T>
 using StdFree   = decltype(std::cout << std::to_string(std::declval<T>()));
 template <typename T>
-using Free1      = decltype(std::cout << to_string(std::declval<T>()));
+using Free1     = decltype(std::cout << to_string(std::declval<T>()));
 template <typename T>
-using Free2 = decltype(std::cout << toString(std::declval<T>()));
+using Free2     = decltype(std::cout << toString(std::declval<T>()));
 template <typename T>
-using Member1 = decltype(std::cout << std::declval<T>().to_string());
+using Member1   = decltype(std::cout << std::declval<T>().to_string());
 template <typename T>
-using Member2    = decltype(std::cout << std::declval<T>().toString());
+using Member2   = decltype(std::cout << std::declval<T>().toString());
 
 ////////////////////////////// The implementations. //////////////////////////////
 

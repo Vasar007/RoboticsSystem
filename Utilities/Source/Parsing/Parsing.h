@@ -1,9 +1,9 @@
 #ifndef PARSING_H
 #define PARSING_H
 
-#include <string>
 #include <deque>
 #include <functional>
+#include <string>
 
 
 // Forward declaration.
@@ -46,7 +46,8 @@ std::deque<vasily::RobotData> parseData(const std::string_view data) noexcept;
  * \param[in] data  Data for parsin.
  * \return          True if input data contains only one digit, false otherwise.
  */
-std::pair<vasily::CoordinateSystem, bool> parseCoordinateSystem(const std::string_view data) noexcept;
+std::pair<vasily::CoordinateSystem, bool> parseCoordinateSystem(
+    const std::string_view data) noexcept;
 
 
 /**

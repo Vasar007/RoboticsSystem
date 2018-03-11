@@ -4,8 +4,8 @@
 #include <chrono>
 #include <optional>
 
-#include "WinsockInterface.h"
 #include "Utilities.h"
+#include "WinsockInterface.h"
 
 
 namespace vasily
@@ -16,6 +16,64 @@ namespace vasily
  */
 class ServerImitator : public WinsockInterface
 {
+public:
+	/**
+	 * \brief					        Constructor which initializes sockets and bindes ports to
+	 *                                  them.
+	 * \param[in] clientSendingPort	    Port for connection.
+	 * \param[in] clientRecivingPort	Port for connection.
+	 * \param[in] backlog		        Number of connections allowed on the incoming queue.
+	 */
+	explicit		ServerImitator(const int clientSendingPort, const int clientRecivingPort,
+								   const int backlog = 10);
+
+	/**
+	 * \brief Default destructor.
+	 */
+	virtual         ~ServerImitator() noexcept					= default;
+
+	/**
+	 * \brief			Deleted copy constructor.
+	 * \param[in] other Other client object.
+	 */
+					ServerImitator(const ServerImitator& other) = delete;
+
+	/**
+	 * \brief			Deleted copy assignment operator.
+	 * \param[in] other Other client object.
+	 * \return			Returns nothing because it's deleted.
+	 */
+	ServerImitator&	operator=(const ServerImitator& other)		= delete;
+
+	/**
+	 * \brief				Move constructor.
+	 * \param[out] other	Other client object.
+	 */
+					ServerImitator(ServerImitator&& other) noexcept;
+
+	/**
+	 * \brief				Move assignment operator.
+	 * \param[out] other	Other client object.
+	 * \return				Returns an object with all moved data.
+	 */
+	ServerImitator&	operator=(ServerImitator&& other) noexcept;
+
+	/**
+	 * \brief Main method which starts infinite working loop.
+	 */
+	void			run() override;
+
+	/**
+	 * \brief Fuction processes sockets (call 'bind' and 'listen').
+	 */
+	void			launch() override;
+
+
+	// Friendly swapping fuction.
+	template <class T>
+	friend void utils::swap(T& first, T& second) noexcept;
+
+
 protected:
 	/**
 	 * \brief Variable used to keep sending port.
@@ -96,64 +154,6 @@ protected:
 	 * \return              Approximately duration in milliseconds. 
 	 */
 	std::chrono::milliseconds calculateDuration(const RobotData& robotData);
-
-
-public:
-	/**
-	 * \brief					        Constructor which initializes sockets and bindes ports to
-	 *                                  them.
-	 * \param[in] clientSendingPort	    Port for connection.
-	 * \param[in] clientRecivingPort	Port for connection.
-	 * \param[in] backlog		        Number of connections allowed on the incoming queue.
-	 */
-	explicit		ServerImitator(const int clientSendingPort, const int clientRecivingPort,
-								   const int backlog = 10);
-
-	/**
-	 * \brief Default destructor.
-	 */
-	virtual         ~ServerImitator() noexcept					= default;
-
-	/**
-	 * \brief			Deleted copy constructor.
-	 * \param[in] other Other client object.
-	 */
-					ServerImitator(const ServerImitator& other) = delete;
-
-	/**
-	 * \brief			Deleted copy assignment operator.
-	 * \param[in] other Other client object.
-	 * \return			Returns nothing because it's deleted.
-	 */
-	ServerImitator&	operator=(const ServerImitator& other)		= delete;
-
-	/**
-	 * \brief				Move constructor.
-	 * \param[out] other	Other client object.
-	 */
-					ServerImitator(ServerImitator&& other) noexcept;
-
-	/**
-	 * \brief				Move assignment operator.
-	 * \param[out] other	Other client object.
-	 * \return				Returns an object with all moved data.
-	 */
-	ServerImitator&	operator=(ServerImitator&& other) noexcept;
-
-	/**
-	 * \brief Main method which starts infinite working loop.
-	 */
-	void			run() override;
-
-	/**
-	 * \brief Fuction processes sockets (call 'bind' and 'listen').
-	 */
-	void			launch() override;
-
-
-	// Friendly swapping fuction.
-	template <class T>
-	friend void utils::swap(T& first, T& second) noexcept;
 };
 
 } // namespace vasily

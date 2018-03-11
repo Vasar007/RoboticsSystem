@@ -2,10 +2,10 @@
 #define PRINT_H
 
 #include <iostream>
-#include <string_view>
 #include <type_traits>
 #include <typeinfo>
 #include <string>
+#include <string_view>
 
 #ifndef _MSC_VER
 	#include <cxxabi.h>

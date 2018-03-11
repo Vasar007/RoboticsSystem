@@ -1,8 +1,8 @@
 #ifndef SERVER_LAYER
 #define SERVER_LAYER
 
-#include <mutex>
 #include <map>
+#include <mutex>
 #include <optional>
 
 #include "Utilities.h"
@@ -14,12 +14,91 @@ namespace vasily
 
 class ServerLayer : public WinsockInterface
 {
-private:
+public:
 	/**
-	 * \brief   Read data from file into container.
-	 * \return  True if reading was successful, false otherwise.
+	 * \brief                           Constructor that initializes sockets, connects to server and
+	 *                                  creates socket to work with clients.
+	 * \param[in] serverSendingPort     Server port to send.
+	 * \param[in] serverRecivingPort    Server port to recieve.
+	 * \param[in] serverIP              Server IP address for connection.
+	 * \param[in] layerPort             Additional port to communicate with clients.
+	 * \param[in] backlog               The maximum length of the queue of pending connections.
 	 */
-	bool readDataTable();
+	explicit ServerLayer(const int serverSendingPort        = _DEFAULT_SENDING_PORT_TO_SERVER,
+						 const int serverRecivingPort       = _DEFAULT_RECEIVING_PORT_FROM_SERVER,
+						 const std::string_view serverIP    = _DEFAULT_SERVER_IP,
+						 const int layerPort                = _DEFAULT_CLIENT_PORT,
+						 const int backlog                  = 10);
+
+	/**
+	 * \brief			Deleted copy constructor.
+	 * \param[in] other Other client object.
+	 */
+					ServerLayer(const ServerLayer& other)   = delete;
+
+	/**
+	 * \brief			Deleted copy assignment operator.
+	 * \param[in] other Other client object.
+	 * \return			Returns nothing because it's deleted.
+	 */
+	ServerLayer&    operator=(const ServerLayer& other)     = delete;
+
+	/**
+	 * \brief			Deleted move constructor.
+	 * \param[in] other Other client object.
+	 */
+					ServerLayer(ServerLayer&& other)        = delete;
+
+	/**
+	 * \brief			Deleted move assignment operator.
+	 * \param[in] other Other client object.
+	 * \return			Returns nothing because it's deleted.
+	 */
+	ServerLayer&    operator=(ServerLayer&& other)          = delete;
+
+	/**
+	 * \brief Destructor that closes client socket.
+	 */
+	virtual         ~ServerLayer() noexcept;
+
+	/**
+	 * \brief Main method which starts infinite working loop.
+	 */
+	void            run() override;
+
+	/**
+	 * \brief Process sockets.
+	 */
+	void            launch() override;
+
+	/**
+	 * \brief	Get server IP address.
+	 * \return	String which contains current server IP address.
+	 */
+	std::string     getServerIP() const;
+
+	/**
+	 * \brief					Set server IP address.
+	 * \param[in] newServerIP	New server IP address as string.
+	 */
+	void		    setServerIP(const std::string_view newServerIP);
+
+	/**
+	 * \brief Additional fuction that receives data from server.
+	 */
+	void		    receiveFromServer();
+
+	/**
+	 * \brief Additional fuction that receives data from clients.
+	 */
+	void            receiveFromClients();
+
+	/**
+	 * \brief				Check if given point is not out of working coordinates.
+	 * \param[in] robotData	Point to check.
+	 * \return				True if point is correct, false otherwise.
+	 */
+	bool		checkCoordinates(const RobotData& robotData) const;
 
 
 protected:
@@ -32,6 +111,11 @@ protected:
 	 * \brief Buffer that is used to keep clients addresses.
 	 */
 	char		_messageWithIPForClient[_MAXRECV];
+
+	/**
+	 * \brief Flag used to define active connection to client.
+	 */
+	std::atomic_bool _isRunningForClient;
 
 	/**
 	 * \brief Variable used to keep server IP address.
@@ -138,6 +222,20 @@ protected:
 	 */
 	static constexpr int	_DEFAULT_CLIENT_PORT                = 8888;
 
+	/**
+	 * \brief Constant number of coordinates to check to avoid "magic number".
+	 */
+	static constexpr std::size_t _MAIN_COORDINATES		        = 3u;
+
+	/**
+	 * \brief Array contains minimum value for first 3 coordinates (x, y, z).
+	 */
+	static constexpr std::array<int, _MAIN_COORDINATES> _MIN_COORDS{ 830'000, -400'000, 539'000 };
+
+	/**
+	 * \brief Array contains maximum value for first 3 coordinates (x, y, z).
+	 */
+	static constexpr std::array<int, _MAIN_COORDINATES> _MAX_COORDS{ 1'320'000, 400'000, 960'000 };
 
 	/**
 	 * \brief Try to establish a connection to a specified socket again.
@@ -172,85 +270,18 @@ protected:
 	 */
 	void waitLoop() override;
 
-	
-public:
 	/**
-	 * \brief                           Constructor that initializes sockets, connects to server and
-	 *                                  creates socket to work with clients.
-	 * \param[in] serverSendingPort     Server port to send.
-	 * \param[in] serverRecivingPort    Server port to recieve.
-	 * \param[in] serverIP              Server IP address for connection.
-	 * \param[in] layerPort             Additional port to communicate with clients.
-	 * \param[in] backlog               The maximum length of the queue of pending connections.
+	 * \brief Additional method which contains all connection calls. 
 	 */
-	explicit ServerLayer(const int serverSendingPort        = _DEFAULT_SENDING_PORT_TO_SERVER,
-						 const int serverRecivingPort       = _DEFAULT_RECEIVING_PORT_FROM_SERVER,
-						 const std::string_view serverIP    = _DEFAULT_SERVER_IP,
-						 const int layerPort                = _DEFAULT_CLIENT_PORT,
-						 const int backlog                  = 10);
+	void doConnection();
 
-	/**
-	 * \brief			Deleted copy constructor.
-	 * \param[in] other Other client object.
-	 */
-					ServerLayer(const ServerLayer& other)   = delete;
 
+private:
 	/**
-	 * \brief			Deleted copy assignment operator.
-	 * \param[in] other Other client object.
-	 * \return			Returns nothing because it's deleted.
+	 * \brief   Read data from file into container.
+	 * \return  True if reading was successful, false otherwise.
 	 */
-	ServerLayer&    operator=(const ServerLayer& other)     = delete;
-
-	/**
-	 * \brief			Deleted move constructor.
-	 * \param[in] other Other client object.
-	 */
-					ServerLayer(ServerLayer&& other)        = delete;
-
-	/**
-	 * \brief			Deleted move assignment operator.
-	 * \param[in] other Other client object.
-	 * \return			Returns nothing because it's deleted.
-	 */
-	ServerLayer&    operator=(ServerLayer&& other)          = delete;
-
-	/**
-	 * \brief Destructor that closes client socket.
-	 */
-	virtual         ~ServerLayer() noexcept;
-
-	/**
-	 * \brief Main method which starts infinite working loop.
-	 */
-	void            run() override;
-
-	/**
-	 * \brief Process sockets.
-	 */
-	void            launch() override;
-
-	/**
-	 * \brief	Get server IP address.
-	 * \return	String which contains current server IP address.
-	 */
-	std::string     getServerIP() const;
-
-	/**
-	 * \brief					Set server IP address.
-	 * \param[in] newServerIP	New server IP address as string.
-	 */
-	void		    setServerIP(const std::string_view newServerIP);
-
-	/**
-	 * \brief Additional fuction that receives data from server.
-	 */
-	void		    receiveFromServer();
-
-	/**
-	 * \brief Additional fuction that receives data from clients.
-	 */
-	void            receiveFromClients();
+	bool readDataTable();
 };
 
 } // namespace vasily

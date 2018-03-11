@@ -262,5 +262,9 @@ __pycache__/
 
 
 # User-defined section
+
 # Logs
 *.txt
+
+# Additional dependencies
+[Dd]ependencies/

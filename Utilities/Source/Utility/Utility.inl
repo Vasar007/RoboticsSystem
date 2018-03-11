@@ -20,7 +20,6 @@ T fromString(const std::string& str, bool& ok) noexcept
 
 	ss >> t;
 	ok = !ss.fail();
-
 	return t;
 }
 
@@ -54,7 +53,7 @@ void swap(T& first, T& second) noexcept
 		swap(first._isRunning,				second._isRunning);
 		swap(first._wasInitialized,			second._wasInitialized);
 		swap(first._buffer,					second._buffer);
-		swap(first._messageWithIP,				second._messageWithIP);
+		swap(first._messageWithIP,			second._messageWithIP);
 	}
 	else
 	{

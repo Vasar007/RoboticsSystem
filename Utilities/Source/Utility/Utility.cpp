@@ -1,9 +1,9 @@
-#include <random>
+#include <cassert>
 #include <chrono>
 #include <ctime>
-#include <cassert>
+#include <random>
 
-#include "../Print/Print.h"
+#include "Print/Print.h"
 #include "Utility.h"
 
 
@@ -21,17 +21,22 @@ namespace
 	
 	auto RANDOM_ENGINE = createRandomEngine();
 
-} // anonymous namespace
+} // namespace
 
 [[nodiscard]]
-int randomInt(const int exclusiveMax) noexcept
+int randomInt(const int exclusiveBorder) noexcept
 {
-	if (exclusiveMax <= 0)
+	if (exclusiveBorder == 0)
 	{
 		return 0;
 	}
+	if (exclusiveBorder < 0)
+	{
+		std::uniform_int_distribution<int> distr(exclusiveBorder + 1, 0);
+		return distr(RANDOM_ENGINE);
+	}
 
-	const std::uniform_int_distribution<> distr(0, exclusiveMax - 1);
+	std::uniform_int_distribution<int> distr(0, exclusiveBorder - 1);
 	return distr(RANDOM_ENGINE);
 }
 
@@ -74,11 +79,11 @@ std::string getCurrentSystemTime() noexcept
 
 	// The string result produced by asctime_s contains exactly 26 characters and
 	// has the form => Wed Jan 02 02:03:55 1980\n\0.
-	constexpr std::size_t SIZE = 26u;
-	char timebuf[SIZE];
-	const errno_t err = asctime_s(timebuf, SIZE, &timeInfo);
+	constexpr std::size_t kSize = 26u;
+	char timebuf[kSize];
+	const errno_t err = asctime_s(timebuf, kSize, &timeInfo);
 
-	if (err)
+	if (err != 0)
 	{
 		std::cout << "Error code: " << err << '\n';
 		return { "" };
@@ -92,7 +97,7 @@ bool almostEqual2Complement(float a, float b, const int maxUlps) noexcept
 	// maxUlps must not be negative and not too large to NaN was not equal to any number.
 	assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
 
-	int aInt = *reinterpret_cast<int*>(&a);
+	int aInt = *DOUBLE_STATIC_CAST(int*, a);
 	// Remove sign in aInt, if you have to get the correct ordered sequence.
 	if (aInt < 0)
 	{
@@ -101,7 +106,7 @@ bool almostEqual2Complement(float a, float b, const int maxUlps) noexcept
 	}
 
 	// Similarly for bInt.
-	int bInt = *reinterpret_cast<int*>(&b);
+	int bInt = *DOUBLE_STATIC_CAST(int*, b);
 	if (bInt < 0)
 	{
 		// bInt &= 0x7fffffff;
