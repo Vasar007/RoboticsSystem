@@ -1,4 +1,4 @@
-# Some advices to write descriptional pull request
+# Some advices to write descriptive pull request
 
 - Example of good pull request [here](https://github.com/Vasar007/FANUC/pull/26).
 
