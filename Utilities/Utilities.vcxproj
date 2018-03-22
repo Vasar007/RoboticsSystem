@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Config\Config.h" />
     <ClInclude Include="Source\NetworkInterface\NetworkInterface.h" />
     <ClInclude Include="Source\Print\Print.hpp" />
     <ClInclude Include="Source\Utility\ValidExpression.hpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="Source\Utility\Utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\Config\Config.inl" />
     <None Include="Source\Parsing\Parsing.inl" />
     <None Include="Source\Print\Print.inl" />
     <None Include="Source\Utility\Utility.inl" />
@@ -151,6 +153,7 @@
     <None Include="Source\Printer\Printer.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Config\Config.cpp" />
     <ClCompile Include="Source\NetworkInterface\NetworkInterface.cpp" />
     <ClCompile Include="Source\Printer\Printer.cpp" />
     <ClCompile Include="Source\Parsing\Parsing.cpp" />

@@ -3,9 +3,11 @@
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\ServerLayer.cpp" />
+    <ClCompile Include="Source\DelayManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\ServerLayer.h" />
+    <ClInclude Include="Source\DelayManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

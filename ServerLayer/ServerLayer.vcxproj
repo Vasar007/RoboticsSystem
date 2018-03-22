@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\DelayManager.cpp" />
     <ClCompile Include="Source\ServerLayer.cpp" />
     <ClCompile Include="Source\Main.cpp" />
   </ItemGroup>
@@ -144,6 +145,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\DelayManager.h" />
     <ClInclude Include="Source\ServerLayer.h" />
   </ItemGroup>
   <ItemGroup>

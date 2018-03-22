@@ -14,7 +14,7 @@ void fastOutput(const std::string& str) noexcept
     if (const int returnValue = std::puts(str.c_str()); returnValue == EOF)
     {
         // POSIX requires that errno is set.
-        std::perror("puts()");
+        std::perror("puts() failed.");
     }
 }
 

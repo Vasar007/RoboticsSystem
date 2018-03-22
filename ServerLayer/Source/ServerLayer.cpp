@@ -4,284 +4,270 @@
 namespace vasily
 {
 
+inline const config::NamedConfig ServerLayer::_CONFIG
+{
+    { "DEFAULT_IN_FILE_NAME",               std::string{ "distance_to_time.txt" } },
+    { "DEFAULT_OUT_FILE_NAME",              std::string{ "out.txt" } },
+    { "DEFAULT_SERVER_IP",                  std::string{ "192.168.1.21" } },
+    { "DEFAULT_SENDING_PORT_TO_SERVER",     int{ 59002 } },
+    { "DEFAULT_RECEIVING_PORT_FROM_SERVER", int{ 59003 } },
+    { "DEFAULT_CLIENT_PORT",                int{ 8888 } },
+    { "NUMBER_OF_MAIN_COORDINATES",         std::size_t{ 3u } },
+    { "RECONNECTION_DELAY",                 long long { 1000LL } },
+    { "MIN_COORDINATES",                    std::array<int, 3u>{ 830'000, -400'000, 539'000 } },
+    { "MAX_COORDINATES",                    std::array<int, 3u>{ 1'320'000, 400'000, 960'000 } }
+};
+
 ServerLayer::ServerLayer(const int serverSendingPort, const int serverRecivingPort,
-						 const std::string_view serverIP, const int layerPort, const int backlog)
-	: _bufferForClient(),
-	  _messageWithIPForClient(),
-	  _isRunningForClient(false),
-	  _serverIP(serverIP),
-	  _layerPort(layerPort),
-	  _backlog(backlog),
-	  _clientSocket(0),
-	  _layerSocket(),
-	  _layerSocketAddress(),
-	  _serverSendingPort(serverSendingPort),
-	  _serverReceivingPort(serverRecivingPort),
-	  _logger(_DEFAULT_IN_FILE_NAME, _DEFAULT_OUT_FILE_NAME)
+                         const std::string_view serverIP, const int layerPort, const int backlog,
+                         const WorkMode workMode)
+    : _bufferForClient(),
+      _messageWithIPForClient(),
+      _isRunningForClient(false),
+      _serverIP(serverIP),
+      _layerPort(layerPort),
+      _backlog(backlog),
+      _clientSocket(0),
+      _layerSocket(),
+      _layerSocketAddress(),
+      _serverSendingPort(serverSendingPort),
+      _serverReceivingPort(serverRecivingPort),
+      _workMode(workMode),
+      _logger(_CONFIG.get<std::string>("DEFAULT_IN_FILE_NAME"),
+              _CONFIG.get<std::string>("DEFAULT_OUT_FILE_NAME")),
+      _delayManager(_printer, _logger)
 {
-	_hasReadTable = readDataTable();
 }
 
-ServerLayer::~ServerLayer() noexcept
+ServerLayer::~ServerLayer()
 {
-	closeSocket(_layerSocket);
-}
-
-bool ServerLayer::readDataTable()
-{
-	while (!_logger.inFile.eof())
-	{
-		if (_logger.hasAnyInputErrors())
-		{
-			_printer.writeLine(std::cout, "Failed to read data from table!");
-			return false;
-		}
-
-		const auto distance = _logger.read<long long>();
-		const auto time     = _logger.read<long long>();
-		_distanceToTimeTable.emplace_hint(_distanceToTimeTable.end(), distance, time);
-	}
-
-	return !_distanceToTimeTable.empty();
+    closeSocket(_layerSocket);
 }
 
 void ServerLayer::receiveFromServer()
 {
-	_printer.writeLine(std::cout, "\nReceiving thread for server started...\n");
+    _printer.writeLine(std::cout, "\nReceiving thread for server started...\n");
 
-	while (true)
-	{
-		const auto [dataBuffer, flag] = receiveData(_receivingSocket, _messageWithIP, _buffer);
-		_isRunning.store(flag);
+    while (true)
+    {
+        const auto [dataBuffer, flag] = receiveData(_receivingSocket, _messageWithIP, _buffer);
+        _isRunning.store(flag);
 
-		if (!_isRunning.load())
-		{
-			tryReconnectToServer();
-			continue;
-		}
+        if (!_isRunning.load())
+        {
+            tryReconnectToServer();
+            continue;
+        }
 
-		if (!dataBuffer.empty())
-		{
-			sendData(_clientSocket, dataBuffer);
-		}
-		_logger.writeLine(_messageWithIP, '-', dataBuffer);
-	}
+        if (!dataBuffer.empty())
+        {
+            sendData(_clientSocket, dataBuffer);
+        }
+        _logger.writeLine(_messageWithIP, '-', dataBuffer);
+    }
 }
 
 void ServerLayer::checkConnectionToServer(const long long& time)
 {
-	while (true)
-	{
-		_logger.writeLine(_lastReceivedPoint);
-		sendData(_sendingSocket, _lastReceivedPoint.toString());
+    while (true)
+    {
+        _logger.writeLine(_lastReceivedPoint);
+        sendData(_sendingSocket, _lastReceivedPoint.toString());
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(time));
-	}
-}
-
-std::chrono::milliseconds ServerLayer::calculateDuration(const RobotData& robotData)
-{	
-	if (!_hasReadTable)
-	{
-		_printer.writeLine(std::cout, "No duration!");
-		return std::chrono::milliseconds(0LL);
-	}
-
-	// Calculate distance between two points, which contains only first 3 coordinates.
-	const long long distance    = utils::distance(_lastReceivedPoint.coordinates.begin(),
-												  _lastReceivedPoint.coordinates.begin() + 2,
-												  robotData.coordinates.begin(), 0LL, 1LL);
-	_lastReceivedPoint          = robotData;
-
-	const auto low = _distanceToTimeTable.lower_bound(distance);
-	
-	if (low == _distanceToTimeTable.end())
-	{
-		const auto it = --_distanceToTimeTable.end();
-		_printer.writeLine(std::cout, "Distance:", it->first, ", Duration:", it->second.count());
-		return it->second;
-	}
-	if (low == _distanceToTimeTable.begin())
-	{
-		_printer.writeLine(std::cout, "Distance:", low->first, ", Duration:", low->second.count());
-		return low->second;
-	}
-	
-	auto prev = low;
-	--prev;
-	if (distance - prev->first < low->first - distance)
-	{
-		_printer.writeLine(std::cout, "Distance:", prev->first,
-						   ", Duration:", prev->second.count());
-		return prev->second;
-	}
-
-	_printer.writeLine(std::cout, "Distance:", low->first, ", Duration:", low->second.count());
-	return low->second;
+        std::this_thread::sleep_for(std::chrono::milliseconds(time));
+    }
 }
 
 void ServerLayer::receiveFromClients()
 {
-	_printer.writeLine(std::cout, "\nReceive thread for clients started...\n");
+    _printer.writeLine(std::cout, "\nReceive thread for clients started...\n");
 
-	while (true)
-	{
-		const auto [dataBuffer, status] = receiveData(_clientSocket, _messageWithIPForClient,
-													  _bufferForClient);
-		_logger.writeLine(_messageWithIPForClient, '-', dataBuffer);
-		_isRunningForClient.store(status);
+    while (true)
+    {
+        const auto [dataBuffer, status] = receiveData(_clientSocket, _messageWithIPForClient,
+                                                      _bufferForClient);
+        _logger.writeLine(_messageWithIPForClient, '-', dataBuffer);
+        _isRunningForClient.store(status);
 
-		if (!_isRunningForClient.load())
-		{
-			waitingForConnections();
-			continue;
-		}
-		if (dataBuffer.empty())
-		{
-			continue;
-		}
+        if (!_isRunningForClient.load())
+        {
+            waitingForConnections();
+            continue;
+        }
+        if (dataBuffer.empty())
+        {
+            continue;
+        }
 
-		/*bool flag;
-		const auto robotData = utils::fromString<RobotData>(dataBuffer, flag);
-		if (!flag || !checkCoordinates(robotData))
-		{
-			sendData(_clientSocket, "INCORRECT COORDINATES: " + dataBuffer);
-			continue;
-		}*/
+        switch (_workMode)
+        {
+            case WorkMode::SAFE:
+            {
+                if (!_coorninateSystem.has_value())
+                {
+                    break;
+                }
 
-		std::lock_guard<std::mutex> lockGuard{ _mutex };
-		if (const auto [value, check] = utils::parseCoordinateSystem(dataBuffer); check)
-		{
-			sendData(_sendingSocket, dataBuffer);
-			_coorninateSystem.emplace(value);
-		}
-		else if (_messagesStorage.empty())
-		{
-			_messagesStorage = utils::parseData(dataBuffer);
-		}
-		else
-		{
-			for (auto&& datum : utils::parseData(dataBuffer))
-			{
-				_messagesStorage.emplace_back(datum);
-			}
-		}
-	}
+                bool flag;
+                const auto robotData = utils::fromString<RobotData>(dataBuffer, flag);
+                if (!flag || !checkCoordinates(robotData))
+                {
+                    sendData(_clientSocket, "INCORRECT COORDINATES: " + dataBuffer);
+                    continue;
+                }
+                break;
+            }
+            
+            case WorkMode::UNSAFE:
+                _printer.writeLine(std::cout, "Warning: working in unsafe mode!");
+                break;
+
+            default:
+                assert(false);
+        }
+
+        std::lock_guard<std::mutex> lockGuard{ _mutex };
+        if (const auto [value, check] = utils::parseCoordinateSystem(dataBuffer); check)
+        {
+            sendData(_sendingSocket, dataBuffer);
+            _coorninateSystem.emplace(value);
+        }
+        else if (_messagesStorage.empty())
+        {
+            _messagesStorage = utils::parseData(dataBuffer);
+        }
+        else
+        {
+            for (auto&& datum : utils::parseData(dataBuffer))
+            {
+                _messagesStorage.emplace_back(datum);
+            }
+        }
+    }
 }
 
 bool ServerLayer::checkCoordinates(const RobotData& robotData) const
 {
-	for (std::size_t i = 0u; i < _MAIN_COORDINATES; ++i)
-	{
-		if (robotData.coordinates.at(i) < _MIN_COORDS.at(i)
-			|| robotData.coordinates.at(i) > _MAX_COORDS.at(i))
-		{
-			_printer.writeLine(std::cout, "ERROR 03: Incorrect coordinates to send!", robotData);
-			return false;
-		}
-	}
+    // Get default parameters for checking.
+    static const auto kMainCoordinates = _CONFIG.get<std::size_t>("NUMBER_OF_MAIN_COORDINATES");
+    static const auto kMinCoords = _CONFIG.get< std::array<int, 3u> >("MIN_COORDINATES");
+    static const auto kMaxCoords = _CONFIG.get< std::array<int, 3u> >("MAX_COORDINATES");
 
-	return true;
+    for (std::size_t i = 0u; i < kMainCoordinates; ++i)
+    {
+        if (robotData.coordinates.at(i) < kMinCoords.at(i)
+            || robotData.coordinates.at(i) > kMaxCoords.at(i))
+        {
+            _printer.writeLine(std::cout, "ERROR 03: Incorrect coordinates to send!", robotData);
+            return false;
+        }
+    }
+
+    return true;
 }
 
 void ServerLayer::process()
 {
-	_printer.writeLine(std::cout, "\nWaiting for connections...\n");
-	_logger.writeLine("\nServer layer waiting for connections at", utils::getCurrentSystemTime());
+    _printer.writeLine(std::cout, "\nWaiting for connections...\n");
+    _logger.writeLine("\nServer layer waiting for connections at", utils::getCurrentSystemTime());
 
-	while (!_isRunningForClient.load())
-	{
-		_clientSocket = acceptSocket(_layerSocket, _messageWithIPForClient);
-		_isRunningForClient.store(true);
+    while (!_isRunningForClient.load())
+    {
+        _clientSocket = acceptSocket(_layerSocket, _messageWithIPForClient);
+        _isRunningForClient.store(true);
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(10LL));
-	}
+        std::this_thread::sleep_for(std::chrono::milliseconds(10LL));
+    }
 }
 
 void ServerLayer::waitLoop()
 {
-	_printer.writeLine(std::cout, "\n\nLaunched layer...\n");
+    _printer.writeLine(std::cout, "\n\nLaunched layer...\n");
 
-	std::thread reciveThreadFromServer(&ServerLayer::receiveFromServer, this);
-	reciveThreadFromServer.detach();
+    std::thread reciveThreadFromServer(&ServerLayer::receiveFromServer, this);
+    reciveThreadFromServer.detach();
 
-	waitingForConnections();
+    waitingForConnections();
 
-	std::thread reciveThreadFromClients(&ServerLayer::receiveFromClients, this);
-	reciveThreadFromClients.detach();
+    std::thread reciveThreadFromClients(&ServerLayer::receiveFromClients, this);
+    reciveThreadFromClients.detach();
 
-	_logger.writeLine("Server layer started to receive at", utils::getCurrentSystemTime());
+    _logger.writeLine("Server layer started to receive at", utils::getCurrentSystemTime());
 
-	while (true)
-	{
-		std::lock_guard<std::mutex> lockGuard{ _mutex };
-		while (!_messagesStorage.empty())
-		{
-			const RobotData robotData = _messagesStorage.front();
-			sendData(_sendingSocket, robotData.toString());
+    while (true)
+    {
+        std::lock_guard<std::mutex> lockGuard{ _mutex };
+        while (!_messagesStorage.empty())
+        {
+            // Not move because RobotData is LiteralType.
+            const RobotData robotData = _messagesStorage.front();
+            sendData(_sendingSocket, robotData.toString());
 
-			std::this_thread::sleep_for(calculateDuration(robotData));
-			_messagesStorage.pop_front();
-		}
-	}
+            std::this_thread::sleep_for(_delayManager.calculateDuration(_lastReceivedPoint,
+                                                                        robotData));
+            _lastReceivedPoint = robotData;
+            _messagesStorage.pop_front();
+        }
+    }
 }
 
 void ServerLayer::doConnection()
 {
-	const bool connectStatus = tryConnect(_serverSendingPort, _serverIP, _sendingSocket,
-										  _sendingSocketAddress)
-								&& tryConnect(_serverReceivingPort, _serverIP, _receivingSocket,
-											  _receivingSocketAddress);
-	_isRunning.store(connectStatus);
+    const bool connectStatus = tryConnect(_serverSendingPort, _serverIP, _sendingSocket,
+                                          _sendingSocketAddress)
+                                && tryConnect(_serverReceivingPort, _serverIP, _receivingSocket,
+                                              _receivingSocketAddress);
+    _isRunning.store(connectStatus);
 }
 
 void ServerLayer::run()
 {
-	_isRunning.store(true);
-	_isRunningForClient.store(true);
-	waitLoop();
+    _isRunning.store(true);
+    _isRunningForClient.store(true);
+    waitLoop();
 }
 
 void ServerLayer::launch()
 {
-	initSocket(_layerSocket);
-	bindSocket(_layerSocket, _layerSocketAddress, _layerPort);
+    initSocket(_layerSocket);
+    bindSocket(_layerSocket, _layerSocketAddress, _layerPort);
 
-	listenOn(_layerSocket, _backlog);
-	doConnection();
+    listenOn(_layerSocket, _backlog);
+    doConnection();
 }
 
 void ServerLayer::waitingForConnections()
 {
-	closeSocket(_clientSocket);
-	_isRunningForClient.store(false);
-	process();
+    closeSocket(_clientSocket);
+    _isRunningForClient.store(false);
+    process();
 }
 
 std::string ServerLayer::getServerIP() const
 {
-	return _serverIP;
+    return _serverIP;
 }
 
 void ServerLayer::setServerIP(const std::string_view newServerIP)
 {
-	_serverIP = newServerIP;
+    _serverIP = newServerIP;
 }
 
 void ServerLayer::tryReconnectToServer()
 {
-	while (!_isRunning.load())
-	{
-		closeSocket(_sendingSocket);
-		closeSocket(_receivingSocket);
+    while (!_isRunning.load())
+    {
+        closeSocket(_sendingSocket);
+        closeSocket(_receivingSocket);
 
-		initSocket(_sendingSocket);
-		initSocket(_receivingSocket);
+        initSocket(_sendingSocket);
+        initSocket(_receivingSocket);
 
-		doConnection();
+        doConnection();
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000LL));
-	}
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds(_CONFIG.get<long long>("RECONNECTION_DELAY")));
+    }
 }
 
 } // namespace vasily

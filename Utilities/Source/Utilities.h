@@ -11,6 +11,8 @@
 
 #include "Logger/Logger.h"
 
+#include "Config/Config.h"
+
 #include "RobotData/RobotData.h"
 
 #include "Printer/Printer.h"
