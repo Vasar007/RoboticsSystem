@@ -23,13 +23,13 @@ namespace item
      * \tparam OutputStream Type of output stream.
      * \tparam T            Datatype to print (need to be overloaded operator '<<').
      */
-    template <class OutputStream, typename T>
+    template <class OutputStream, class T>
     struct ItemPrinter
     {
         /**
-         * \brief           Outputting constructor.
-         * \param[out] out  Output stream to write.
-         * \param[in] t     Data to print.
+         * \brief          Outputting constructor.
+         * \param[out] out Output stream to write.
+         * \param[in] t    Data to print.
          */
         ItemPrinter(OutputStream& out, const T& t)
         {
@@ -46,8 +46,8 @@ class Printer
 {
 public:
     /**
-     * \brief   Get the instance of singleton.
-     * \return  Reference to singleton object.
+     * \brief  Get the instance of singleton.
+     * \return Reference to singleton object.
      */
     static Printer& getInstance() noexcept;
 
@@ -70,15 +70,15 @@ public:
     Printer& operator=(const Printer& other)        = delete;
 
     /**
-     * \brief				Default move constructor.
-     * \param[out] other	Other object.
+     * \brief			 Default move constructor.
+     * \param[out] other Other object.
      */
     Printer(Printer&& other) noexcept               = delete;
 
     /**
-     * \brief				Default move assignment operator.
-     * \param[out] other	Other object.
-     * \return				Return moved object.
+     * \brief			 Default move assignment operator.
+     * \param[out] other Other object.
+     * \return			 Return moved object.
      */
     Printer& operator=(Printer&& other) noexcept    = delete;
 
@@ -89,8 +89,8 @@ public:
      * \param[out] out      Output stream to write..
      * \param[in] args      Data to print.
      */
-    template<class OutputStream, typename... Args>
-    void operator()(OutputStream& out, const Args&... args) noexcept;
+    template<class OutputStream, class... Args>
+    void operator()(OutputStream& out, const Args&... args);
 
     /**
      * \brief               Print datatypes (unlimited) to outstream.
@@ -99,8 +99,8 @@ public:
      * \param[out] out      Output stream to write..
      * \param[in] args      Data to print.
      */
-    template<class OutputStream, typename... Args>
-    void write(OutputStream& out, const Args&... args) noexcept;
+    template<class OutputStream, class... Args>
+    void write(OutputStream& out, const Args&... args);
 
     /**
      * \brief               Print datatypes (unlimited) to outstream and new line character.
@@ -109,8 +109,8 @@ public:
      * \param out           Output stream to write..
      * \param args          Data to print.
      */
-    template<class OutputStream, typename... Args>
-    void writeLine(OutputStream& out, const Args&... args) noexcept;
+    template<class OutputStream, class... Args>
+    void writeLine(OutputStream& out, const Args&... args);
 
 
 private:

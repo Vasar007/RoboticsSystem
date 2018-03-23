@@ -14,11 +14,6 @@ class TenzoMath
 {
 public:
     TenzoMath();
-    ~TenzoMath() = default;
-    TenzoMath(const TenzoMath&) = default;
-    TenzoMath(TenzoMath&&) = default;
-    TenzoMath& operator=(const TenzoMath&) = delete;
-    TenzoMath& operator=(TenzoMath&&) = delete;
 
     /**
     * \brief convertes double array into int array * 1000

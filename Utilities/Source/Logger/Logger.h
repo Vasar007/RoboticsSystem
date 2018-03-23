@@ -41,16 +41,16 @@ public:
 
 
     /**
-     * \brief                   Constructor.
-     * \param[in] inputFile     File name for input. 
-     * \param[in] outputFile    File name for output.
+     * \brief                Constructor.
+     * \param[in] inputFile  File name for input. 
+     * \param[in] outputFile File name for output.
      */
     explicit Logger(const std::string& inputFile, const std::string& outputFile);
 
     /**
      * \brief Destructor.
      */
-    ~Logger() noexcept;
+    ~Logger();
 
     /**
      * \brief			Default copy constructor.
@@ -66,79 +66,79 @@ public:
     Logger& operator=(const Logger& other)      = delete;
 
     /**
-     * \brief				Default move constructor.
-     * \param[out] other	Other object.
+     * \brief			 Default move constructor.
+     * \param[out] other Other object.
      */
     Logger(Logger&& other)                      = delete;
 
     /**
-     * \brief				Default move assignment operator.
-     * \param[out] other	Other object.
-     * \return				Return moved object.
+     * \brief			 Default move assignment operator.
+     * \param[out] other Other object.
+     * \return			 Return moved object.
      */
     Logger& operator=(Logger&& other)           = delete;
 
     /**
-     * \brief           Write (unlimited) data in output stream.
-     * \tparam Args     Variadic data types.
-     * \param[in] args  Data to write.
+     * \brief          Write (unlimited) data in output stream.
+     * \tparam Args    Variadic data types.
+     * \param[in] args Data to write.
      */
-    template <typename ...Args>
-    void write(const Args&... args) noexcept;
+    template <class... Args>
+    void write(const Args&... args);
 
     /**
-     * \brief           Write (unlimited) data in output stream and new line character.
-     * \tparam Args     Variadic data types.
-     * \param[in] args  Data to write.
+     * \brief          Write (unlimited) data in output stream and new line character.
+     * \tparam Args    Variadic data types.
+     * \param[in] args Data to write.
      */
-    template <typename ...Args>
-    void writeLine(const Args&... args) noexcept;
+    template <class... Args >
+    void writeLine(const Args&... args);
 
     /**
-     * \brief       Read data from input stream. Read data until space character (' ').
-     * \tparam T    Type of input data.
-     * \return      Readed data.
+     * \brief    Read data from input stream. Read data until space character (' ').
+     * \tparam T Type of input data.
+     * \return   Readed data.
      */
-    template <typename T>
-    T read() noexcept;
+    template <class T>
+    T read();
 
     /**
-     * \brief       Read data from input stream. Read data until newline character ('\n').
-     * \tparam T    Type of input data.
-     * \return      Readed data.
+     * \brief    Read data from input stream. Read data until newline character ('\n').
+     * \tparam T Type of input data.
+     * \return   Readed data.
      */
-    template <typename T>
-    T readLine() noexcept;
+    template <class T>
+    T readLine();
 
     /**
-     * \brief   Show if any errors in input stream occurred.
-     * \return  Flag that contains answer.
+     * \brief  Show if any errors in input stream occurred.
+     * \return Flag that contains answer.
      */
     bool hasAnyInputErrors() const noexcept;
 
     /**
-     * \brief   Show if any errors in output stream occurred.
-     * \return  Flag that contains answer.
+     * \brief  Show if any errors in output stream occurred.
+     * \return Flag that contains answer.
      */
     bool hasAnyOutputErrors() const noexcept;
 
     /**
-     * \brief   Show if any errors in input and output streams occurred.
-     * \return  Flag that contains answer.
+     * \brief  Show if any errors in input and output streams occurred.
+     * \return Flag that contains answer.
      */
     bool hasAnyErrors() const noexcept;
 
     /**
-     * \brief               Restart file stream.
-     * \param[in] ioStream  Type of stream to restart.
+     * \brief              Restart file stream.
+     * \param[in] ioStream Type of stream to restart.
      */
-    void restartStream(const TypeStream ioStream) noexcept;
+    void restartStream(const TypeStream ioStream);
 
     /**
-     * \brief   Count lines in input file.
-     * \return  Number of lines.
+     * \brief  Count lines in input file.
+     * \return Number of lines.
      */
-    std::size_t countLinesInInputFile() noexcept;
+    std::size_t countLinesInInputFile();
 
 
 private:
@@ -158,52 +158,52 @@ private:
 
 
     /**
-     * \brief               Restart current stream.
-     * \tparam Stream       Type of stream to restart.
-     * \param[out] stream   Stream to restart.
+     * \brief             Restart current stream.
+     * \tparam Stream     Type of stream to restart.
+     * \param[out] stream Stream to restart.
      */
     template <class Stream>
-    void restart(Stream& stream) noexcept;
+    void restart(Stream& stream);
 
     /**
      * \brief       Write data in output stream.
      * \tparam T    Type of output data.
      * \param[in] t Data to write.
      */
-    template <typename T>
-    void writeImpl(const T& t) noexcept;
+    template <class T>
+    void writeImpl(const T& t);
 
     /**
-     * \brief           Write (unlimited) data in output stream.
-     * \tparam T        Type of output data.
-     * \tparam Args     Variadic data types.
-     * \param[in] t     Data to write.
-     * \param[in] args  Data to write.
+     * \brief          Write (unlimited) data in output stream.
+     * \tparam T       Type of output data.
+     * \tparam Args    Variadic data types.
+     * \param[in] t    Data to write.
+     * \param[in] args Data to write.
      */
-    template <typename T, typename ...Args>
-    void writeImpl(const T& t, const Args&... args) noexcept;
+    template <class T, class... Args>
+    void writeImpl(const T& t, const Args&... args);
 
     /**
      * \brief       Write data in output stream and new line character.
      * \tparam T    Type of output data.
      * \param[in] t Data to write.
      */
-    template <typename T>
-    void writeLineImpl(const T& t) noexcept;
+    template <class T>
+    void writeLineImpl(const T& t);
 
     /**
-     * \brief           Write (unlimited) data in output stream and new line character.
-     * \tparam T        Type of output data.
-     * \tparam Args     Variadic data types.
-     * \param[in] t     Data to write.
-     * \param[in] args  Data to write.
+     * \brief          Write (unlimited) data in output stream and new line character.
+     * \tparam T       Type of output data.
+     * \tparam Args    Variadic data types.
+     * \param[in] t    Data to write.
+     * \param[in] args Data to write.
      */
-    template <typename T, typename ...Args>
-    void writeLineImpl(const T& t, const Args&... args) noexcept;
+    template <class T, class... Args>
+    void writeLineImpl(const T& t, const Args&... args);
 
     /**
-     * \brief               Report error if any error occurred with streams.
-     * \param[in] message   Print this string to user with error.
+     * \brief             Report error if any error occurred with streams.
+     * \param[in] message Print this string to user with error.
      */
     void repoortError(const std::string_view message) const noexcept;
 };
