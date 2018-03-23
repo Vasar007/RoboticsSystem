@@ -13,7 +13,6 @@ Handler::Handler()
 	  _mode(Mode::COMMAND),
 	  _coorninateSystem(CoordinateSystem::WORLD),
 	  _coefficient(10'000),
-	  _numberOfIterations(0),
 	  _mapping({
 		{ "q", State::FORWARD },		{ "a", State::BACK },
 		{ "w", State::LEFT },			{ "s", State::RIGHT },
@@ -22,7 +21,8 @@ Handler::Handler()
 		{ "t", State::PITHCH_PLUS },	{ "g", State::PITHCH_MINUS },
 		{ "y", State::YAW_PLUS },		{ "h", State::YAW_MINUS },
 		{ "c", State::CIRCLIC },		{ "p", State::PARTIAL },
-		{ "z", State::HOME },           { "x", State::FROM_FILE } })
+		{ "z", State::HOME },           { "x", State::FROM_FILE },
+        { "o", State::POSITIONAL} })
 {
 }
 
@@ -113,32 +113,55 @@ ParsedResult Handler::parseDataAfterCommand()
 
 		case State::CIRCLIC:
 			[[fallthrough]];
+        case State::POSITIONAL:
+            [[fallthrough]];
 		case State::PARTIAL:
-			if (_data.size() > 1u && std::count(_data.begin(), _data.end(), '|') == 3)
+		{
+            const int num = std::count(_data.begin(), _data.end(), '|');
+            if (_data.size() > 1u && num >= 3)
 			{
-				const std::size_t findPosZero = _data.find('|');
+                result.points.reserve(num - 1);
 
-				const std::size_t foundPosFirst = _data.find('|', findPosZero + 1u);
-				std::string strToParse = _data.substr(findPosZero + 1u, 
-													  foundPosFirst - findPosZero - 1u);
-				bool flag1;
-				result.firstPoint = utils::fromString<RobotData>(strToParse, flag1);
+                std::size_t prev = 0;
 
-				const std::size_t foundPosSecond = _data.find('|', foundPosFirst + 1u);
-				strToParse = _data.substr(foundPosFirst + 1u, foundPosSecond - foundPosFirst - 1u);
-				bool flag2;
-				result.secondPoint = utils::fromString<RobotData>(strToParse, flag2);
+                std::size_t count = 0;
 
-				strToParse = _data.substr(foundPosSecond + 1u);
-				bool flag3;
-				result.numberOfIterations = utils::fromString<int>(strToParse, flag3);
+			    bool flag = true;
 
-				if (flag1 && flag2 && flag3)
-				{
-					return result;
-				}
-			}
+                for(std::size_t i = 0; i <_data.size(); ++i)
+                {
+                    if(_data[i] == '|')
+                    {
+                        const std::string strToParse = _data.substr(prev,i-prev);
+
+                        prev = i + 1;
+
+                        ++count;
+
+                        bool locFlag = true;
+
+                        if(count == 2)
+                        {
+                            result.numberOfIterations = utils::fromString<int>(strToParse, locFlag);
+                        }
+                        if(count >= 3)
+                        {
+                            result.points.emplace_back(utils::fromString<RobotData>(strToParse,
+                                                                                    locFlag));
+                        }
+
+                        flag &= locFlag;
+                    }
+                }
+                
+                if (flag)
+                {
+                    return result;
+                }
+		    }
+			    
 			break;
+		}
 
 		case State::HOME:
 			[[fallthrough]];
@@ -257,6 +280,9 @@ void Handler::appendCommand(const std::string_view command, RobotData& robotData
 		case State::PARTIAL:
 			break;
 
+        case State::POSITIONAL:
+            break;
+
 		case State::HOME:
 			break;
 		
@@ -350,11 +376,6 @@ CoordinateSystem Handler::getCoordinateSystem() const
 void Handler::setCoordinateSystem(const CoordinateSystem coordninateSystem)
 {
 	_coorninateSystem = coordninateSystem;
-}
-
-int Handler::getNumberOfIterations() const
-{
-	return _numberOfIterations;
 }
 
 ParsedResult Handler::getParsedResult() const

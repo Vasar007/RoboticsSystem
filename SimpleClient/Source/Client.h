@@ -7,6 +7,7 @@
 #include "Utilities.h"
 #include "WinsockInterface.h"   // INCLUDE ORDER DEPENDENCY -> 1 (because of "Windows.h")
 #include "TenzoMath.h"          // INCLUDE ORDER DEPENDENCY -> 2
+#include "TrajectoryManager.h"
 
 
 namespace vasily
@@ -133,11 +134,16 @@ public:
 	void		receive();
 
 	/**
-	 * \brief				Check coordinates and if it's right sends to robot.
+	 * \brief				send coordinate to robot.
 	 * \param[in] robotData Point to send.
-	 * \return				True if coordinates sent, false otherwise.
 	 */
 	void		sendCoordinates(const RobotData& robotData);
+
+    /**
+    * \brief	    	send coordinates to robot.
+    * \param[in] points List of points for sending.
+    */
+    void		sendCoordinates(const std::vector<RobotData>& points);
 
 	/**
 	 * \brief						Send coordinate system to robot.
@@ -216,32 +222,37 @@ protected:
 	/**
 	 * \brief Data used to send and with we compare answer from robot if it needs.
 	 */
-	RobotData			_waitAnswer;
+	RobotData		        	_waitAnswer;
 							
 	/**
 	 * \brief Flag used to define if client needs to wait answer from robot.
 	 */
-	std::atomic_bool	_isNeedToWait;
+	std::atomic_bool	        _isNeedToWait;
 							
 	/**
 	 * \brief Current state of work in circle.
 	 */
-	CirclicState		_circlicState;
+	CirclicState	        	_circlicState;
 
 	/**
 	 * \brief Work mode for client, initialize when object created.
 	 */
-	WorkMode            _workMode;
+	WorkMode                    _workMode;
 
 	/**
 	 * \brief Logger used to write received data to file.
 	 */
-	logger::Logger      _logger;
+	logger::Logger              _logger;
 
 	/**
 	 * \brief Class-wrapper used to work with strain gauge. 
 	 */
-	nikita::TenzoMath   _tenzoMath;
+	nikita::TenzoMath           _tenzoMath;
+
+    /**
+     * \brief Class used ot generate trajectoryes.
+     */
+    danila::TrajectoryManager   _trajectoryManager;
 
 	/**
 	 * \brief Default file name for input.
@@ -290,32 +301,6 @@ protected:
 	 * \param[in] time	Period time to check.
 	 */
 	void		checkConnection(const long long time);
-
-	/**
-	 * \brief							Work with robot in circlic mode.
-	 * \details							Now function works only with 2 points!
-	 * \param[in] firstPoint			First point to send and in which robot should return.
-	 * \param[in] secondPoint			Second point for circlic movement.
-	 * \param[in] numberOfIterations	Number of iterations in circlic movement.
-	 * \code
-	 * Enter command: c|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|5
-	 * \endcode
-	 */
-	void		circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint, 
-								const int numberOfIterations = 1);
-
-	/**
-	 * \brief					Work with robot in partial mode.
-	 * \details					Now function works only with 2 points!
-	 * \param[in] firstPoint	Start point.
-	 * \param[in] secondPoint	End point.
-	 * \param[in] numberOfSteps	Number of steps for which robot should move from start to end point.
-	 * \code
-	 * Enter command: p|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0|3
-	 * \endcode
-	*/
-	void		partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
-								const int numberOfSteps = 1);
 };
 
 } // namespace vasily

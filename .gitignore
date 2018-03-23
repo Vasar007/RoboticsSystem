@@ -268,3 +268,5 @@ __pycache__/
 
 # Additional dependencies
 [Dd]ependencies/
+/StatisticalDisplay/Source/include/SFML
+/StatisticalDisplay/Source/SFML

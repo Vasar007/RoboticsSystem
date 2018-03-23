@@ -205,16 +205,17 @@ void Client::waitLoop()
 				}
 				else if (_handler.getCurrentState() == Handler::State::CIRCLIC)
 				{
-					const ParsedResult parsedResult = _handler.getParsedResult();
-					circlicMovement(parsedResult.firstPoint, parsedResult.secondPoint,
-									parsedResult.numberOfIterations);
+                    sendCoordinates(_trajectoryManager.CirclicMovement(_handler.getParsedResult()));
 				}
-				else if (_handler.getCurrentState() == Handler::State::PARTIAL)
+                else if (_handler.getCurrentState() == Handler::State::POSITIONAL)
+                {
+                    sendCoordinates(_trajectoryManager.PositionalMovement(
+                        _handler.getParsedResult()));
+                }
+                else if (_handler.getCurrentState() == Handler::State::PARTIAL)
 				{
-					const ParsedResult parsedResult = _handler.getParsedResult();
-					partialMovement(parsedResult.firstPoint, parsedResult.secondPoint,
-									parsedResult.numberOfIterations);
-				}
+                    sendCoordinates(_trajectoryManager.PartialMovement(_handler.getParsedResult()));
+                }
 				else if (_handler.getCurrentState() == Handler::State::HOME)
 				{
 					sendCoordinates(_DEFAULT_POSITION);
@@ -360,91 +361,6 @@ void Client::run()
 	waitLoop();
 }
 
-void Client::circlicMovement(const RobotData& firstPoint, const RobotData& secondPoint,
-							 const int numberOfIterations)
-{
-	assert(numberOfIterations > 0);
-
-	_circlicState           = CirclicState::SEND_FIRST;
-	int counterIterations   = 0;
-	bool flag               = true;
-	while (flag)
-	{
-		switch (_circlicState)
-		{
-			case CirclicState::SEND_FIRST:
-				if (counterIterations == numberOfIterations)
-				{
-					flag = false;
-					break;
-				}
-				++counterIterations;
-
-				_isNeedToWait.store(true);
-				_waitAnswer		= firstPoint;
-				_circlicState	= CirclicState::WAIT_FIRST_ANSWER;
-
-				sendCoordinates(firstPoint);
-				//if (!sendCoordinates(firstPoint)) return;
-				break;
-
-			case CirclicState::WAIT_FIRST_ANSWER:
-			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(10LL));
-				break;
-			}
-
-			case CirclicState::SEND_SECOND:
-				_isNeedToWait.store(true);
-				_waitAnswer		= secondPoint;
-				_circlicState	= CirclicState::WAIT_SECOND_ANSWER;
-
-				sendCoordinates(secondPoint);
-				//if (!sendCoordinates(secondPoint)) return;
-				break;
-
-			case CirclicState::WAIT_SECOND_ANSWER:
-			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(10LL));
-				break;
-			}
-
-			default:
-				assert(false);
-				break;
-		}
-	}
-
-	sendCoordinates(firstPoint);
-}
-
-void Client::partialMovement(const RobotData& firstPoint, const RobotData& secondPoint,
-							 const int numberOfSteps)
-{
-	assert(numberOfSteps > 0);
-
-	const RobotData directionalVector	= (secondPoint - firstPoint) / numberOfSteps;
-	RobotData robotData					= firstPoint;
-
-	sendCoordinates(firstPoint);
-	//if (!sendCoordinates(firstPoint)) return;
-
-	for (int i = 0; i < numberOfSteps; ++i)
-	{
-		robotData += directionalVector;
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
-
-		sendCoordinates(robotData);
-		//if (!sendCoordinates(robotData)) return;
-	}
-
-	if (robotData != secondPoint)
-	{
-		sendCoordinates(secondPoint);
-	}
-}
-
 void Client::sendCoordinates(const RobotData& robotData)
 {
 	_start          = std::chrono::steady_clock::now();
@@ -452,6 +368,18 @@ void Client::sendCoordinates(const RobotData& robotData)
 	lastSentPoint   = robotData;
 	_robotData      = robotData;
 	_logger.writeLine(robotData);
+}
+
+void Client::sendCoordinates(const std::vector<RobotData>& points)
+{
+    _start = std::chrono::steady_clock::now();
+    for(auto& it:points)
+    {
+        sendData(_sendingSocket, it.toString());
+        _logger.writeLine(it);
+    }
+    _robotData = *points.rbegin();
+    lastSentPoint = _robotData;
 }
 
 void Client::sendCoordinateSystem(const CoordinateSystem coordinateSystem) const

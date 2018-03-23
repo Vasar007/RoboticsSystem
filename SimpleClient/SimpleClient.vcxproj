@@ -149,10 +149,12 @@
   <ItemGroup>
     <ClCompile Include="Source\Handler.cpp" />
     <ClCompile Include="Source\Client.cpp" />
+    <ClCompile Include="Source\TrajectoryManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Handler.h" />
     <ClInclude Include="Source\Client.h" />
+    <ClInclude Include="Source\TrajectoryManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleWinsockInterface\SimpleWinsockInterface.vcxproj">

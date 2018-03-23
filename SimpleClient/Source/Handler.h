@@ -18,27 +18,22 @@ struct ParsedResult
 	/**
 	 * \brief Number used to change coordinates.
 	 */
-	int			coefficient		    = 1;
+	int			            coefficient		    = 1;
 
 	/**
 	 * \brief Number of iterations for circlic movement.
 	 */
-	int	        numberOfIterations	= 1;
+	int	                    numberOfIterations	= 1;
 
 	/**
 	 * \brief Additional flag to check correctness of coordinates.
 	 */
-	bool		isCorrect			= true;
+	bool		            isCorrect			= true;
 
-	/**
-	 * \brief First point of interval.
-	 */
-	RobotData	firstPoint			= {};
-
-	/**
-	 * \brief Second point of interval.
-	 */
-	RobotData	secondPoint		    = {};
+    /**
+     * \brief List of parsed points.
+     */
+    std::vector<RobotData>  points              = {};
 };
 
 /**
@@ -58,7 +53,8 @@ public:
 		FULL_CONTROL,
 		CIRCLIC,
 		PARTIAL,
-		HOME,
+		POSITIONAL,
+	    HOME,
 		FROM_FILE,
 
 		FORWARD,
@@ -146,11 +142,6 @@ private:
 	 * \brief Moving coefficient which we use to change the coordinates.
 	 */
 	int										_coefficient;
-
-	/**
-	 * \brief Number of iterations for circlic movement.
-	 */
-	int								        _numberOfIterations;
 
 	/**
 	 * \brief Parsed data structure which build from input data after command literal.
@@ -258,12 +249,6 @@ public:
 	* \param[in] coordninateSystem	New value to set.
 	*/
 	void setCoordinateSystem(const CoordinateSystem coordninateSystem);
-
-	/**
-	 * \brief	Get number of iterations.
-	 * \return	Current number of iterations.
-	 */
-	int getNumberOfIterations() const;
 
 	/**
 	 * \brief	Get parsed result after command.
