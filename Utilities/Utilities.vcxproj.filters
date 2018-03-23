@@ -65,9 +65,6 @@
     <None Include="Source\Print\Print.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="Source\Config\Config.inl">
-      <Filter>Header Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Logger\Logger.cpp">
@@ -89,9 +86,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\NetworkInterface\NetworkInterface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Config\Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

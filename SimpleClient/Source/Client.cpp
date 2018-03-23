@@ -7,16 +7,17 @@
 namespace vasily
 {
 
-inline const config::NamedConfig Client::_CONFIG
+inline const config::Config<std::string, std::string, std::string_view, int, int, long long>
+    Client::CONFIG
 {
-    { "DEFAULT_IN_FILE_NAME",               std::string{ "in.txt" } },
-    { "DEFAULT_OUT_FILE_NAME",              std::string{ "out.txt" } },
-    { "DEFAULT_SERVER_IP",                  std::string{ "192.168.1.21" } },
-    { "DEFAULT_SENDING_PORT_TO_SERVER",     int{ 59002 } },
-    { "DEFAULT_RECEIVING_PORT_FROM_SERVER", int{ 59003 } },
-    { "RECONNECTION_DELAY",                 long long{ 1000LL } }
+    { "in.txt" },
+    { "out.txt" },
+    { "192.168.1.21", 13 },
+     59002,
+     59003,
+     1000LL
 };
-    
+ 
 Client::Client(const int serverPort, const std::string_view serverIP, const WorkMode workMode)
     : isNeedToUpdate(false),
       lastSentPoint(RobotData::DEFAULT_CORDINATES, RobotData::DEFAULT_PARAMETERS),
@@ -28,8 +29,8 @@ Client::Client(const int serverPort, const std::string_view serverIP, const Work
       _isNeedToWait(false),
       _circlicState(),
       _workMode(workMode),
-      _logger(_CONFIG.get<std::string>("DEFAULT_IN_FILE_NAME"),
-              _CONFIG.get<std::string>("DEFAULT_OUT_FILE_NAME"))
+      _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
+              CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>())
 {
 }
 
@@ -45,8 +46,8 @@ Client::Client(const int serverSendingPort, const int serverReceivingPort,
       _isNeedToWait(false),
       _circlicState(),
       _workMode(workMode),
-      _logger(_CONFIG.get<std::string>("DEFAULT_IN_FILE_NAME"),
-              _CONFIG.get<std::string>("DEFAULT_OUT_FILE_NAME"))
+      _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
+              CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>())
 {
 }
 
@@ -63,8 +64,8 @@ Client::Client(Client&& other) noexcept
       _isNeedToWait(other._isNeedToWait.load()),
       _circlicState(other._circlicState),
       _workMode(other._workMode),
-      _logger(_CONFIG.get<std::string>("DEFAULT_IN_FILE_NAME"),
-              _CONFIG.get<std::string>("DEFAULT_OUT_FILE_NAME"))
+      _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
+              CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>())
 {
     utils::swap(*this, other);
 }
@@ -351,7 +352,7 @@ void Client::tryReconnect()
         launch();
 
         std::this_thread::sleep_for(
-            std::chrono::milliseconds(_CONFIG.get<long long>("RECONNECTION_DELAY")));
+            std::chrono::milliseconds(CONFIG.get<CAST(Param::RECONNECTION_DELAY)>()));
     }
 }
 

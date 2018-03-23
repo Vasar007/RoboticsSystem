@@ -10,7 +10,7 @@ int main()
 
     constexpr int	kServerSendingPort      = 9999;
     constexpr int	kServerReceivingPort    = 9998;
-    constexpr char	kServerIP[]             = "192.168.0.103"; 
+    constexpr char	kServerIP[]             = "192.168.0.101"; 
     constexpr int   kLayerPort              = 8888;
     constexpr int   kBacklog                = 10;
 

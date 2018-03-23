@@ -4,18 +4,20 @@
 namespace vasily
 {
 
-inline const config::NamedConfig ServerLayer::_CONFIG
+inline const config::Config<std::string, std::string, std::string_view, int, int, int,
+                            std::size_t, std::array<int, 3u>, std::array<int, 3u>, long long>
+    ServerLayer::CONFIG
 {
-    { "DEFAULT_IN_FILE_NAME",               std::string{ "distance_to_time.txt" } },
-    { "DEFAULT_OUT_FILE_NAME",              std::string{ "out.txt" } },
-    { "DEFAULT_SERVER_IP",                  std::string{ "192.168.1.21" } },
-    { "DEFAULT_SENDING_PORT_TO_SERVER",     int{ 59002 } },
-    { "DEFAULT_RECEIVING_PORT_FROM_SERVER", int{ 59003 } },
-    { "DEFAULT_CLIENT_PORT",                int{ 8888 } },
-    { "NUMBER_OF_MAIN_COORDINATES",         std::size_t{ 3u } },
-    { "RECONNECTION_DELAY",                 long long { 1000LL } },
-    { "MIN_COORDINATES",                    std::array<int, 3u>{ 830'000, -400'000, 539'000 } },
-    { "MAX_COORDINATES",                    std::array<int, 3u>{ 1'320'000, 400'000, 960'000 } }
+    { "distance_to_time.txt" },
+    { "out.txt" },
+    { "192.168.1.21", 13 },
+    59002,
+    59003,
+    8888,
+    3u,
+    { 830'000, -400'000, 539'000 },
+    { 1'320'000, 400'000, 960'000 },
+    1000LL
 };
 
 ServerLayer::ServerLayer(const int serverSendingPort, const int serverRecivingPort,
@@ -33,8 +35,8 @@ ServerLayer::ServerLayer(const int serverSendingPort, const int serverRecivingPo
       _serverSendingPort(serverSendingPort),
       _serverReceivingPort(serverRecivingPort),
       _workMode(workMode),
-      _logger(_CONFIG.get<std::string>("DEFAULT_IN_FILE_NAME"),
-              _CONFIG.get<std::string>("DEFAULT_OUT_FILE_NAME")),
+      _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
+              CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>()),
       _delayManager(_printer, _logger)
 {
 }
@@ -149,9 +151,9 @@ void ServerLayer::receiveFromClients()
 bool ServerLayer::checkCoordinates(const RobotData& robotData) const
 {
     // Get default parameters for checking.
-    static const auto kMainCoordinates = _CONFIG.get<std::size_t>("NUMBER_OF_MAIN_COORDINATES");
-    static const auto kMinCoords = _CONFIG.get< std::array<int, 3u> >("MIN_COORDINATES");
-    static const auto kMaxCoords = _CONFIG.get< std::array<int, 3u> >("MAX_COORDINATES");
+    static const auto kMainCoordinates = CONFIG.get<CAST(Param::NUMBER_OF_MAIN_COORDINATES)>();
+    static const auto kMinCoords = CONFIG.get<CAST(Param::MIN_COORDINATES)>();
+    static const auto kMaxCoords = CONFIG.get<CAST(Param::MAX_COORDINATES)>();
 
     for (std::size_t i = 0u; i < kMainCoordinates; ++i)
     {
@@ -266,7 +268,7 @@ void ServerLayer::tryReconnectToServer()
         doConnection();
 
         std::this_thread::sleep_for(
-            std::chrono::milliseconds(_CONFIG.get<long long>("RECONNECTION_DELAY")));
+            std::chrono::milliseconds(CONFIG.get<CAST(Param::RECONNECTION_DELAY)>()));
     }
 }
 

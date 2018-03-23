@@ -6,10 +6,10 @@
 namespace vasily
 {
 
-inline const config::NamedConfig ServerImitator::_CONFIG
+inline const config::Config<std::string, std::string> ServerImitator::CONFIG
 {
-    { "DEFAULT_IN_FILE_NAME",               std::string{ "in.txt" } },
-    { "DEFAULT_OUT_FILE_NAME",              std::string{ "out.txt" } }
+    { "in.txt" },
+    { "out.txt" }
 };
 
 ServerImitator::ServerImitator(const int clientSendingPort, const int clientRecivingPort,
@@ -19,8 +19,8 @@ ServerImitator::ServerImitator(const int clientSendingPort, const int clientReci
       _backlog(backlog),
       _clientSendingSocket(0),
       _clientReceivingSocket(0),
-      _logger(_CONFIG.get<std::string>("DEFAULT_IN_FILE_NAME"),
-              _CONFIG.get<std::string>("DEFAULT_OUT_FILE_NAME"))
+      _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
+              CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>())
 {
 }
 
@@ -31,8 +31,8 @@ ServerImitator::ServerImitator(ServerImitator&& other) noexcept
       _clientSendingSocket(0),
       _clientReceivingSocket(0),
       _coorninateSystem(other._coorninateSystem),
-      _logger(_CONFIG.get<std::string>("DEFAULT_IN_FILE_NAME"),
-              _CONFIG.get<std::string>("DEFAULT_OUT_FILE_NAME")),
+      _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
+              CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>()),
       _lastReceivedData(other._lastReceivedData)
 {
     utils::swap(*this, other);

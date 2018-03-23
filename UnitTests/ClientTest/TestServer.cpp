@@ -4,12 +4,6 @@
 namespace clientTests
 {
 
-inline const config::NamedConfig TestServer::CONFIG
-{
-    { "PORT_SENDING",   int{ 9998 } },
-    { "PORT_RECEIVING", int{ 9999 } },
-};
-
 TestServer::TestServer(const int sendingPort, const int recivingPort, const int backlog)
     : ServerImitator(sendingPort, recivingPort, backlog),
       hasConnected(false),

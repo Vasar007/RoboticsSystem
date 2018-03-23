@@ -28,6 +28,27 @@ public:
     };
 
     /**
+     * \brief Array of constant to get parameters from config.
+     */
+    enum class Param : std::size_t
+    {
+        DEFAULT_IN_FILE_NAME,
+        DEFAULT_OUT_FILE_NAME,
+        DEFAULT_SERVER_IP,
+        DEFAULT_SENDING_PORT_TO_SERVER,
+        DEFAULT_RECEIVING_PORT_FROM_SERVER,
+        RECONNECTION_DELAY
+    };
+
+    /**
+     * \brief   Variable used to keep all default parameters and constants.
+     * \details Using std::string instead of std::string_view because Logger constructor needs only
+     *          std::string because of std::istream and std::ostream.
+     */
+    static const config::Config<std::string, std::string, std::string_view, int, int, long long>
+        CONFIG;
+
+    /**
      * \brief Used to define break point for transmitter.
      */
     std::atomic_bool    isNeedToUpdate;
@@ -57,15 +78,15 @@ public:
      *                                or indirect.
      */
     explicit	Client(
-        const int serverSendingPort     = _CONFIG.get<int>("DEFAULT_SENDING_PORT_TO_SERVER"), 
-        const int serverReceivingPort   = _CONFIG.get<int>("DEFAULT_RECEIVING_PORT_FROM_SERVER"),
-        const std::string_view serverIP = _CONFIG.get<std::string>("DEFAULT_SERVER_IP"),
+        const int serverSendingPort     = CONFIG.get<CAST(Param::DEFAULT_SENDING_PORT_TO_SERVER)>(), 
+        const int serverReceivingPort   = CONFIG.get<CAST(Param::DEFAULT_RECEIVING_PORT_FROM_SERVER)>(),
+        const std::string_view serverIP = CONFIG.get<CAST(Param::DEFAULT_SERVER_IP)>(),
         const WorkMode workMode         = WorkMode::INDIRECT);
 
     /**	
      * \brief Default destructor.
      */
-    virtual     ~Client() noexcept				= default;
+    virtual     ~Client()       				= default;
 
     /**
      * \brief			Deleted copy constructor.
@@ -239,10 +260,6 @@ protected:
      */
     nikita::TenzoMath   _tenzoMath;
 
-    /**
-     * \brief Variable used to keep all default parameters and constants.
-     */
-    static const config::NamedConfig _CONFIG;
 
     /**
      * \brief Try to establish a connection to a specified socket again.

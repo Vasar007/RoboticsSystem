@@ -1,13 +1,10 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include <map>
-#include <string>
-#include <any>
-#include <cassert>
-#include <initializer_list>
-#include <iostream>
+#include <tuple>
 
+
+#define CAST(x) static_cast<std::size_t>(x)
 
 /**
  * \brief Additional namespace to process lots of config parameters and constants in classes.
@@ -16,33 +13,53 @@ namespace config
 {
 
 /**
- * \brief More complex config with heap allocation (std::map) but it is easier to use.
+ * \brief       Class provides parameters storage with almost zero-cost overhead.
+ * \tparam Args Config parameters types.
  */
-struct NamedConfig
+template <class... Args>
+struct Config
 {
     /**
-     * \brief       Constructor which created dictionary from arguments.
-     * \param init  Config parameters in pairs (name : value) which need to keep in storage.
+     * \brief    Type alias for tuple elements.
+     * \tparam I Index of tuple element.
      */
-    NamedConfig(const std::initializer_list<std::map<std::string, std::any>::value_type> init);
+    template <std::size_t I>
+    using TupleElement = std::tuple_element_t<I, std::tuple<Args...> >;
+
 
     /**
-     * \brief           Get element with needed name from the storage.
-     * \tparam T        Type of the needed element.
-     * \param paramName Name of the needed element.
-     * \return          Needed element.
+     * \brief      Constructor which created tuple from arguments.
+     * \param args Config parameters which need to keep in storage.
      */
-    template <class T>
-    T get(const std::string_view paramName) const;
+    constexpr Config(Args&&... args)
+        : _storage(std::make_tuple(args...))
+    {
+    }
+
+    /**
+     * \brief        Get element with needed index from the storage.
+     * \tparam Index Index of needed element.
+     * \return       Needed element.
+     */
+    template <std::size_t Index>
+    constexpr TupleElement<Index> get() const noexcept
+    {
+        static_assert(Index < sizeof...(Args), "Index out of range!");
+        return std::get<Index>(_storage);
+    }
+
+    /**
+     * \brief Keep number of arguments in config at runtime. Alternative: std::tuple_size_v.
+     */
+    const std::size_t   kNumberOfParams = sizeof...(Args);
+
 
 private:
     /**
      * \brief Storage of all parameters in config.
      */
-    std::map<std::string, std::any, std::less<> > _storage;
+    std::tuple<Args...> _storage;
 };
-
-#include "Config.inl"
 
 }  // namespace config
 

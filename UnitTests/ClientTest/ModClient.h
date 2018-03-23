@@ -12,9 +12,26 @@ namespace clientTests
 struct ModClient final : public vasily::Client
 {
     /**
+     * \brief Array of constant to get parameters from config.
+     */
+    enum class Param : std::size_t
+    {
+        SERVER_PORT,
+        SERVER_PORT_SENDING,
+        SERVER_PORT_RECEIVING,
+        SERVER_IP
+    };
+
+    /**
      * \brief Variable used to keep all default parameters and constants.
      */
-    static const config::NamedConfig CONFIG;
+    static constexpr config::Config<int, int, int, std::string_view> TEST_CONFIG
+    {
+        8888,
+        9999,
+        9998,
+        { "192.168.0.101", 14 }
+    };
 
     /**
      * \brief Mutex to lock thread for safety.
@@ -41,9 +58,9 @@ struct ModClient final : public vasily::Client
      *                              indirect.
      */
     explicit	ModClient(
-        const int serverPortSending     = CONFIG.get<int>("SERVER_PORT_SENDING"),
-        const int serverReceiving       = CONFIG.get<int>("SERVER_PORT_RECEIVING"),
-        const std::string_view serverIP = CONFIG.get<std::string>("SERVER_IP"),
+        const int serverPortSending     = TEST_CONFIG.get<CAST(Param::SERVER_PORT_SENDING)>(),
+        const int serverReceiving       = TEST_CONFIG.get<CAST(Param::SERVER_PORT_RECEIVING)>(),
+        const std::string_view serverIP = TEST_CONFIG.get<CAST(Param::SERVER_IP)>(),
         const Client::WorkMode workMode = Client::WorkMode::INDIRECT);
 
     /**

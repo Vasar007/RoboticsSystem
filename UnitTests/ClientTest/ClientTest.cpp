@@ -51,9 +51,9 @@ void ClientTest::sendReceiveAbility()
     std::thread serverThread(initTestServer, std::ref(testServer), kNumberOfTimesToReceiveData);
     serverThread.detach();
     
-    ModClient client(ModClient::CONFIG.get<int>("SERVER_PORT_SENDING"),
-                     ModClient::CONFIG.get<int>("SERVER_PORT_RECEIVING"),
-                     ModClient::CONFIG.get<std::string>("SERVER_IP"),
+    ModClient client(ModClient::TEST_CONFIG.get<CAST(ModClient::Param::SERVER_PORT_SENDING)>(),
+                     ModClient::TEST_CONFIG.get<CAST(ModClient::Param::SERVER_PORT_RECEIVING)>(),
+                     ModClient::TEST_CONFIG.get<CAST(ModClient::Param::SERVER_IP)>(),
                      vasily::Client::WorkMode::STRAIGHTFORWARD);
     initClient(client, [&client, &kStandartDelay]()
     {	
@@ -91,9 +91,9 @@ void ClientTest::dangerusZone()
     std::thread serverThread(initTestServer, std::ref(testServer), kNumberOfTimesToReceiveData);
     serverThread.detach();
 
-    ModClient client(ModClient::CONFIG.get<int>("SERVER_PORT_SENDING"),
-                     ModClient::CONFIG.get<int>("SERVER_PORT_RECEIVING"),
-                     ModClient::CONFIG.get<std::string>("SERVER_IP"),
+    ModClient client(ModClient::TEST_CONFIG.get<CAST(ModClient::Param::SERVER_PORT_SENDING)>(),
+                     ModClient::TEST_CONFIG.get<CAST(ModClient::Param::SERVER_PORT_RECEIVING)>(),
+                     ModClient::TEST_CONFIG.get<CAST(ModClient::Param::SERVER_IP)>(),
                      vasily::Client::WorkMode::STRAIGHTFORWARD);
     initClient(client, [&client, &kStandartDelay]()
     {
@@ -136,7 +136,7 @@ void ClientTest::circlicMovement()
     constexpr long long kStandartDelay      = 25LL;
     constexpr int kReceiveCoordinateType    = 1;
     constexpr int kReceiveCordinatesFirst   = 5;
-    constexpr int kReceiveCordinatesSecond  = 5; // 1
+    constexpr int kReceiveCordinatesSecond  = 5; // 1 coords with layer's checking.
 
     constexpr int kReceiveCoordinates = kReceiveCordinatesFirst + kReceiveCordinatesSecond;
     constexpr int kNumberOfTimesToReceiveData = kReceiveCoordinateType + kReceiveCoordinates;
@@ -144,9 +144,9 @@ void ClientTest::circlicMovement()
     std::thread serverThread(initTestServer, std::ref(testServer), kNumberOfTimesToReceiveData);
     serverThread.detach();
     
-    ModClient client(ModClient::CONFIG.get<int>("SERVER_PORT_SENDING"),
-                     ModClient::CONFIG.get<int>("SERVER_PORT_RECEIVING"),
-                     ModClient::CONFIG.get<std::string>("SERVER_IP"),
+    ModClient client(ModClient::TEST_CONFIG.get<CAST(ModClient::Param::SERVER_PORT_SENDING)>(),
+                     ModClient::TEST_CONFIG.get<CAST(ModClient::Param::SERVER_PORT_RECEIVING)>(),
+                     ModClient::TEST_CONFIG.get<CAST(ModClient::Param::SERVER_IP)>(),
                      vasily::Client::WorkMode::STRAIGHTFORWARD);
     initClient(client, [&client, &kStandartDelay]()
     {
@@ -192,7 +192,7 @@ void ClientTest::partialMovement()
     constexpr long long kStandartDelay      = 25LL;
     constexpr int kReceiveCoordinateType    = 1;
     constexpr int kReceiveCordinatesFirst   = 6;
-    constexpr int kReceiveCordinatesSecond  = 6; // 5
+    constexpr int kReceiveCordinatesSecond  = 6; // 5 coords with layer's checking.
 
     constexpr int kReceiveCoordinates = kReceiveCordinatesFirst + kReceiveCordinatesSecond;
     constexpr int kNumberOfTimesToReceiveData = kReceiveCoordinateType + kReceiveCoordinates;
@@ -200,9 +200,9 @@ void ClientTest::partialMovement()
     std::thread serverThread(initTestServer, std::ref(testServer), kNumberOfTimesToReceiveData);
     serverThread.detach();
 
-    ModClient client(ModClient::CONFIG.get<int>("SERVER_PORT_SENDING"),
-                     ModClient::CONFIG.get<int>("SERVER_PORT_RECEIVING"),
-                     ModClient::CONFIG.get<std::string>("SERVER_IP"),
+    ModClient client(ModClient::TEST_CONFIG.get<CAST(ModClient::Param::SERVER_PORT_SENDING)>(),
+                     ModClient::TEST_CONFIG.get<CAST(ModClient::Param::SERVER_PORT_RECEIVING)>(),
+                     ModClient::TEST_CONFIG.get<CAST(ModClient::Param::SERVER_IP)>(),
                      vasily::Client::WorkMode::STRAIGHTFORWARD);
     initClient(client, [&client, &kStandartDelay]()
     {

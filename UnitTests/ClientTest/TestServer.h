@@ -15,9 +15,22 @@ namespace clientTests
 struct TestServer final : public vasily::ServerImitator
 {
     /**
+     * \brief Array of constant to get parameters from config.
+     */
+    enum class Param : std::size_t
+    {
+        PORT_SENDING,
+        PORT_RECEIVING
+    };
+
+    /**
      * \brief Variable used to keep all default parameters and constants.
      */
-    static const config::NamedConfig CONFIG;
+    static constexpr config::Config<int, int> TEST_CONFIG
+    {
+        9998,
+        9999
+    };
 
     /**
      * \brief Mutex to lock thread for safety.
@@ -46,8 +59,8 @@ struct TestServer final : public vasily::ServerImitator
      * \param[in] recivingPort	Port for connection.
      * \param[in] backlog		Number of connections allowed on the incoming queue.
      */
-    explicit	TestServer(const int sendingPort    = CONFIG.get<int>("PORT_SENDING"),
-                           const int recivingPort   = CONFIG.get<int>("PORT_RECEIVING"),
+    explicit	TestServer(const int sendingPort    = TEST_CONFIG.get<CAST(Param::PORT_SENDING)>(),
+                           const int recivingPort   = TEST_CONFIG.get<CAST(Param::PORT_RECEIVING)>(),
                            const int backlog        = 10);
 
     /**

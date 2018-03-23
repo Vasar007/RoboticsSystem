@@ -18,6 +18,22 @@ class ServerImitator : public WinsockInterface
 {
 public:
     /**
+     * \brief Array of constant to get parameters from config.
+     */
+    enum class Param : std::size_t
+    {
+        DEFAULT_IN_FILE_NAME,
+        DEFAULT_OUT_FILE_NAME
+    };
+
+    /**
+     * \brief   Variable used to keep all default parameters and constants.
+     * \details Using std::string instead of std::string_view because Logger constructor needs only
+     *          std::string because of std::istream and std::ostream.
+     */
+    static const config::Config<std::string, std::string> CONFIG;
+
+    /**
      * \brief					     Constructor which initializes sockets and bindes ports to
      *                               them.
      * \param[in] clientSendingPort	 Port for connection.
@@ -109,12 +125,6 @@ protected:
      * \brief Last received data from client.
      */
     RobotData               _lastReceivedData;
-    
-
-    /**
-     * \brief Variable used to keep all default parameters and constants.
-     */
-    static const config::NamedConfig _CONFIG;
 
 
     /**

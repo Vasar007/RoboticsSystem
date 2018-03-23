@@ -29,6 +29,32 @@ public:
     };
 
     /**
+     * \brief Array of constant to get parameters from config.
+     */
+    enum class Param : std::size_t
+    {
+        DEFAULT_IN_FILE_NAME,
+        DEFAULT_OUT_FILE_NAME,
+        DEFAULT_SERVER_IP,
+        DEFAULT_SENDING_PORT_TO_SERVER,
+        DEFAULT_RECEIVING_PORT_FROM_SERVER,
+        DEFAULT_CLIENT_PORT,
+        NUMBER_OF_MAIN_COORDINATES,
+        MIN_COORDINATES,
+        MAX_COORDINATES,
+        RECONNECTION_DELAY
+    };
+
+    /**
+     * \brief   Variable used to keep all default parameters and constants.
+     * \details Using std::string instead of std::string_view because Logger constructor needs only
+     *          std::string because of std::istream and std::ostream.
+     */
+    static const config::Config<std::string, std::string, std::string_view, int, int, int,
+                                std::size_t, std::array<int, 3u>, std::array<int, 3u>, long long>
+        CONFIG;
+
+    /**
      * \brief                        Constructor that initializes sockets, connects to server and
      *                               creates socket to work with clients.
      * \param[in] serverSendingPort  Server port to send.
@@ -40,10 +66,10 @@ public:
      *                               or unsafety.
      */
     explicit ServerLayer(
-        const int serverSendingPort        = _CONFIG.get<int>("DEFAULT_SENDING_PORT_TO_SERVER"),
-        const int serverRecivingPort       = _CONFIG.get<int>("DEFAULT_RECEIVING_PORT_FROM_SERVER"),
-        const std::string_view serverIP    = _CONFIG.get<std::string>("DEFAULT_SERVER_IP"),
-        const int layerPort                = _CONFIG.get<int>("DEFAULT_CLIENT_PORT"),
+        const int serverSendingPort        = CONFIG.get<CAST(Param::DEFAULT_SENDING_PORT_TO_SERVER)>(),
+        const int serverRecivingPort       = CONFIG.get<CAST(Param::DEFAULT_RECEIVING_PORT_FROM_SERVER)>(),
+        const std::string_view serverIP    = CONFIG.get<CAST(Param::DEFAULT_SERVER_IP)>(),
+        const int layerPort                = CONFIG.get<CAST(Param::DEFAULT_CLIENT_PORT)>(),
         const int backlog                  = 10,
         const WorkMode workMode            = WorkMode::SAFE);
 
@@ -208,11 +234,6 @@ protected:
      * \brief Class used to calculate delays.
      */
     DelayManager            _delayManager;  // ORDER DEPENDENCY => 2.
-
-    /**
-     * \brief Variable used to keep all default parameters and constants.
-     */
-    static const config::NamedConfig _CONFIG;
 
 
     /**

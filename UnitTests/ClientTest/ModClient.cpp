@@ -4,14 +4,6 @@
 namespace clientTests
 {
 
-inline const config::NamedConfig ModClient::CONFIG
-{
-    { "SERVER_PORT",           int{ 8888 } },
-    { "SERVER_PORT_SENDING",   int{ 9999 } },
-    { "SERVER_PORT_RECEIVING", int{ 9998 } },
-    { "SERVER_IP",             std::string{ "192.168.0.103" } }
-};
-
 ModClient::ModClient(const int serverPortSending, const int serverReceiving, 
                      const std::string_view serverIP, const Client::WorkMode workMode)
     : Client(serverPortSending, serverReceiving, serverIP, workMode),
