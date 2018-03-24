@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>SFML_DYNAMIC;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\gusef\source\repos\FANUC\Dependencies\include;$(SolutionDir)Utilities\Source;$(SolutionDir)SimpleWinsockInterface\Source;$(SolutionDir)SimpleClient\Source;$(SolutionDir)Dependencies\SFML-2.4.2-64\include;$(SolutionDir)TenzoMath\Source;D:\Common Files\OpenCV\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Utilities\Source;$(SolutionDir)SimpleWinsockInterface\Source;$(SolutionDir)SimpleClient\Source;$(SolutionDir)Dependencies\SFML-2.4.2-64\include;$(SolutionDir)TenzoMath\Source;D:\Common Files\OpenCV\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
@@ -145,7 +145,7 @@
       <SDLCheck>true</SDLCheck>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>SFML_DYNAMIC;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\gusef\source\repos\FANUC\Dependencies\include;$(SolutionDir)Utilities\Source;$(SolutionDir)SimpleWinsockInterface\Source;$(SolutionDir)SimpleClient\Source;$(SolutionDir)Dependencies\SFML-2.4.2-64\include;$(SolutionDir)TenzoMath\Source;D:\Common Files\OpenCV\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Utilities\Source;$(SolutionDir)SimpleWinsockInterface\Source;$(SolutionDir)SimpleClient\Source;$(SolutionDir)Dependencies\SFML-2.4.2-64\include;$(SolutionDir)TenzoMath\Source;D:\Common Files\OpenCV\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>

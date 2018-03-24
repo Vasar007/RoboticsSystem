@@ -54,6 +54,6 @@ public:
         const vasily::ParsedResult& parsedResult) const noexcept;
 };
 
-}
+} // namespace danila
 
 #endif // TRAJECTORY_MANAGER_H

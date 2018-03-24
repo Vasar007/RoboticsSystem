@@ -1,5 +1,6 @@
 #include "HandlerTest.h"
 
+#include "testUtilites.h"
 #include "Handler.h"
 
 /**
@@ -18,7 +19,7 @@ void HandlerTest::IncorrectSymbols()
     handler.appendCommand(command, robotData);
     const vasily::ParsedResult parsedResult = handler.getParsedResult();
 
-    Assert::IsTrue(!parsedResult.isCorrect, L"Mistake not found");
+    Assert::IsFalse(parsedResult.isCorrect, L"Mistake not found");
 }
 
 void HandlerTest::IncorrectNumberOfIterations()
@@ -30,7 +31,7 @@ void HandlerTest::IncorrectNumberOfIterations()
     handler.appendCommand(command, robotData);
     const vasily::ParsedResult parsedResult = handler.getParsedResult();
 
-    Assert::IsTrue(!parsedResult.isCorrect, L"Mistake not found");
+    Assert::IsFalse(parsedResult.isCorrect, L"Mistake not found");
 }
     
 void HandlerTest::IncorrectNumberOfCordinates()
@@ -42,26 +43,32 @@ void HandlerTest::IncorrectNumberOfCordinates()
     handler.appendCommand(command, robotData);
     const vasily::ParsedResult parsedResult = handler.getParsedResult();
 
-    Assert::IsTrue(!parsedResult.isCorrect, L"Mistake not found");
+    Assert::IsFalse(parsedResult.isCorrect, L"Mistake not found");
 }
 
 void HandlerTest::HandlerTwoPointsParsing()
 {
     constexpr std::string_view command = { "p|3|1 2 3 4 5 6 10 2 0|10 20 30 40 50 60 10 2 0",48 };
     vasily::Handler handler;
-    std::vector<vasily::RobotData> result;
-    result.push_back({ { 1, 2, 3, 4, 5, 6 },{ 10, 2, 0 } });
-    result.push_back({ { 10, 20, 30, 40, 50, 60 },{ 10, 2, 0 } });
+    std::vector<vasily::RobotData> result
+    {
+        { {  1,  2,  3,  4,  5,  6 }, { 10, 2, 0 } },
+        { { 10, 20, 30, 40, 50, 60 }, { 10, 2, 0 } }
+    };
 
     handler.appendCommand(command, *result.begin());
     vasily::ParsedResult parsedResult = handler.getParsedResult();
 
-    Assert::IsTrue(handler.getCurrentState() == vasily::Handler::State::PARTIAL,
+    Assert::IsTrue(parsedResult.isCorrect, L"There is no mistake");
+    Assert::AreEqual(vasily::Handler::State::PARTIAL, handler.getCurrentState(),
         L"not right state parsed");
-    Assert::IsTrue(parsedResult.points.size() == result.size(), L"Not right number of points");
-    Assert::IsTrue(parsedResult.numberOfIterations == 3, L"Not right number of iterations");
-    Assert::IsTrue(parsedResult.points[0].isEqual(result[0]), L"Not right first point");
-    Assert::IsTrue(parsedResult.points[1].isEqual(result[1]), L"Not right second point");
+    Assert::AreEqual(result.size(), parsedResult.points.size(), L"Not right number of points");
+    Assert::AreEqual(3, parsedResult.numberOfIterations, L"Not right number of iterations");
+    for (std::size_t i = 0; i < result.size();++i)
+    {
+        const std::wstring message = L"in " + std::to_wstring(i) + L" point!";
+        myAreEqual(result[i], parsedResult.points[i], message);
+    }
 }
 
 void HandlerTest::HandlerManyPointsParsing()
@@ -69,22 +76,26 @@ void HandlerTest::HandlerManyPointsParsing()
     constexpr std::string_view command =
     { "c|3|1 1 1 1 1 1 10 2 0|2 2 2 2 2 2 10 2 0|3 3 3 3 3 3 10 2 0|4 4 4 4 4 4 10 2 0",80 };
     vasily::Handler handler;
-    std::vector<vasily::RobotData> result;
-    result.push_back({ { 1, 1, 1, 1, 1, 1 },{ 10, 2, 0 } });
-    result.push_back({ { 2, 2, 2, 2, 2, 2 },{ 10, 2, 0 } });
-    result.push_back({ { 3, 3, 3, 3, 3, 3 },{ 10, 2, 0 } });
-    result.push_back({ { 4, 4, 4, 4, 4, 4 },{ 10, 2, 0 } });
+    std::vector<vasily::RobotData> result
+    {
+        { { 1, 1, 1, 1, 1, 1 }, { 10, 2, 0 } },
+        { { 2, 2, 2, 2, 2, 2 }, { 10, 2, 0 } },
+        { { 3, 3, 3, 3, 3, 3 }, { 10, 2, 0 } },
+        { { 4, 4, 4, 4, 4, 4 }, { 10, 2, 0 } }
+    };
 
     handler.appendCommand(command, *result.begin());
     vasily::ParsedResult parsedResult = handler.getParsedResult();
 
-    Assert::IsTrue(handler.getCurrentState() == vasily::Handler::State::CIRCLIC,
+    Assert::IsTrue(parsedResult.isCorrect, L"There is no mistake");
+    Assert::AreEqual(vasily::Handler::State::CIRCLIC, handler.getCurrentState(),
         L"not right state parsed");
-    Assert::IsTrue(parsedResult.points.size() == result.size(), L"Not right number of points");
-    Assert::IsTrue(parsedResult.numberOfIterations == 3, L"Not right number of iterations");
-    for (size_t i = 0; i < result.size();++i)
+    Assert::AreEqual(result.size(), parsedResult.points.size(), L"Not right number of points");
+    Assert::AreEqual(3, parsedResult.numberOfIterations, L"Not right number of iterations");
+    for (std::size_t i = 0; i < result.size();++i)
     {
-        Assert::IsTrue(parsedResult.points[i].isEqual(result[i]), L"Not right point");
+        const std::wstring message = L"in " + std::to_wstring(i) + L" point!";
+        myAreEqual(result[i], parsedResult.points[i], message);
     }
 }
 
@@ -93,22 +104,26 @@ void HandlerTest::HandlerManyPointsParsingWiyhoutIterations()
     constexpr std::string_view command =
     { "o|1 1 1 1 1 1 10 2 0|2 2 2 2 2 2 10 2 0|3 3 3 3 3 3 10 2 0|4 4 4 4 4 4 10 2 0",78 };
     vasily::Handler handler;
-    std::vector<vasily::RobotData> result;
-    result.push_back({ { 1, 1, 1, 1, 1, 1 },{ 10, 2, 0 } });
-    result.push_back({ { 2, 2, 2, 2, 2, 2 },{ 10, 2, 0 } });
-    result.push_back({ { 3, 3, 3, 3, 3, 3 },{ 10, 2, 0 } });
-    result.push_back({ { 4, 4, 4, 4, 4, 4 },{ 10, 2, 0 } });
+    std::vector<vasily::RobotData> result
+    {
+        { { 1, 1, 1, 1, 1, 1 }, { 10, 2, 0 } },
+        { { 2, 2, 2, 2, 2, 2 }, { 10, 2, 0 } },
+        { { 3, 3, 3, 3, 3, 3 }, { 10, 2, 0 } },
+        { { 4, 4, 4, 4, 4, 4 }, { 10, 2, 0 } }
+    };
 
     handler.appendCommand(command, *result.begin());
     vasily::ParsedResult parsedResult = handler.getParsedResult();
 
-    Assert::IsTrue(handler.getCurrentState() == vasily::Handler::State::POSITIONAL,
+    Assert::IsTrue(parsedResult.isCorrect, L"There is no mistake");
+    Assert::AreEqual(vasily::Handler::State::POSITIONAL, handler.getCurrentState(),
         L"not right state parsed");
-    Assert::IsTrue(parsedResult.points.size() == result.size(), L"Not right number of points");
-    for (size_t i = 0; i < result.size();++i)
+    Assert::AreEqual(result.size(), parsedResult.points.size(), L"Not right number of points");
+    for (std::size_t i = 0; i < result.size();++i)
     {
-        Assert::IsTrue(parsedResult.points[i].isEqual(result[i]), L"Not right point");
+        const std::wstring message = L"in " + std::to_wstring(i) + L" point!";
+        myAreEqual(result[i], parsedResult.points[i], message);
     }
 }
 
-}
+} // namespace clientTests

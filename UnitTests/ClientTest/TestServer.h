@@ -59,7 +59,7 @@ struct TestServer final : public vasily::ServerImitator
      * \param[in] recivingPort	Port for connection.
      * \param[in] backlog		Number of connections allowed on the incoming queue.
      */
-    explicit	TestServer(const int sendingPort    = TEST_CONFIG.get<CAST(Param::PORT_SENDING)>(),
+    explicit    TestServer(const int sendingPort    = TEST_CONFIG.get<CAST(Param::PORT_SENDING)>(),
                            const int recivingPort   = TEST_CONFIG.get<CAST(Param::PORT_RECEIVING)>(),
                            const int backlog        = 10);
 

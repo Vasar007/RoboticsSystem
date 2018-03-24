@@ -129,6 +129,4 @@ void ClientTest::dangerusZone()
     //Assert::IsTrue(client.storage.empty(), L"There are not accepted coordinates on client!");
 }
 
-
-
-}
+} // namespace clientTests

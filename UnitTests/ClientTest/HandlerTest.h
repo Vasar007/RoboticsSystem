@@ -53,5 +53,6 @@ public:
 
 };
 
-}
+} // namespace clientTests
+
 #endif // HANDLER_TEST_H

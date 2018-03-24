@@ -1,13 +1,16 @@
 #include "TrajectoryManager.h"
 
-std::vector<vasily::RobotData> danila::TrajectoryManager::PositionalMovement(
+namespace danila
+{
+
+std::vector<vasily::RobotData> TrajectoryManager::PositionalMovement(
     const vasily::ParsedResult& parsedResult) const noexcept
 {
     assert(parsedResult.isCorrect);
     return parsedResult.points;
 }
 
-std::vector<vasily::RobotData> danila::TrajectoryManager::PartialMovement(
+std::vector<vasily::RobotData> TrajectoryManager::PartialMovement(
     const vasily::ParsedResult& parsedResult) const noexcept
 {
     assert(parsedResult.isCorrect);
@@ -29,7 +32,7 @@ std::vector<vasily::RobotData> danila::TrajectoryManager::PartialMovement(
 
     ans.emplace_back(*parsedResult.points.begin());
 
-    for (size_t i = 1; i<parsedResult.points.size();++i)
+    for (std::size_t i = 1; i<parsedResult.points.size();++i)
     {
         double curlen = (parsedResult.points[i] - prev).length();
         while(prevlen + curlen >= len)
@@ -47,18 +50,20 @@ std::vector<vasily::RobotData> danila::TrajectoryManager::PartialMovement(
     return ans;
 }
 
-std::vector<vasily::RobotData> danila::TrajectoryManager::CirclicMovement(
+std::vector<vasily::RobotData> TrajectoryManager::CirclicMovement(
     const vasily::ParsedResult& parsedResult) const noexcept
 {
     assert(parsedResult.isCorrect);
     std::vector<vasily::RobotData> ans;
     ans.reserve(parsedResult.numberOfIterations * parsedResult.points.size());
-    for(int i=0;i<parsedResult.numberOfIterations;++i)
+    for (int i = 0;i < parsedResult.numberOfIterations;++i)
     {
-        for(auto& it:parsedResult.points)
+        for (auto& it : parsedResult.points)
         {
             ans.emplace_back(it);
         }
     }
     return ans;
 }
+
+} // namespace danila

@@ -40,6 +40,6 @@ public:
     TEST_METHOD(partialTrajectoryBuildingInOneStep);
 };
 
-}
+} // namespace clientTests
 
 #endif // TRAJECTORY_MANAGER_TEST_H

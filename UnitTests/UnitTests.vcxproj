@@ -173,6 +173,7 @@
     <ClInclude Include="ClientTest\HandlerTest.h" />
     <ClInclude Include="ClientTest\ModClient.h" />
     <ClInclude Include="ClientTest\TestServer.h" />
+    <ClInclude Include="ClientTest\testUtilites.h" />
     <ClInclude Include="ClientTest\TrajectoryManagerTest.h" />
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +181,7 @@
     <ClCompile Include="ClientTest\HandlerTest.cpp" />
     <ClCompile Include="ClientTest\ModClient.cpp" />
     <ClCompile Include="ClientTest\TestServer.cpp" />
+    <ClCompile Include="ClientTest\testUtilites.cpp" />
     <ClCompile Include="ClientTest\TrajectoryManagerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
