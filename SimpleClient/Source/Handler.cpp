@@ -111,13 +111,57 @@ ParsedResult Handler::parseDataAfterCommand()
         case State::FULL_CONTROL:
             break;
 
+        case State::POSITIONAL:
+        {
+            const long long num = std::count(_data.begin(), _data.end(), '|');
+            if (_data.size() > 1u && num >= 2)
+            {
+                result.points.reserve(num);
+
+                std::size_t prev = 0;
+
+                std::size_t count = 0;
+
+                bool flag = true;
+
+                _data += '|';
+
+                for (std::size_t i = 0; i <_data.size(); ++i)
+                {
+                    if (_data[i] == '|')
+                    {
+                        const std::string strToParse = _data.substr(prev, i - prev);
+
+                        prev = i + 1;
+
+                        ++count;
+
+                        bool locFlag = true;
+
+                        if (count >= 2)
+                        {
+                            result.points.emplace_back(utils::fromString<RobotData>(strToParse,
+                                locFlag));
+                        }
+
+                        flag &= locFlag;
+                    }
+                }
+
+                if (flag)
+                {
+                    return result;
+                }
+            }
+
+            break;
+        }
+
 		case State::CIRCLIC:
 			[[fallthrough]];
-        case State::POSITIONAL:
-            [[fallthrough]];
 		case State::PARTIAL:
 		{
-            const int num = std::count(_data.begin(), _data.end(), '|');
+            const long long num = std::count(_data.begin(), _data.end(), '|');
             if (_data.size() > 1u && num >= 3)
 			{
                 result.points.reserve(num - 1);
@@ -127,6 +171,8 @@ ParsedResult Handler::parseDataAfterCommand()
                 std::size_t count = 0;
 
 			    bool flag = true;
+
+                _data += '|';
 
                 for(std::size_t i = 0; i <_data.size(); ++i)
                 {
@@ -143,6 +189,11 @@ ParsedResult Handler::parseDataAfterCommand()
                         if(count == 2)
                         {
                             result.numberOfIterations = utils::fromString<int>(strToParse, locFlag);
+                            if(result.numberOfIterations < 1)
+                            {
+                                flag = false;
+                                break;
+                            }
                         }
                         if(count >= 3)
                         {

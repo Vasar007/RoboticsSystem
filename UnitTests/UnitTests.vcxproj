@@ -170,13 +170,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ClientTest\ClientTest.h" />
+    <ClInclude Include="ClientTest\HandlerTest.h" />
     <ClInclude Include="ClientTest\ModClient.h" />
     <ClInclude Include="ClientTest\TestServer.h" />
+    <ClInclude Include="ClientTest\TrajectoryManagerTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientTest\ClientTest.cpp" />
+    <ClCompile Include="ClientTest\HandlerTest.cpp" />
     <ClCompile Include="ClientTest\ModClient.cpp" />
     <ClCompile Include="ClientTest\TestServer.cpp" />
+    <ClCompile Include="ClientTest\TrajectoryManagerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleClient\SimpleClient.vcxproj">

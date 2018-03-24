@@ -53,43 +53,6 @@ void ModClient::sendCoordinatesMod(const vasily::RobotData& robotData)
     sendCoordinates(robotData);
 }
 
-void ModClient::circlicMovementMod(const vasily::RobotData& firstPoint,
-                                   const vasily::RobotData& secondPoint, 
-                                   const int numberOfIterations)
-{
-    for (int i = 0; i < numberOfIterations; ++i)
-    {
-        storage.push_back(firstPoint.toString());
-        storage.push_back(secondPoint.toString());
-    }
-    storage.push_back(firstPoint.toString());
-
-    circlicMovement(firstPoint, secondPoint, numberOfIterations);
-}
-
-void ModClient::partialMovementMod(const vasily::RobotData& firstPoint,
-                                   const vasily::RobotData& secondPoint, 
-                                   const int numberOfSteps)
-{
-    const vasily::RobotData directionalVector = (secondPoint - firstPoint) / numberOfSteps;
-    vasily::RobotData robotData				  = firstPoint;
-
-    storage.push_back(firstPoint.toString());
-
-    for (int i = 0; i < numberOfSteps; ++i)
-    {
-        robotData += directionalVector;
-        storage.push_back(robotData.toString());
-    }
-
-    if (robotData != secondPoint)
-    {
-        storage.push_back(secondPoint.toString());
-    }
-
-    partialMovement(firstPoint, secondPoint, numberOfSteps);
-}
-
 std::thread ModClient::spawn(const int numberOfTimes)
 {
     return std::thread(&ModClient::receiveDataNTimes, this, numberOfTimes);

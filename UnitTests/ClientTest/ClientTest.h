@@ -28,16 +28,7 @@ public:
      * \brief Test on dangerous zone.
      */
     TEST_METHOD(dangerusZone);
-    
-    /**
-     * \brief Circlic movement test.
-     */
-    TEST_METHOD(circlicMovement);
-    
-    /**
-     * \brief Partial movement test.
-     */
-    TEST_METHOD(partialMovement);
+
 };
 
 } // namespace clientTests

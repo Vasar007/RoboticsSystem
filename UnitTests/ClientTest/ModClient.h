@@ -77,31 +77,6 @@ struct ModClient final : public vasily::Client
     void		sendCoordinatesMod(const vasily::RobotData& robotData);
 
     /**
-     * \brief							Launch thread for circlic processing and
-     *									forwards parameters.
-     * \details							Now function works only with 2 points!
-     * \param[in] firstPoint			First point to send and in which robot should return.
-     * \param[in] secondPoint			Second point for circlic movement.
-     * \param[in] numberOfIterations	Number of iterations in circlic movement.
-     */
-    void		circlicMovementMod(const vasily::RobotData& firstPoint, 
-                                   const vasily::RobotData& secondPoint,
-                                   const int numberOfIterations);
-
-
-    /**
-     * \brief					Launch thread for partial processing and
-     *							forwards parameters.
-     * \details					Now function works only with 2 points!
-     * \param[in] firstPoint	Start point.
-     * \param[in] secondPoint	End point.
-     * \param[in] numberOfSteps	Number of steps for which robot should move from start to end point.
-     */
-    void		partialMovementMod(const vasily::RobotData& firstPoint, 
-                                   const vasily::RobotData& secondPoint,
-                                   const int numberOfSteps);
-
-    /**
      * \brief					Spawn new thread to receive data from client.
      * \param[in] numberOfTimes Number of times to allow connections.
      * \return					Created thread.

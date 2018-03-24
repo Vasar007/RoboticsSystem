@@ -394,6 +394,40 @@ struct RobotData
     }
 
     /**
+    * \brief         Divide coordinate of lhs and rhs objects.
+    * \param[in] lhs Left-hand side object.
+    * \param[in] rhs Right-hand side object.
+    * \return        Result of division.
+    */
+    friend constexpr RobotData operator*(const RobotData& lhs, const double& rhs)
+    {
+        RobotData result;
+        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        {
+            result.coordinates.at(i) = lround(lhs.coordinates.at(i) * rhs);
+        }
+
+        return result;
+    }
+
+
+    /**
+    * \brief         Divide coordinate of lhs and rhs objects.
+    * \param[in] lhs Left-hand side object.
+    * \param[in] rhs Right-hand side object.
+    * \return        Result of division puts in lhs object.
+    */
+    friend constexpr RobotData& operator*=(RobotData& lhs, const double& rhs)
+    {
+        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        {
+            lhs.coordinates.at(i) = lround(lhs.coordinates.at(i) * rhs);
+        }
+
+        return lhs;
+    }
+
+    /**
      * \brief               Operator overloading for istream.
      * \param[in] in        Refrence to the original istream.
      * \param[in] robotData Object for records.

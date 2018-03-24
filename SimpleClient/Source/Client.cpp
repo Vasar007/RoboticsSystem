@@ -159,7 +159,7 @@ void Client::receive()
     }
 }
 
-void Client::checkConnection(const long long& time)
+void Client::checkConnection(const long long time)
 {
     while (true)
     {
@@ -231,7 +231,7 @@ void Client::waitLoop()
                 }
 				else if (_handler.getCurrentState() == Handler::State::HOME)
 				{
-					sendCoordinates(_DEFAULT_POSITION);
+					sendCoordinates(RobotData::getDefaultPosition());
 				}
 				else if (_handler.getCurrentState() == Handler::State::FROM_FILE)
 				{
@@ -253,7 +253,7 @@ void Client::waitLoop()
 				}
 				else if (input == "test")
 				{
-					_robotData = _DEFAULT_POSITION;
+					_robotData = RobotData::getDefaultPosition();
 					constexpr int kNumberOfIterations = 1000;
 					constexpr int kDefaultMultiplier  = 100;
 					for (int i = 1; i <= kNumberOfIterations; ++i)
