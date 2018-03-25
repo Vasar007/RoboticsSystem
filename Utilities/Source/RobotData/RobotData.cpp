@@ -60,4 +60,15 @@ std::ostream& operator<<(std::ostream& out, const RobotData& robotData)
     return out;
 }
 
+std::wostream& operator<<(std::wostream& out, const RobotData& robotData)
+{
+    std::copy(robotData.coordinates.begin(), robotData.coordinates.end(),
+        std::ostream_iterator<int, wchar_t>(out, L" "));
+
+    std::copy(robotData.parameters.begin(), robotData.parameters.end(),
+        std::ostream_iterator<int, wchar_t>(out, L" "));
+
+    return out;
+}
+
 } // namespace vasily

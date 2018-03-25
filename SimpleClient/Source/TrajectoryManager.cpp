@@ -20,8 +20,8 @@ std::vector<vasily::RobotData> TrajectoryManager::PartialMovement(
     double len = 0.;
     for(size_t i = 1; i<parsedResult.points.size();++i)
     {
-        len += (parsedResult.points[i] - parsedResult.points[i - 1]).length() /
-            parsedResult.numberOfIterations;
+        vasily::RobotData robotData = parsedResult.points[i] - parsedResult.points[i - 1];
+        len += robotData.length() / parsedResult.numberOfIterations;
     }
 
     assert(len > 0.);
@@ -32,12 +32,12 @@ std::vector<vasily::RobotData> TrajectoryManager::PartialMovement(
 
     ans.emplace_back(*parsedResult.points.begin());
 
-    for (std::size_t i = 1; i<parsedResult.points.size();++i)
+    for (std::size_t i = 1; i < parsedResult.points.size(); ++i)
     {
         double curlen = (parsedResult.points[i] - prev).length();
         while(prevlen + curlen >= len)
         {
-            prev += (parsedResult.points[i] - prev) * ((len- prevlen)/curlen);
+            prev += (parsedResult.points[i] - prev) * ((len - prevlen) / curlen);
             ans.emplace_back(prev);
             curlen = (parsedResult.points[i] - prev).length();
             prevlen = 0.;
@@ -56,12 +56,9 @@ std::vector<vasily::RobotData> TrajectoryManager::CirclicMovement(
     assert(parsedResult.isCorrect);
     std::vector<vasily::RobotData> ans;
     ans.reserve(parsedResult.numberOfIterations * parsedResult.points.size());
-    for (int i = 0;i < parsedResult.numberOfIterations;++i)
+    for (int i = 0; i < parsedResult.numberOfIterations; ++i)
     {
-        for (auto& it : parsedResult.points)
-        {
-            ans.emplace_back(it);
-        }
+        ans.insert(std::end(ans), std::begin(parsedResult.points), std::end(parsedResult.points));
     }
     return ans;
 }

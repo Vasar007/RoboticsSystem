@@ -60,11 +60,11 @@ void HandlerTest::HandlerTwoPointsParsing()
     vasily::ParsedResult parsedResult = handler.getParsedResult();
 
     Assert::IsTrue(parsedResult.isCorrect, L"There is no mistake");
-    Assert::AreEqual(vasily::Handler::State::PARTIAL, handler.getCurrentState(),
+    Assert::AreEqual(CAST(vasily::Handler::State::PARTIAL), CAST(handler.getCurrentState()),
         L"not right state parsed");
     Assert::AreEqual(result.size(), parsedResult.points.size(), L"Not right number of points");
     Assert::AreEqual(3, parsedResult.numberOfIterations, L"Not right number of iterations");
-    for (std::size_t i = 0; i < result.size();++i)
+    for (std::size_t i = 0; i < result.size(); ++i)
     {
         const std::wstring message = L"in " + std::to_wstring(i) + L" point!";
         myAreEqual(result[i], parsedResult.points[i], message);
@@ -88,11 +88,11 @@ void HandlerTest::HandlerManyPointsParsing()
     vasily::ParsedResult parsedResult = handler.getParsedResult();
 
     Assert::IsTrue(parsedResult.isCorrect, L"There is no mistake");
-    Assert::AreEqual(vasily::Handler::State::CIRCLIC, handler.getCurrentState(),
+    Assert::AreEqual(CAST(vasily::Handler::State::CIRCLIC), CAST(handler.getCurrentState()),
         L"not right state parsed");
     Assert::AreEqual(result.size(), parsedResult.points.size(), L"Not right number of points");
     Assert::AreEqual(3, parsedResult.numberOfIterations, L"Not right number of iterations");
-    for (std::size_t i = 0; i < result.size();++i)
+    for (std::size_t i = 0; i < result.size(); ++i)
     {
         const std::wstring message = L"in " + std::to_wstring(i) + L" point!";
         myAreEqual(result[i], parsedResult.points[i], message);
@@ -116,10 +116,10 @@ void HandlerTest::HandlerManyPointsParsingWiyhoutIterations()
     vasily::ParsedResult parsedResult = handler.getParsedResult();
 
     Assert::IsTrue(parsedResult.isCorrect, L"There is no mistake");
-    Assert::AreEqual(vasily::Handler::State::POSITIONAL, handler.getCurrentState(),
+    Assert::AreEqual(CAST(vasily::Handler::State::POSITIONAL), CAST(handler.getCurrentState()),
         L"not right state parsed");
     Assert::AreEqual(result.size(), parsedResult.points.size(), L"Not right number of points");
-    for (std::size_t i = 0; i < result.size();++i)
+    for (std::size_t i = 0; i < result.size(); ++i)
     {
         const std::wstring message = L"in " + std::to_wstring(i) + L" point!";
         myAreEqual(result[i], parsedResult.points[i], message);
