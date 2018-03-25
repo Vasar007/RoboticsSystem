@@ -394,7 +394,7 @@ struct RobotData
      * \param[in] rhs Right-hand side object.
      * \return        Result of sum.
      */
-    friend constexpr RobotData& operator+(const RobotData& lhs, const RobotData& rhs) noexcept
+    friend constexpr RobotData operator+(const RobotData& lhs, const RobotData& rhs) noexcept
     {
         RobotData result = lhs;
 
@@ -407,7 +407,7 @@ struct RobotData
      * \param[in] rhs Right-hand side object.
      * \return        Result of sustraction.
      */
-    friend constexpr RobotData& operator-(const RobotData& lhs, const RobotData& rhs) noexcept
+    friend constexpr RobotData operator-(const RobotData& lhs, const RobotData& rhs) noexcept
     {
         RobotData result = lhs;
 
@@ -420,7 +420,7 @@ struct RobotData
      * \param[in] rhs Right-hand side object.
      * \return        Result of multiplication.
      */
-    friend constexpr RobotData& operator*(const RobotData& lhs, const RobotData& rhs) noexcept
+    friend constexpr RobotData operator*(const RobotData& lhs, const RobotData& rhs) noexcept
     {
         RobotData result = lhs;
 
@@ -433,7 +433,7 @@ struct RobotData
      * \param[in] rhs Right-hand side object.
      * \return        Result of division.
      */
-    friend constexpr RobotData& operator/(const RobotData& lhs, const RobotData& rhs) noexcept
+    friend constexpr RobotData operator/(const RobotData& lhs, const RobotData& rhs) noexcept
     {
         RobotData result = lhs;
 
@@ -447,7 +447,7 @@ struct RobotData
      * \return        Result of sum.
      */
     template <class T>
-    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
+    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData>
         operator+(const RobotData& lhs, const T& rhs) noexcept
     {
         RobotData result = lhs;
@@ -462,7 +462,7 @@ struct RobotData
      * \return        Result of sustraction.
      */
     template <class T>
-    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
+    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData>
         operator-(const RobotData& lhs, const T& rhs) noexcept
     {
         RobotData result = lhs;
@@ -478,7 +478,7 @@ struct RobotData
     * \return        Result of multiplication.
     */
     template <class T>
-    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
+    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData>
         operator*(const RobotData& lhs, const T& rhs)
     {
         RobotData result = lhs;
@@ -494,7 +494,7 @@ struct RobotData
      * \return        Result of division.
      */
     template <class T>
-    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
+    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData>
         operator/(const RobotData& lhs, const T& rhs)
     {
         assert(rhs != 0);

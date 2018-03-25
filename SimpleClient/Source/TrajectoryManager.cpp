@@ -20,8 +20,8 @@ std::vector<vasily::RobotData> TrajectoryManager::PartialMovement(
     double len = 0.;
     for(size_t i = 1; i<parsedResult.points.size();++i)
     {
-        vasily::RobotData robotData = parsedResult.points[i] - parsedResult.points[i - 1];
-        len += robotData.length() / parsedResult.numberOfIterations;
+        len += (parsedResult.points[i] - parsedResult.points[i - 1]).length() /
+            parsedResult.numberOfIterations;
     }
 
     assert(len > 0.);
