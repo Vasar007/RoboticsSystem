@@ -5,9 +5,11 @@
 
 #include <RobotData/RobotData.h>
 
+
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-void myAreEqual(const vasily::RobotData& expected, const vasily::RobotData& actual,
-    const std::wstring& comment);
 
-#endif
+void specialAreEqual(const vasily::RobotData& expected, const vasily::RobotData& actual,
+                     const std::wstring& comment);
+
+#endif // TEST_UTILITES_H

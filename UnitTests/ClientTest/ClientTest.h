@@ -28,7 +28,6 @@ public:
      * \brief Test on dangerous zone.
      */
     TEST_METHOD(dangerusZone);
-
 };
 
 } // namespace clientTests

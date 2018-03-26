@@ -245,7 +245,7 @@ void ServerLayer::waitingForConnections()
     process();
 }
 
-std::string ServerLayer::getServerIP() const
+std::string ServerLayer::getServerIP() const noexcept
 {
     return _serverIP;
 }

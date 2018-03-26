@@ -30,7 +30,7 @@ struct ModClient final : public vasily::Client
         8888,
         9999,
         9998,
-        { "192.168.0.101", 14 }
+        { "192.168.0.100", 14 }
     };
 
     /**

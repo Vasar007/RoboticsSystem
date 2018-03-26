@@ -188,6 +188,7 @@ void Client::waitLoop()
         memset(_messageWithIP, 0, _MAXRECV);
 
         std::string input;
+        // TODO(Vasily, Danila): Improved this block.
         switch (_handler.getCurrentMode())
         {
             case Handler::Mode::READING:
@@ -212,86 +213,86 @@ void Client::waitLoop()
 
                 _handler.appendCommand(input, _robotData);
 
-				if (_handler.getCurrentState() == Handler::State::COORDINATE_TYPE)
-				{
-					sendCoordinateSystem(_handler.getCoordinateSystem());
-				}
-				else if (_handler.getCurrentState() == Handler::State::CIRCLIC)
-				{
-                    sendCoordinates(_trajectoryManager.CirclicMovement(_handler.getParsedResult()));
-				}
+                if (_handler.getCurrentState() == Handler::State::COORDINATE_TYPE)
+                {
+                    sendCoordinateSystem(_handler.getCoordinateSystem());
+                }
+                else if (_handler.getCurrentState() == Handler::State::CIRCLIC)
+                {
+                    sendCoordinates(_trajectoryManager.circlicMovement(_handler.getParsedResult()));
+                }
                 else if (_handler.getCurrentState() == Handler::State::POSITIONAL)
                 {
-                    sendCoordinates(_trajectoryManager.PositionalMovement(
+                    sendCoordinates(_trajectoryManager.positionalMovement(
                         _handler.getParsedResult()));
                 }
                 else if (_handler.getCurrentState() == Handler::State::PARTIAL)
-				{
-                    sendCoordinates(_trajectoryManager.PartialMovement(_handler.getParsedResult()));
+                {
+                    sendCoordinates(_trajectoryManager.partialMovement(_handler.getParsedResult()));
                 }
-				else if (_handler.getCurrentState() == Handler::State::HOME)
-				{
-					sendCoordinates(RobotData::getDefaultPosition());
-				}
-				else if (_handler.getCurrentState() == Handler::State::FROM_FILE)
-				{
-					_robotData = _logger.readLine<RobotData>();
-					if (!_logger.hasAnyInputErrors())
-					{
-						sendCoordinates(_robotData);
-					}
-					else
-					{
-						_printer.writeLine(std::cout, "ERROR 05: Some error occurred in input "
-										   "stream! Input stream will be restarted.");
-						_logger.restartStream(logger::Logger::TypeStream::INPUT_STREAM);
-					}
-				}
-				else if (_handler.getCurrentState() != Handler::State::DEFAULT)
-				{
-					sendCoordinates(_robotData);
-				}
-				else if (input == "test")
-				{
-					_robotData = RobotData::getDefaultPosition();
-					constexpr int kNumberOfIterations = 1000;
-					constexpr int kDefaultMultiplier  = 100;
-					for (int i = 1; i <= kNumberOfIterations; ++i)
-					{
-						_robotData.coordinates.at(Handler::Y) += kDefaultMultiplier * i
-																* (i & 1 ? 1 : -1);
-						sendCoordinates(_robotData);
-						_isNeedToWait.store(true);
-						while (_isNeedToWait.load())
-						{
-							std::this_thread::sleep_for(std::chrono::milliseconds(1LL));
-						}
-					}
-				}
-				else if (input == "tenzo")
-				{
-					tenzoCalibration();
-					//workWithTenzo();
-				}
-				else if (input == "tzTest")
-				{
-					StrainGauge tenzo(L"COM13");
-					while (true)
-					{
-						std::array<double, 6> tmp = tenzo.readComStrain();
-						std::array<double, 6> collectedData{ tmp[1], -tmp[0], -tmp[2],
-															 tmp[4], -tmp[3],  tmp[5] };
-						std::copy(collectedData.begin(), collectedData.end(),
-								  std::ostream_iterator<double>(std::cout, "\t"));
-					}
-				}
-				break;
-			
-			default:
-				assert(false);
-				break;
-		}
-	}
+                else if (_handler.getCurrentState() == Handler::State::HOME)
+                {
+                    sendCoordinates(RobotData::getDefaultPosition());
+                }
+                else if (_handler.getCurrentState() == Handler::State::FROM_FILE)
+                {
+                    _robotData = _logger.readLine<RobotData>();
+                    if (!_logger.hasAnyInputErrors())
+                    {
+                        sendCoordinates(_robotData);
+                    }
+                    else
+                    {
+                        _printer.writeLine(std::cout, "ERROR 05: Some error occurred in input "
+                                           "stream! Input stream will be restarted.");
+                        _logger.restartStream(logger::Logger::TypeStream::INPUT_STREAM);
+                    }
+                }
+                else if (_handler.getCurrentState() != Handler::State::DEFAULT)
+                {
+                    sendCoordinates(_robotData);
+                }
+                else if (input == "test")
+                {
+                    _robotData = RobotData::getDefaultPosition();
+                    constexpr int kNumberOfIterations = 1000;
+                    constexpr int kDefaultMultiplier  = 100;
+                    for (int i = 1; i <= kNumberOfIterations; ++i)
+                    {
+                        _robotData.coordinates.at(Handler::Y) += kDefaultMultiplier * i
+                                                                * (i & 1 ? 1 : -1);
+                        sendCoordinates(_robotData);
+                        _isNeedToWait.store(true);
+                        while (_isNeedToWait.load())
+                        {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(1LL));
+                        }
+                    }
+                }
+                else if (input == "tenzo")
+                {
+                    tenzoCalibration();
+                    //workWithTenzo();
+                }
+                else if (input == "tzTest")
+                {
+                    StrainGauge tenzo(L"COM13");
+                    while (true)
+                    {
+                        std::array<double, 6> tmp = tenzo.readComStrain();
+                        std::array<double, 6> collectedData{ tmp[1], -tmp[0], -tmp[2],
+                                                             tmp[4], -tmp[3],  tmp[5] };
+                        std::copy(collectedData.begin(), collectedData.end(),
+                                  std::ostream_iterator<double>(std::cout, "\t"));
+                    }
+                }
+                break;
+            
+            default:
+                assert(false);
+                break;
+        }
+    }
 }
 
 void Client::launch()
@@ -322,7 +323,7 @@ void Client::launch()
     }
 }
 
-std::string Client::getServerIP() const
+std::string Client::getServerIP() const noexcept
 {
     return _serverIP;
 }
@@ -332,12 +333,12 @@ void Client::setServerIP(const std::string_view newServerIP)
     _serverIP = newServerIP;
 }
 
-std::chrono::duration<double> Client::getDuration() const
+std::chrono::duration<double> Client::getDuration() const noexcept
 {
     return _duration;
 }
 
-RobotData Client::getRobotData() const
+RobotData Client::getRobotData() const noexcept
 {
     return _robotData;
 }
@@ -377,23 +378,20 @@ void Client::run()
 
 void Client::sendCoordinates(const RobotData& robotData)
 {
-    _start          = std::chrono::steady_clock::now();
+    _start        = std::chrono::steady_clock::now();
     sendData(_sendingSocket, robotData.toString());
-    lastSentPoint   = robotData;
-    _robotData      = robotData;
+    lastSentPoint = robotData;
+    _robotData    = robotData;
     _logger.writeLine(robotData);
 }
 
 void Client::sendCoordinates(const std::vector<RobotData>& points)
 {
-    _start = std::chrono::steady_clock::now();
-    for(auto& it:points)
+    for(auto& point : points)
     {
-        sendData(_sendingSocket, it.toString());
-        _logger.writeLine(it);
+        sendCoordinates(point);
+        _logger.writeLine(point);
     }
-    _robotData = *points.rbegin();
-    lastSentPoint = _robotData;
 }
 
 void Client::sendCoordinateSystem(const CoordinateSystem coordinateSystem) const

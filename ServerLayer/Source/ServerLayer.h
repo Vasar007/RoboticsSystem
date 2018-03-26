@@ -118,7 +118,7 @@ public:
      * \brief  Get server IP address.
      * \return String which contains current server IP address.
      */
-    std::string     getServerIP() const;
+    std::string     getServerIP() const noexcept;
 
     /**
      * \brief                 Set server IP address.
@@ -127,12 +127,12 @@ public:
     void		    setServerIP(const std::string_view newServerIP);
 
     /**
-     * \brief Additional fuction that receives data from server.
+     * \brief Additional function that receives data from server.
      */
     void		    receiveFromServer();
 
     /**
-     * \brief Additional fuction that receives data from clients.
+     * \brief Additional function that receives data from clients.
      */
     void            receiveFromClients();
 

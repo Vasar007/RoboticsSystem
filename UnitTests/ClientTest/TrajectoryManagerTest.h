@@ -15,28 +15,28 @@ TEST_CLASS(TrajectoryManagerTest)
 public:
     
     /**
-    * \brief Test of building positional trajectory.
-    */
+     * \brief Test of building positional trajectory.
+     */
     TEST_METHOD(positionalTrajectoryBuilding);
 
     /**
-    * \brief Test of building circlic trajectory.
-    */
+     * \brief Test of building circlic trajectory.
+     */
     TEST_METHOD(circlicTrajectoryBuilding);
 
     /**
-    * \brief Test of building partial trajectory with one breaking point.
-    */
+     * \brief Test of building partial trajectory with one breaking point.
+     */
     TEST_METHOD(partialTrajectoryBuildingWithOneBreakingPoint);
 
     /**
-    * \brief Test of building partial trajectory with many breaking points.
-    */
+     * \brief Test of building partial trajectory with many breaking points.
+     */
     TEST_METHOD(partialTrajectoryBuildingWithManyBreakingPoints);
 
     /**
-    * \brief Test of building partial trajectory with one moving.
-    */
+     * \brief Test of building partial trajectory with one moving.
+     */
     TEST_METHOD(partialTrajectoryBuildingInOneStep);
 };
 
