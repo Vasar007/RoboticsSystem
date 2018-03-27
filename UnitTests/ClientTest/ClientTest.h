@@ -19,25 +19,16 @@ namespace clientTests
 TEST_CLASS(ClientTest)
 {
 public:
-	/**
-	 * \brief Simple send-receive test.
-	 */
-	TEST_METHOD(sendReceiveAbility);
-	
-	/**
-	 * \brief Test on dangerous zone.
-	 */
-	TEST_METHOD(dangerusZone);
-	
-	/**
-	 * \brief Circlic movement test.
-	 */
-	TEST_METHOD(circlicMovement);
-	
-	/**
-	 * \brief Partial movement test.
-	 */
-	TEST_METHOD(partialMovement);
+    /**
+     * \brief Simple send-receive test.
+     */
+    TEST_METHOD(sendReceiveAbility);
+    
+    /**
+     * \brief Test on dangerous zone.
+     */
+    TEST_METHOD(dangerusZone);
+
 };
 
 } // namespace clientTests

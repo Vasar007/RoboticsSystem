@@ -82,17 +82,17 @@ namespace utils
 {
 
 // Expressions to test validity wrapped into tyedefs using decltype.
-template <typename T>
+template <class T>
 using Ostream   = decltype(std::cout << std::declval<T>());
-template <typename T>
+template <class T>
 using StdFree   = decltype(std::cout << std::to_string(std::declval<T>()));
-template <typename T>
+template <class T>
 using Free1     = decltype(std::cout << to_string(std::declval<T>()));
-template <typename T>
+template <class T>
 using Free2     = decltype(std::cout << toString(std::declval<T>()));
-template <typename T>
+template <class T>
 using Member1   = decltype(std::cout << std::declval<T>().to_string());
-template <typename T>
+template <class T>
 using Member2   = decltype(std::cout << std::declval<T>().toString());
 
 ////////////////////////////// The implementations. //////////////////////////////
@@ -104,8 +104,8 @@ using Member2   = decltype(std::cout << std::declval<T>().toString());
  * \param[out] out      Output stream to write.
  * \param[in] t         Data to print.
  */
-template <class OutputStream, typename T>
-void print(OutputStream& out, const T& t) noexcept
+template <class OutputStream, class T>
+void print(OutputStream& out, const T& t)
 {
     if constexpr (VALID_EXPRESSION<Ostream, T>)
     {
@@ -146,8 +146,8 @@ void print(OutputStream& out, const T& t) noexcept
  * \param[in] t		    Data to print.
  * \param[in] args	    Data to print.
  */
-template <class OutputStream, typename T, typename... Args>
-void print(OutputStream& out, const T& t, const Args&... args) noexcept
+template <class OutputStream, class T, class... Args>
+void print(OutputStream& out, const T& t, const Args&... args)
 {
     if constexpr (VALID_EXPRESSION<Ostream, T>)
     {
@@ -188,8 +188,8 @@ void print(OutputStream& out, const T& t, const Args&... args) noexcept
  * \param[out] out      Output stream to write.
  * \param[in] t         Data to print.
  */
-template <class OutputStream, typename T>
-void println(OutputStream& out, const T& t) noexcept
+template <class OutputStream, class T>
+void println(OutputStream& out, const T& t)
 {
     if constexpr (VALID_EXPRESSION<Ostream, T>)
     {
@@ -230,8 +230,8 @@ void println(OutputStream& out, const T& t) noexcept
  * \param[in] t		    Data to print.
  * \param[in] args	    Data to print.
  */
-template <class OutputStream, typename T, typename... Args>
-void println(OutputStream& out, const T& t, const Args&... args) noexcept
+template <class OutputStream, class T, class... Args>
+void println(OutputStream& out, const T& t, const Args&... args)
 {
     if constexpr (VALID_EXPRESSION<Ostream, T>)
     {

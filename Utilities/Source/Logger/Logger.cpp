@@ -21,7 +21,7 @@ Logger::Logger(const std::string& inputFile, const std::string& outputFile)
     }
 }
 
-Logger::~Logger() noexcept
+Logger::~Logger()
 {
     inFile.close();
     outFile.close();
@@ -49,7 +49,7 @@ bool Logger::hasAnyErrors() const noexcept
     return !_hasNotAnyInputErrors && !_hasNotAnyOutputErrors;
 }
 
-void Logger::restartStream(const TypeStream ioStream) noexcept
+void Logger::restartStream(const TypeStream ioStream)
 {
     switch (ioStream)
     {
@@ -69,7 +69,7 @@ void Logger::restartStream(const TypeStream ioStream) noexcept
     }
 }
 
-std::size_t Logger::countLinesInInputFile() noexcept
+std::size_t Logger::countLinesInInputFile()
 {
     // New lines will be skipped unless we stop it from happening: 
     inFile.unsetf(std::ios_base::skipws);

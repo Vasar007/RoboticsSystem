@@ -1,3 +1,6 @@
+#ifndef POLY_H
+#define POLY_H
+
 // x - array of size 2
 // return 2: 2 real roots x[0], x[1]
 // return 0: pair of complex roots: x[0]±i*x[1]
@@ -22,3 +25,5 @@ int SolveP4Bi(double* x, double b, double d); // solve equation x^4 + b*x^2 + d 
 int SolveP4De(double* x, double b, double c, double d); // solve equation x^4 + b*x^2 + c*x + d = 0
 void CSqrt(double x, double y, double& a, double& b); // returns as a+i*s,  sqrt(x+i*y)
 double N4Step(double x, double a, double b, double c, double d);// one Newton step for x^4 + a*x^3 + b*x^2 + c*x + d
+
+#endif // POLY_H

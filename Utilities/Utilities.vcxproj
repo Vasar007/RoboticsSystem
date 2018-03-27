@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Config\Config.h" />
     <ClInclude Include="Source\NetworkInterface\NetworkInterface.h" />
     <ClInclude Include="Source\Print\Print.hpp" />
     <ClInclude Include="Source\Utility\ValidExpression.hpp" />

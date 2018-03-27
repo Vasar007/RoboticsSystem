@@ -3,7 +3,7 @@
 
 
 template <class Stream>
-void Logger::restart(Stream& stream) noexcept
+void Logger::restart(Stream& stream)
 {
     if constexpr (std::is_same<Stream, std::ifstream>::value)
     {
@@ -21,16 +21,16 @@ void Logger::restart(Stream& stream) noexcept
     }
 }
 
-template <typename T>
-void Logger::writeImpl(const T& t) noexcept
+template <class T>
+void Logger::writeImpl(const T& t)
 {
     // It is necessary to flush buffer here.
     outFile << t << ' ' << std::flush;
     _hasNotAnyOutputErrors = !outFile.fail();
 }
 
-template <typename T, typename ...Args>
-void Logger::writeImpl(const T& t, const Args&... args) noexcept
+template <class T, class... Args>
+void Logger::writeImpl(const T& t, const Args&... args)
 {
     outFile << t << ' ';
     _hasNotAnyOutputErrors = !outFile.fail();
@@ -38,16 +38,16 @@ void Logger::writeImpl(const T& t, const Args&... args) noexcept
     writeImpl(args...);
 }
 
-template <typename T>
-void Logger::writeLineImpl(const T& t) noexcept
+template <class T>
+void Logger::writeLineImpl(const T& t)
 {
     // std::endl because it is necessary to flush buffer here.
     outFile << t << std::endl;
     _hasNotAnyOutputErrors = !outFile.fail();
 }
 
-template <typename T, typename ...Args>
-void Logger::writeLineImpl(const T& t, const Args&... args) noexcept
+template <class T, class... Args>
+void Logger::writeLineImpl(const T& t, const Args&... args)
 {
     outFile << t << ' ';
     _hasNotAnyOutputErrors = !outFile.fail();
@@ -55,8 +55,8 @@ void Logger::writeLineImpl(const T& t, const Args&... args) noexcept
     writeLineImpl(args...);
 }
 
-template <typename ...Args>
-void Logger::write(const Args&... args) noexcept
+template <class... Args>
+void Logger::write(const Args&... args)
 {
     std::lock_guard<std::mutex> lockGuard{ _mutex };
     if (outFile)
@@ -69,8 +69,8 @@ void Logger::write(const Args&... args) noexcept
     }
 }
 
-template <typename ...Args>
-void Logger::writeLine(const Args&... args) noexcept
+template <class... Args>
+void Logger::writeLine(const Args&... args)
 {
     std::lock_guard<std::mutex> lockGuard{ _mutex };
     if (outFile)
@@ -83,8 +83,8 @@ void Logger::writeLine(const Args&... args) noexcept
     }
 }
 
-template <typename T>
-T Logger::read() noexcept
+template <class T>
+T Logger::read()
 {
     std::string readedData;
     if (inFile)
@@ -104,8 +104,8 @@ T Logger::read() noexcept
     return t;
 }
 
-template <typename T>
-T Logger::readLine() noexcept
+template <class T>
+T Logger::readLine()
 {  
     std::string readedData;
     if (inFile)
