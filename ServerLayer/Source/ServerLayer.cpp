@@ -5,7 +5,7 @@ namespace vasily
 {
 
 inline const config::Config<std::string, std::string, std::string_view, int, int, int,
-                            std::size_t, std::array<int, 3u>, std::array<int, 3u>, long long>
+                            std::size_t, std::array<int, 3>, std::array<int, 3>, long long>
     ServerLayer::CONFIG
 {
     { "distance_to_time.txt" },
@@ -14,10 +14,10 @@ inline const config::Config<std::string, std::string, std::string_view, int, int
     59002,
     59003,
     8888,
-    3u,
+    3,
     { 830'000, -400'000, 539'000 },
     { 1'320'000, 400'000, 960'000 },
-    1000LL
+    1000
 };
 
 ServerLayer::ServerLayer(const int serverSendingPort, const int serverRecivingPort,
@@ -151,11 +151,12 @@ void ServerLayer::receiveFromClients()
 bool ServerLayer::checkCoordinates(const RobotData& robotData) const
 {
     // Get default parameters for checking.
-    static const auto kMainCoordinates = CONFIG.get<CAST(Param::NUMBER_OF_MAIN_COORDINATES)>();
-    static const auto kMinCoords = CONFIG.get<CAST(Param::MIN_COORDINATES)>();
-    static const auto kMaxCoords = CONFIG.get<CAST(Param::MAX_COORDINATES)>();
+    static const std::size_t kMainCoordinates =
+        CONFIG.get<CAST(Param::NUMBER_OF_MAIN_COORDINATES)>();
+    static const std::array<int, 3> kMinCoords = CONFIG.get<CAST(Param::MIN_COORDINATES)>();
+    static const std::array<int, 3> kMaxCoords = CONFIG.get<CAST(Param::MAX_COORDINATES)>();
 
-    for (std::size_t i = 0u; i < kMainCoordinates; ++i)
+    for (std::size_t i = 0; i < kMainCoordinates; ++i)
     {
         if (robotData.coordinates.at(i) < kMinCoords.at(i)
             || robotData.coordinates.at(i) > kMaxCoords.at(i))
@@ -178,7 +179,7 @@ void ServerLayer::process()
         _clientSocket = acceptSocket(_layerSocket, _messageWithIPForClient);
         _isRunningForClient.store(true);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(10LL));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
 
@@ -186,13 +187,13 @@ void ServerLayer::waitLoop()
 {
     _printer.writeLine(std::cout, "\n\nLaunched layer...\n");
 
-    std::thread reciveThreadFromServer(&ServerLayer::receiveFromServer, this);
-    reciveThreadFromServer.detach();
+    std::thread receiveThreadFromServer(&ServerLayer::receiveFromServer, this);
+    receiveThreadFromServer.detach();
 
     waitingForConnections();
 
-    std::thread reciveThreadFromClients(&ServerLayer::receiveFromClients, this);
-    reciveThreadFromClients.detach();
+    std::thread receiveThreadFromClients(&ServerLayer::receiveFromClients, this);
+    receiveThreadFromClients.detach();
 
     _logger.writeLine("Server layer started to receive at", utils::getCurrentSystemTime());
 

@@ -13,7 +13,7 @@ namespace utils
 
 [[nodiscard]]
 std::string parseFullData(const std::string& data, const int numberOfCoords,
-                          const int excludeNumber) noexcept
+                          const int excludeNumber)
 {
     if (numberOfCoords <= excludeNumber || data.empty())
     {
@@ -59,7 +59,7 @@ std::string parseFullData(const std::string& data, const int numberOfCoords,
     return result;
 }
 
-std::deque<vasily::RobotData> parseData(const std::string_view data) noexcept
+std::deque<vasily::RobotData> parseData(const std::string_view data)
 {
     std::deque<vasily::RobotData> result;
 
@@ -75,8 +75,7 @@ std::deque<vasily::RobotData> parseData(const std::string_view data) noexcept
     return result;
 }
 
-std::pair<vasily::CoordinateSystem, bool> parseCoordinateSystem(
-    const std::string_view data) noexcept
+std::pair<vasily::CoordinateSystem, bool> parseCoordinateSystem(const std::string_view data)
 {
     const bool parsedResult = data.size() == 1u && utils::isCorrectNumber(data);
 

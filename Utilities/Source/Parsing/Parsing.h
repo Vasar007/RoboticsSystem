@@ -29,7 +29,7 @@ namespace utils
  */
 [[nodiscard]]
 std::string parseFullData(const std::string& data, const int numberOfCoords = 9,
-                          const int excludeNumber = 2) noexcept;
+                          const int excludeNumber = 2);
 
 
 /**
@@ -38,7 +38,7 @@ std::string parseFullData(const std::string& data, const int numberOfCoords = 9,
  * \return         Deserialized data if parsed successful, empty container otherwise.
  */
 [[nodiscard]]
-std::deque<vasily::RobotData> parseData(const std::string_view data) noexcept;
+std::deque<vasily::RobotData> parseData(const std::string_view data);
 
 
 /**
@@ -46,8 +46,7 @@ std::deque<vasily::RobotData> parseData(const std::string_view data) noexcept;
  * \param[in] data Data for parsin.
  * \return         True if input data contains only one digit, false otherwise.
  */
-std::pair<vasily::CoordinateSystem, bool> parseCoordinateSystem(
-    const std::string_view data) noexcept;
+std::pair<vasily::CoordinateSystem, bool> parseCoordinateSystem(const std::string_view data);
 
 
 /**

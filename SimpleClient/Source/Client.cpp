@@ -15,7 +15,7 @@ inline const config::Config<std::string, std::string, std::string_view, int, int
     { "192.168.1.21", 13 },
      59002,
      59003,
-     1000LL
+     1000
 };
  
 Client::Client(const int serverPort, const std::string_view serverIP, const WorkMode workMode)
@@ -26,8 +26,6 @@ Client::Client(const int serverPort, const std::string_view serverIP, const Work
       _serverSendingPort(0),
       _serverReceivingPort(0),
       _start(std::chrono::steady_clock::now()),
-      _isNeedToWait(false),
-      _circlicState(),
       _workMode(workMode),
       _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
               CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>())
@@ -43,8 +41,6 @@ Client::Client(const int serverSendingPort, const int serverReceivingPort,
       _serverSendingPort(serverSendingPort),
       _serverReceivingPort(serverReceivingPort),
       _start(std::chrono::steady_clock::now()),
-      _isNeedToWait(false),
-      _circlicState(),
       _workMode(workMode),
       _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
               CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>())
@@ -61,8 +57,6 @@ Client::Client(Client&& other) noexcept
       _handler(std::move(other._handler)),
       _start(other._start),
       _waitAnswer(other._waitAnswer),
-      _isNeedToWait(other._isNeedToWait.load()),
-      _circlicState(other._circlicState),
       _workMode(other._workMode),
       _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
               CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>())
@@ -119,37 +113,6 @@ void Client::receive()
             continue;
         }
 
-        if (_isNeedToWait.load())
-        {
-            ///RobotData robotData; => Danila works on new movement algorithms.
-            ///bool flag;
-            ///robotData = utils::fromString<RobotData>(dataBuffer, flag);
-
-            ///if (flag && robotData == _waitAnswer)
-            {
-                _isNeedToWait.store(false);
-                switch (_circlicState)
-                {
-                    case CirclicState::SEND_FIRST:
-                        break;
-                        
-                    case CirclicState::WAIT_FIRST_ANSWER:
-                        _circlicState = CirclicState::SEND_SECOND;
-                        break;
-                        
-                    case CirclicState::SEND_SECOND:
-                        break;
-                        
-                    case CirclicState::WAIT_SECOND_ANSWER:
-                        _circlicState = CirclicState::SEND_FIRST;
-                        break;
-                        
-                    default:
-                        break;
-                }
-            }
-        }
-
         isNeedToUpdate.store(true);
         ++count;
         _printer.writeLine(std::cout, count, "Duration:", _duration.count(), "seconds");
@@ -175,7 +138,7 @@ void Client::waitLoop()
     std::thread reciveThread(&Client::receive, this);
     reciveThread.detach();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(25LL));
+    std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
     ///constexpr long long kTime = 2000LL;
     ///std::thread checkThread(&Client::checkConnection, this, std::cref(kTime));
@@ -262,11 +225,6 @@ void Client::waitLoop()
                         _robotData.coordinates.at(Handler::Y) += kDefaultMultiplier * i
                                                                 * (i & 1 ? 1 : -1);
                         sendCoordinates(_robotData);
-                        _isNeedToWait.store(true);
-                        while (_isNeedToWait.load())
-                        {
-                            std::this_thread::sleep_for(std::chrono::milliseconds(1LL));
-                        }
                     }
                 }
                 else if (input == "tenzo")

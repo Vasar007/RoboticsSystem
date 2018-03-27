@@ -51,7 +51,7 @@ public:
      *          std::string because of std::istream and std::ostream.
      */
     static const config::Config<std::string, std::string, std::string_view, int, int, int,
-                                std::size_t, std::array<int, 3u>, std::array<int, 3u>, long long>
+                                std::size_t, std::array<int, 3>, std::array<int, 3>, long long>
         CONFIG;
 
     /**
@@ -66,12 +66,12 @@ public:
      *                               or unsafety.
      */
     explicit ServerLayer(
-        const int serverSendingPort        = CONFIG.get<CAST(Param::DEFAULT_SENDING_PORT_TO_SERVER)>(),
-        const int serverRecivingPort       = CONFIG.get<CAST(Param::DEFAULT_RECEIVING_PORT_FROM_SERVER)>(),
-        const std::string_view serverIP    = CONFIG.get<CAST(Param::DEFAULT_SERVER_IP)>(),
-        const int layerPort                = CONFIG.get<CAST(Param::DEFAULT_CLIENT_PORT)>(),
-        const int backlog                  = 10,
-        const WorkMode workMode            = WorkMode::SAFE);
+        const int serverSendingPort     = CONFIG.get<CAST(Param::DEFAULT_SENDING_PORT_TO_SERVER)>(),
+        const int serverRecivingPort    = CONFIG.get<CAST(Param::DEFAULT_RECEIVING_PORT_FROM_SERVER)>(),
+        const std::string_view serverIP = CONFIG.get<CAST(Param::DEFAULT_SERVER_IP)>(),
+        const int layerPort             = CONFIG.get<CAST(Param::DEFAULT_CLIENT_PORT)>(),
+        const int backlog               = 10,
+        const WorkMode workMode         = WorkMode::SAFE);
 
     /**
      * \brief			Deleted copy constructor.
@@ -216,7 +216,7 @@ protected:
     RobotData	            _lastReceivedPoint;
 
     /**
-     * \brief Queue used t keeps received messages frm clients.
+     * \brief Queue used to keeps received messages from clients.
      */
     std::deque<RobotData>   _messagesStorage;
 

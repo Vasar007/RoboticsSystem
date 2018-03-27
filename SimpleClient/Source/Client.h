@@ -14,7 +14,7 @@ namespace vasily
 {
 
 /**
- * \brief Typical realization of client used for interaction with robot server.
+ * \brief Typical implementation of client used for interaction with robot server.
  */
 class Client : public WinsockInterface
 {
@@ -186,17 +186,6 @@ public:
 
 protected:
     /**
-     * \brief Array of states to work in circlic mode.
-     */
-    enum class CirclicState
-    {
-        SEND_FIRST,
-        WAIT_FIRST_ANSWER,
-        SEND_SECOND,
-        WAIT_SECOND_ANSWER
-    };
-
-    /**
      * \brief Structure which contains data that is used for interaction with robot.
      */
     RobotData	_robotData;
@@ -240,16 +229,6 @@ protected:
      * \brief Data used to send and with we compare answer from robot if it needs.
      */
     RobotData		        	_waitAnswer;
-                            
-    /**
-     * \brief Flag used to define if client needs to wait answer from robot.
-     */
-    std::atomic_bool	        _isNeedToWait;
-                            
-    /**
-     * \brief Current state of work in circle.
-     */
-    CirclicState	        	_circlicState;
 
     /**
      * \brief Work mode for client, initialize when object created.

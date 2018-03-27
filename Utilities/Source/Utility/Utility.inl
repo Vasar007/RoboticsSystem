@@ -64,7 +64,7 @@ void swap(T& first, T& second) noexcept(std::is_nothrow_move_constructible_v<T>
 
 template <class InputIt1, class InputIt2, class T>
 [[nodiscard]]
-T distance(InputIt1 first1, InputIt1 last1, InputIt2 first2, T value, T divisor)
+T distance(InputIt1 first1, InputIt1 last1, InputIt2 first2, T value, const T& divisor)
 {
     assert(divisor != 0);
 

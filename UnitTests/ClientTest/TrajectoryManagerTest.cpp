@@ -29,7 +29,7 @@ void TrajectoryManagerTest::positionalTrajectoryBuilding()
     Assert::AreEqual(result.size(), trajectory.size(), L"Not equal numer of positions");
     for (std::size_t i = 0; i < result.size();++i)
     {
-        const std::wstring message = L"in " + std::to_wstring(i) + L" point!";
+        const std::wstring message = L"In " + std::to_wstring(i) + L" point!";
         specialAreEqual(result[i], trajectory[i], message);
     }
 }
@@ -132,7 +132,7 @@ void TrajectoryManagerTest::partialTrajectoryBuildingWithManyBreakingPoints()
         trajectoryManager.partialMovement(parsedResult);
 
 
-    Assert::AreEqual(result.size(), trajectory.size(), L"Not equal numer of positions");
+    Assert::AreEqual(result.size(), trajectory.size(), L"Not equal number of positions");
     for (std::size_t i = 0; i < result.size(); ++i)
     {
         const std::wstring message = L"In " + std::to_wstring(i) + L" point!";
@@ -169,7 +169,7 @@ void TrajectoryManagerTest::partialTrajectoryBuildingInOneStep()
     Assert::AreEqual(result.size(), trajectory.size(), L"Not equal numer of positions");
     for (std::size_t i = 0; i < result.size(); ++i)
     {
-        const std::wstring message = L"in " + std::to_wstring(i) + L" point!";
+        const std::wstring message = L"In " + std::to_wstring(i) + L" point!";
         specialAreEqual(result[i], trajectory[i], message);
     }
 }

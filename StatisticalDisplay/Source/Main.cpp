@@ -47,11 +47,11 @@ int main()
     std::thread clientThread(vasily::init, std::ref(client));
     clientThread.detach();
 
-    constexpr unsigned int kWidth	= 1280u;
-    constexpr unsigned int kHeight	= 720u;
+    constexpr unsigned int kWidth	= 1280;
+    constexpr unsigned int kHeight	= 720;
 
     sf::RenderWindow window(sf::VideoMode(kWidth, kHeight), "Fanuc Diagram Interface");
-    window.setFramerateLimit(60u);
+    window.setFramerateLimit(60);
 
     statistic::Transmitter transmitter(kWidth, kHeight);
 

@@ -29,12 +29,12 @@ struct RobotData
     /**
      * \brief Constant number of values to avoid "magic number".
      */
-    static constexpr std::size_t NUMBER_OF_COORDINATES	= 6u;
+    static constexpr std::size_t NUMBER_OF_COORDINATES	= 6;
     
     /**
      * \brief Constant number of parameters to avoid "magic number".
      */
-    static constexpr std::size_t NUMBER_OF_PARAMETERS	= 3u;
+    static constexpr std::size_t NUMBER_OF_PARAMETERS	= 3;
     
     /**
      * \brief Constant number to calculate real distance and to avoid "magic number".
@@ -150,7 +150,7 @@ struct RobotData
      */
     constexpr bool isEqual(const RobotData& other) const noexcept
     {
-        for (std::size_t i = 0u; i < NUMBER_OF_PARAMETERS; ++i)
+        for (std::size_t i = 0; i < NUMBER_OF_PARAMETERS; ++i)
         {
             if (this->parameters.at(i) != other.parameters.at(i))
             {
@@ -187,7 +187,7 @@ struct RobotData
      */
     friend constexpr bool operator==(const RobotData& lhs, const RobotData& rhs) noexcept
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             if (lhs.coordinates.at(i) != rhs.coordinates.at(i))
             {
@@ -216,7 +216,7 @@ struct RobotData
      */
     friend constexpr bool operator<(const RobotData& lhs, const RobotData& rhs) noexcept
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             if (lhs.coordinates.at(i) > rhs.coordinates.at(i))
             {
@@ -245,7 +245,7 @@ struct RobotData
      */
     friend constexpr RobotData& operator+=(RobotData& lhs, const RobotData& rhs) noexcept
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             lhs.coordinates.at(i) += rhs.coordinates.at(i);
         }
@@ -261,7 +261,7 @@ struct RobotData
      */
     friend constexpr RobotData& operator-=(RobotData& lhs, const RobotData& rhs) noexcept
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             lhs.coordinates.at(i) -= rhs.coordinates.at(i);
         }
@@ -277,7 +277,7 @@ struct RobotData
      */
     friend constexpr RobotData& operator*=(RobotData& lhs, const RobotData& rhs) noexcept
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             lhs.coordinates.at(i) *= rhs.coordinates.at(i);
         }
@@ -292,7 +292,7 @@ struct RobotData
      */
     friend constexpr RobotData& operator/=(RobotData& lhs, const RobotData& rhs)
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             assert(rhs.coordinates.at(i) != 0);
             lhs.coordinates.at(i) = lhs.coordinates.at(i) / rhs.coordinates.at(i);
@@ -359,7 +359,7 @@ struct RobotData
     friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
         operator+=(RobotData& lhs, const T& rhs) noexcept
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             lhs.coordinates.at(i) = static_cast<int>(lhs.coordinates.at(i) * rhs);
         }
@@ -378,7 +378,7 @@ struct RobotData
     friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
         operator-=(RobotData& lhs, const T& rhs) noexcept
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             lhs.coordinates.at(i) = static_cast<int>(lhs.coordinates.at(i) * rhs);
         }
@@ -397,7 +397,7 @@ struct RobotData
     friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
         operator*=(RobotData& lhs, const T& rhs) noexcept
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             lhs.coordinates.at(i) = static_cast<int>(lhs.coordinates.at(i) * rhs);
         }
@@ -418,7 +418,7 @@ struct RobotData
     {
         assert(rhs != 0);
 
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             lhs.coordinates.at(i) = static_cast<int>(lhs.coordinates.at(i) / rhs);
         }
