@@ -126,7 +126,7 @@ ParsedResult Handler::parseDataAfterCommand()
 
                 _data += '|';
 
-                for (std::size_t i = 0; i <_data.size(); ++i)
+                for (std::size_t i = 0; i < _data.size(); ++i)
                 {
                     if (_data[i] == '|')
                     {
@@ -174,11 +174,11 @@ ParsedResult Handler::parseDataAfterCommand()
 
                 _data += '|';
 
-                for(std::size_t i = 0; i <_data.size(); ++i)
+                for(std::size_t i = 0; i < _data.size(); ++i)
                 {
                     if(_data[i] == '|')
                     {
-                        const std::string strToParse = _data.substr(prev,i-prev);
+                        const std::string strToParse = _data.substr(prev, i - prev);
 
                         prev = i + 1;
 

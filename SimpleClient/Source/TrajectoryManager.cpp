@@ -38,7 +38,7 @@ std::vector<vasily::RobotData> TrajectoryManager::partialMovement(
         double curlen = (parsedResult.points[i] - prev).length();
         while (prevlen + curlen >= len)
         {
-            prev += (parsedResult.points[i] - prev) * ((len- prevlen)/curlen);
+            prev += (parsedResult.points[i] - prev) * ((len - prevlen) / curlen);
             ans.emplace_back(prev);
             curlen = (parsedResult.points[i] - prev).length();
             prevlen = 0.0;
@@ -59,10 +59,7 @@ std::vector<vasily::RobotData> TrajectoryManager::circlicMovement(
     ans.reserve(parsedResult.numberOfIterations * parsedResult.points.size());
     for (int i = 0; i < parsedResult.numberOfIterations; ++i)
     {
-        for (auto& it : parsedResult.points)
-        {
-            ans.emplace_back(it);
-        }
+        ans.insert(std::end(ans), std::begin(parsedResult.points), std::end(parsedResult.points));
     }
     return ans;
 }

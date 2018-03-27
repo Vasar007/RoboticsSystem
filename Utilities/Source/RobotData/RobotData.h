@@ -301,6 +301,7 @@ struct RobotData
     }
 
     /**
+
      * \brief         Sum coordinate of lhs and rhs objects.
      * \param[in] lhs Left-hand side object.
      * \param[in] rhs Right-hand side object.
@@ -496,6 +497,14 @@ struct RobotData
      * \return              A reference to the original ostream object.
      */
     friend std::ostream& operator<<(std::ostream& out, const RobotData& robotData);
+
+    /**
+     * \brief               Operator overloading for wostream.
+     * \param[in] out       Refrence to the original wostream.
+     * \param[in] robotData Object for output.
+     * \return              A reference to the original wostream object.
+     */
+    friend std::wostream& operator<<(std::wostream& out, const RobotData& robotData);
 };
 
 } // namespace vasily

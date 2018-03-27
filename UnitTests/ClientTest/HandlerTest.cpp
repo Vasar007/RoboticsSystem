@@ -64,6 +64,7 @@ void HandlerTest::handlerTwoPointsParsing()
     Assert::IsTrue(parsedResult.isCorrect, L"There is no mistake");
     Assert::AreEqual(CAST(vasily::Handler::State::PARTIAL), CAST(handler.getCurrentState()),
                      L"not right state parsed");
+
     Assert::AreEqual(result.size(), parsedResult.points.size(), L"Not right number of points");
     Assert::AreEqual(3, parsedResult.numberOfIterations, L"Not right number of iterations");
     for (std::size_t i = 0; i < result.size(); ++i)
