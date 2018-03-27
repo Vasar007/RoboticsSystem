@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <iostream>
 #include <iterator>
 #include <sstream>
 
@@ -24,9 +23,9 @@ std::string RobotData::toString() const
 
 double RobotData::length() const
 {
-    double result = 0.;
+    double result = 0.0;
 
-    for (std::size_t i = 0u; i < NUMBER_OF_COORDINATES; ++i)
+    for (std::size_t i = 0; i < NUMBER_OF_COORDINATES; ++i)
     {
         result += coordinates.at(i) * coordinates.at(i) / (TRANSFER_NUMBER * TRANSFER_NUMBER);
     }

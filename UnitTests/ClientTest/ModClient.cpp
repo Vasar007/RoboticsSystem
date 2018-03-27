@@ -18,30 +18,6 @@ void ModClient::receiveDataNTimes(const int numberOfTimes)
     for (int step = 0; step < numberOfTimes; ++step)
     {
         receiveData(_receivingSocket, _messageWithIP, _buffer);
-
-        if (_isNeedToWait.load())
-        {
-            _isNeedToWait.store(false);
-            switch (_circlicState)
-            {
-                case ModClient::CirclicState::SEND_FIRST:
-                    break;
-
-                case ModClient::CirclicState::WAIT_FIRST_ANSWER:
-                    _circlicState = ModClient::CirclicState::SEND_SECOND;
-                    break;
-
-                case ModClient::CirclicState::SEND_SECOND:
-                    break;
-
-                case ModClient::CirclicState::WAIT_SECOND_ANSWER:
-                    _circlicState = ModClient::CirclicState::SEND_FIRST;
-                    break;
-
-                default:
-                    break;
-            }
-        }
     }
 
     hasFinished.store(true);

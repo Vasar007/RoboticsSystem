@@ -1,18 +1,19 @@
-#include "TrajectoryManagerTest.h"
-
 #include "testUtilites.h"
 #include "TrajectoryManager.h"
 
+#include "TrajectoryManagerTest.h"
+
+
 /**
-* \brief Namespace scope to test project.
-*/
+ * \brief Namespace scope to test project.
+ */
 namespace clientTests
 {
 
 void TrajectoryManagerTest::positionalTrajectoryBuilding()
 {
     const danila::TrajectoryManager trajectoryManager;
-    const std::vector<vasily::RobotData> result
+    std::vector<vasily::RobotData> result
     {
         { { 1, 1, 1, 1, 1, 1 }, { 10, 2, 0 } },
         { { 2, 2, 2, 2, 2, 2 }, { 10, 2, 0 } },
@@ -23,52 +24,46 @@ void TrajectoryManagerTest::positionalTrajectoryBuilding()
     const vasily::ParsedResult parsedResult{ 0, 3, true, result };
 
     const std::vector<vasily::RobotData> trajectory = 
-        trajectoryManager.PositionalMovement(parsedResult);
+        trajectoryManager.positionalMovement(parsedResult);
 
     Assert::AreEqual(result.size(), trajectory.size(), L"Not equal numer of positions");
-    for (std::size_t i = 0; i < result.size(); ++i)
+    for (std::size_t i = 0; i < result.size();++i)
     {
-        const std::wstring message = L"in " + std::to_wstring(i) + L" point!";
-        myAreEqual(result[i], trajectory[i], message);
+        const std::wstring message = L"In " + std::to_wstring(i) + L" point!";
+        specialAreEqual(result[i], trajectory[i], message);
     }
 }
 
 void TrajectoryManagerTest::circlicTrajectoryBuilding()
 {
     const danila::TrajectoryManager trajectoryManager;
-    const std::vector<vasily::RobotData> result
+    std::vector<vasily::RobotData> result
     {
-        { { 1, 1, 1, 1, 1, 1 }, { 10, 2, 0 } },
-        { { 2, 2, 2, 2, 2, 2 }, { 10, 2, 0 } },
-        { { 3, 3, 3, 3, 3, 3 }, { 10, 2, 0 } },
-        { { 4, 4, 4, 4, 4, 4 }, { 10, 2, 0 } },
-        { { 1, 1, 1, 1, 1, 1 }, { 10, 2, 0 } },
-        { { 2, 2, 2, 2, 2, 2 }, { 10, 2, 0 } },
-        { { 3, 3, 3, 3, 3, 3 }, { 10, 2, 0 } },
-        { { 4, 4, 4, 4, 4, 4 }, { 10, 2, 0 } },
         { { 1, 1, 1, 1, 1, 1 }, { 10, 2, 0 } },
         { { 2, 2, 2, 2, 2, 2 }, { 10, 2, 0 } },
         { { 3, 3, 3, 3, 3, 3 }, { 10, 2, 0 } },
         { { 4, 4, 4, 4, 4, 4 }, { 10, 2, 0 } }
     };
 
-    const vasily::ParsedResult parsedResult{0,3,true,
+    const vasily::ParsedResult parsedResult{ 0, 3, true, result };
+    
+    result.reserve(12);
+    for(int i=0;i<2;++i)
     {
-        { { 1, 1, 1, 1, 1, 1 }, { 10, 2, 0 } },
-        { { 2, 2, 2, 2, 2, 2 }, { 10, 2, 0 } },
-        { { 3, 3, 3, 3, 3, 3 }, { 10, 2, 0 } },
-        { { 4, 4, 4, 4, 4, 4 }, { 10, 2, 0 } }
-    } 
-    };
+        for (int j = 0;j < 4;++j)
+        {
+            result.emplace_back(result[j]);
+        }
+    }
 
     const std::vector<vasily::RobotData> trajectory =
-        trajectoryManager.CirclicMovement(parsedResult);
+        trajectoryManager.circlicMovement(parsedResult);
 
     Assert::AreEqual(result.size(), trajectory.size(), L"Not equal numer of positions");
     for (std::size_t i = 0; i < result.size(); ++i)
     {
-        const std::wstring message = L"in " + std::to_wstring(i) + L" point!";
-        myAreEqual(result[i], trajectory[i], message);
+        const std::wstring message = L"In " + std::to_wstring(i) + L" point!";
+        specialAreEqual(result[i], trajectory[i], message);
     }
 }
 
@@ -76,13 +71,12 @@ void TrajectoryManagerTest::partialTrajectoryBuildingWithOneBreakingPoint()
 {
     const danila::TrajectoryManager trajectoryManager;
     
-    const vasily::ParsedResult parsedResult{ 0, 5, true,
+    const vasily::ParsedResult parsedResult{ 0,5,true,
     {
         { {   0,   0, 0, 0, 0, 0 }, { 10, 2, 0 } },
         { { 100,   0, 0, 0, 0, 0 }, { 10, 2, 0 } },
         { { 100, 100, 0, 0, 0, 0 }, { 10, 2, 0 } }
-    } 
-    };
+    } };
 
     std::vector<vasily::RobotData> result
     {
@@ -95,30 +89,30 @@ void TrajectoryManagerTest::partialTrajectoryBuildingWithOneBreakingPoint()
     };
 
     const std::vector<vasily::RobotData> trajectory =
-        trajectoryManager.PartialMovement(parsedResult);
+        trajectoryManager.partialMovement(parsedResult);
 
 
     Assert::AreEqual(result.size(), trajectory.size(), L"Not equal numer of positions");
     for (std::size_t i = 0; i < result.size(); ++i)
     {
-        const std::wstring message = L"in " + std::to_wstring(i) + L" point!";
-        myAreEqual(result[i], trajectory[i], message);
+        const std::wstring message = L"In " + std::to_wstring(i) + L" point!";
+        specialAreEqual(result[i], trajectory[i], message);
     }
 }
 
 void TrajectoryManagerTest::partialTrajectoryBuildingWithManyBreakingPoints()
 {
     const danila::TrajectoryManager trajectoryManager;
-
-    const vasily::ParsedResult parsedResult{ 0,8,true,
+    std::vector<vasily::RobotData> inputPoints
     {
         { {   0,   0,   0, 0, 0, 0 }, { 10, 2, 0 } },
         { { 100,   0,   0, 0, 0, 0 }, { 10, 2, 0 } },
         { { 100, 100,   0, 0, 0, 0 }, { 10, 2, 0 } },
         { { 100, 100, 100, 0, 0, 0 }, { 10, 2, 0 } },
         { { 100, 100,   0, 0, 0, 0 }, { 10, 2, 0 } }
-    }
     };
+
+    const vasily::ParsedResult parsedResult{ 0, 8, true, inputPoints };
 
     std::vector<vasily::RobotData> result
     {
@@ -135,30 +129,31 @@ void TrajectoryManagerTest::partialTrajectoryBuildingWithManyBreakingPoints()
 
 
     const std::vector<vasily::RobotData> trajectory =
-        trajectoryManager.PartialMovement(parsedResult);
+        trajectoryManager.partialMovement(parsedResult);
 
 
-    Assert::AreEqual(result.size(), trajectory.size(), L"Not equal numer of positions");
+    Assert::AreEqual(result.size(), trajectory.size(), L"Not equal number of positions");
     for (std::size_t i = 0; i < result.size(); ++i)
     {
-        const std::wstring message = L"in " + std::to_wstring(i) + L" point!";
-        myAreEqual(result[i], trajectory[i], message);
+        const std::wstring message = L"In " + std::to_wstring(i) + L" point!";
+        specialAreEqual(result[i], trajectory[i], message);
     }
 }
 
 void TrajectoryManagerTest::partialTrajectoryBuildingInOneStep()
 {
     const danila::TrajectoryManager trajectoryManager;
-
-    const vasily::ParsedResult parsedResult{ 0, 1, true, 
-    {
+    const std::vector<vasily::RobotData> inputPoints
+    { 
         { {   0,   0,   0, 0, 0, 0 }, { 10, 2, 0 } },
         { { 100,   0,   0, 0, 0, 0 }, { 10, 2, 0 } },
         { { 100, 100,   0, 0, 0, 0 }, { 10, 2, 0 } },
         { { 100, 100, 100, 0, 0, 0 }, { 10, 2, 0 } },
-        { { 100, 100,   0, 0, 0, 0 }, { 10, 2, 0 } }
+        { { 100, 100,   0, 0, 0, 0 }, { 10, 2, 0 } } 
     }
-    };
+    ;
+
+    const vasily::ParsedResult parsedResult{ 0, 1, true, inputPoints };
 
     std::vector<vasily::RobotData> result
     { 
@@ -168,14 +163,14 @@ void TrajectoryManagerTest::partialTrajectoryBuildingInOneStep()
 
 
     const std::vector<vasily::RobotData> trajectory =
-        trajectoryManager.PartialMovement(parsedResult);
+        trajectoryManager.partialMovement(parsedResult);
 
 
     Assert::AreEqual(result.size(), trajectory.size(), L"Not equal numer of positions");
     for (std::size_t i = 0; i < result.size(); ++i)
     {
-        const std::wstring message = L"in " + std::to_wstring(i) + L" point!";
-        myAreEqual(result[i], trajectory[i], message);
+        const std::wstring message = L"In " + std::to_wstring(i) + L" point!";
+        specialAreEqual(result[i], trajectory[i], message);
     }
 }
 

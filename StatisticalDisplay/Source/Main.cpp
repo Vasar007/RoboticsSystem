@@ -31,7 +31,7 @@ int main()
     constexpr int	kServerPort				= 8888;
     constexpr int	kServerPortSending		= 9999;
     constexpr int	kServerPortReceiving	= 9998;
-    constexpr char	kServerIP[]				= "192.168.0.101";
+    constexpr char	kServerIP[]				= "192.168.0.100";
 
     constexpr int	kRobotSendingPortToServer       = 59002;
     constexpr int	kRobotReceivingPortFromServer   = 59003;
@@ -47,11 +47,11 @@ int main()
     std::thread clientThread(vasily::init, std::ref(client));
     clientThread.detach();
 
-    constexpr unsigned int kWidth	= 1280u;
-    constexpr unsigned int kHeight	= 720u;
+    constexpr unsigned int kWidth	= 1280;
+    constexpr unsigned int kHeight	= 720;
 
     sf::RenderWindow window(sf::VideoMode(kWidth, kHeight), "Fanuc Diagram Interface");
-    window.setFramerateLimit(60u);
+    window.setFramerateLimit(60);
 
     statistic::Transmitter transmitter(kWidth, kHeight);
 

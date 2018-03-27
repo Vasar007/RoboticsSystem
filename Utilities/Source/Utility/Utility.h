@@ -128,7 +128,8 @@ std::string         getCurrentSystemTime() noexcept;
  */
 template <class InputIt1, class InputIt2, class T>
 [[nodiscard]]
-T                   distance(InputIt1 first1, InputIt1 last1, InputIt2 first2, T value, T divisor);
+T                   distance(InputIt1 first1, InputIt1 last1, InputIt2 first2, T value,
+                             const T& divisor);
 
 /**
  * \brief         Compare two not integral numbers.

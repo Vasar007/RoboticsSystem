@@ -14,7 +14,7 @@ namespace vasily
 {
 
 /**
- * \brief Typical realization of client used for interaction with robot server.
+ * \brief Typical implementation of client used for interaction with robot server.
  */
 class Client : public WinsockInterface
 {
@@ -120,7 +120,7 @@ public:
      * \brief  Get server IP address.
      * \return String which contains current server IP address.
      */
-    std::string getServerIP() const;
+    std::string getServerIP() const noexcept;
 
     /**
      * \brief				  Set server IP address.
@@ -132,13 +132,13 @@ public:
      * \brief  Get current duration.
      * \return Measured time between start point and some event.
      */
-    std::chrono::duration<double> getDuration() const;
+    std::chrono::duration<double> getDuration() const noexcept;
 
     /**
      * \brief  Get actual point to interact.
      * \return RobotData structure.
      */
-    RobotData   getRobotData() const;
+    RobotData   getRobotData() const noexcept;
 
     /**
      * \brief Main method which starts infinite working loop.
@@ -155,11 +155,11 @@ public:
      */
     void		receive();
 
-	/**
-	 * \brief				send coordinate to robot.
-	 * \param[in] robotData Point to send.
-	 */
-	void		sendCoordinates(const RobotData& robotData);
+    /**
+     * \brief				send coordinate to robot.
+     * \param[in] robotData Point to send.
+     */
+    void		sendCoordinates(const RobotData& robotData);
 
     /**
     * \brief	    	send coordinates to robot.
@@ -167,11 +167,11 @@ public:
     */
     void		sendCoordinates(const std::vector<RobotData>& points);
 
-	/**
-	 * \brief						Send coordinate system to robot.
-	 * \param[in] coordinateSystem	Coordinate system to send.
-	 */
-	void		sendCoordinateSystem(const CoordinateSystem coordinateSystem) const;
+    /**
+     * \brief						Send coordinate system to robot.
+     * \param[in] coordinateSystem	Coordinate system to send.
+     */
+    void		sendCoordinateSystem(const CoordinateSystem coordinateSystem) const;
 
     /**
      * \brief Calibrate strain gauge.
@@ -185,17 +185,6 @@ public:
 
 
 protected:
-    /**
-     * \brief Array of states to work in circlic mode.
-     */
-    enum class CirclicState
-    {
-        SEND_FIRST,
-        WAIT_FIRST_ANSWER,
-        SEND_SECOND,
-        WAIT_SECOND_ANSWER
-    };
-
     /**
      * \brief Structure which contains data that is used for interaction with robot.
      */
@@ -236,35 +225,25 @@ protected:
      */
     std::chrono::duration<double>						_duration{};
 
-	/**
-	 * \brief Data used to send and with we compare answer from robot if it needs.
-	 */
-	RobotData		        	_waitAnswer;
-							
-	/**
-	 * \brief Flag used to define if client needs to wait answer from robot.
-	 */
-	std::atomic_bool	        _isNeedToWait;
-							
-	/**
-	 * \brief Current state of work in circle.
-	 */
-	CirclicState	        	_circlicState;
+    /**
+     * \brief Data used to send and with we compare answer from robot if it needs.
+     */
+    RobotData		        	_waitAnswer;
 
-	/**
-	 * \brief Work mode for client, initialize when object created.
-	 */
-	WorkMode                    _workMode;
+    /**
+     * \brief Work mode for client, initialize when object created.
+     */
+    WorkMode                    _workMode;
 
-	/**
-	 * \brief Logger used to write received data to file.
-	 */
-	logger::Logger              _logger;
+    /**
+     * \brief Logger used to write received data to file.
+     */
+    logger::Logger              _logger;
 
-	/**
-	 * \brief Class-wrapper used to work with strain gauge. 
-	 */
-	nikita::TenzoMath           _tenzoMath;
+    /**
+     * \brief Class-wrapper used to work with strain gauge. 
+     */
+    nikita::TenzoMath           _tenzoMath;
 
     /**
      * \brief Class used ot generate trajectoryes.
@@ -282,11 +261,11 @@ protected:
      */
     void		waitLoop() override;
 
-	/**
-	 * \brief			Check connection to robot every time.
-	 * \param[in] time	Period time to check.
-	 */
-	void		checkConnection(const long long time);
+    /**
+     * \brief			Check connection to robot every time.
+     * \param[in] time	Period time to check.
+     */
+    void		checkConnection(const long long time);
 };
 
 } // namespace vasily

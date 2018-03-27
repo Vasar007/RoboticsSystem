@@ -79,7 +79,7 @@ std::string getCurrentSystemTime() noexcept
 
     // The string result produced by asctime_s contains exactly 26 characters and
     // has the form => Wed Jan 02 02:03:55 1980\n\0.
-    constexpr std::size_t kSize = 26u;
+    constexpr std::size_t kSize = 26;
     char timebuf[kSize];
     const errno_t err = asctime_s(timebuf, kSize, &timeInfo);
 

@@ -63,7 +63,7 @@ void ServerImitator::process()
             _isRunning.store(true);
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(10LL));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
 
@@ -90,7 +90,7 @@ void ServerImitator::waitLoop()
 
         if (const auto [value, check] = utils::parseCoordinateSystem(dataBuffer); check)
         {
-            const std::string coordSystemStr = dataBuffer.substr(0u, 1u);
+            const std::string coordSystemStr = dataBuffer.substr(0, 1);
             _printer.writeLine(std::cout, coordSystemStr);
             _coorninateSystem.emplace(value);
         }
@@ -140,11 +140,11 @@ std::chrono::milliseconds ServerImitator::calculateDuration(const RobotData& rob
     // Calculate distance between two points, which contains only first 3 coordinates.
     const double distance   = utils::distance(_lastReceivedData.coordinates.begin(),
                                               _lastReceivedData.coordinates.begin() + 2,
-                                              robotData.coordinates.begin(), 0., 10'000.);
+                                              robotData.coordinates.begin(), 0.0, 10'000.0);
     _lastReceivedData       = robotData;
 
-    constexpr long long multiplier  = 65LL;
-    const auto result               = static_cast<long long>(distance * multiplier);
+    constexpr long long kMultiplier  = 65;
+    const auto result               = static_cast<long long>(distance * kMultiplier);
 
     return std::chrono::milliseconds(result);
 }

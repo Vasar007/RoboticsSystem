@@ -29,12 +29,12 @@ struct RobotData
     /**
      * \brief Constant number of values to avoid "magic number".
      */
-    static constexpr std::size_t NUMBER_OF_COORDINATES	= 6u;
+    static constexpr std::size_t NUMBER_OF_COORDINATES	= 6;
     
     /**
      * \brief Constant number of parameters to avoid "magic number".
      */
-    static constexpr std::size_t NUMBER_OF_PARAMETERS	= 3u;
+    static constexpr std::size_t NUMBER_OF_PARAMETERS	= 3;
     
     /**
      * \brief Constant number to calculate real distance and to avoid "magic number".
@@ -150,7 +150,7 @@ struct RobotData
      */
     constexpr bool isEqual(const RobotData& other) const noexcept
     {
-        for (std::size_t i = 0u; i < NUMBER_OF_PARAMETERS; ++i)
+        for (std::size_t i = 0; i < NUMBER_OF_PARAMETERS; ++i)
         {
             if (this->parameters.at(i) != other.parameters.at(i))
             {
@@ -187,7 +187,7 @@ struct RobotData
      */
     friend constexpr bool operator==(const RobotData& lhs, const RobotData& rhs) noexcept
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             if (lhs.coordinates.at(i) != rhs.coordinates.at(i))
             {
@@ -216,7 +216,7 @@ struct RobotData
      */
     friend constexpr bool operator<(const RobotData& lhs, const RobotData& rhs) noexcept
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             if (lhs.coordinates.at(i) > rhs.coordinates.at(i))
             {
@@ -245,7 +245,7 @@ struct RobotData
      */
     friend constexpr RobotData& operator+=(RobotData& lhs, const RobotData& rhs) noexcept
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             lhs.coordinates.at(i) += rhs.coordinates.at(i);
         }
@@ -257,11 +257,11 @@ struct RobotData
      * \brief         Subtract coordinate of lhs and rhs objects.
      * \param[in] lhs Left-hand side object.
      * \param[in] rhs Right-hand side object.
-     * \return        Result of subtract puts in lhs object.
+     * \return        Result of sustraction puts in lhs object.
      */
     friend constexpr RobotData& operator-=(RobotData& lhs, const RobotData& rhs) noexcept
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             lhs.coordinates.at(i) -= rhs.coordinates.at(i);
         }
@@ -277,11 +277,10 @@ struct RobotData
      */
     friend constexpr RobotData& operator*=(RobotData& lhs, const RobotData& rhs) noexcept
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
             lhs.coordinates.at(i) *= rhs.coordinates.at(i);
         }
-
         return lhs;
     }
 
@@ -289,106 +288,20 @@ struct RobotData
      * \brief         Divide coordinate of lhs and rhs objects.
      * \param[in] lhs Left-hand side object.
      * \param[in] rhs Right-hand side object.
-     * \return        Result of division puts in lhs object.
+     * \return        Result of divison puts in lhs object.
      */
-    friend constexpr RobotData& operator/=(RobotData& lhs, const RobotData& rhs) noexcept
+    friend constexpr RobotData& operator/=(RobotData& lhs, const RobotData& rhs)
     {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
         {
-            lhs.coordinates.at(i) /= rhs.coordinates.at(i);
+            assert(rhs.coordinates.at(i) != 0);
+            lhs.coordinates.at(i) = lhs.coordinates.at(i) / rhs.coordinates.at(i);
         }
-
         return lhs;
     }
 
     /**
-     * \brief     Sum coordinate of lhs and rhs objects.
-     * \tparam T  Number type for sum.
-     * \param lhs Left-hand side object.
-     * \param rhs Right-hand side object.
-     * \return    Result of sum puts in lhs object.
-     */
-    template <class T>
-    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
-        operator+=(RobotData& lhs, const T& rhs)
-    {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
-        {
-            lhs.coordinates.at(i) = static_cast<int>(lhs.coordinates.at(i) + rhs);
-        }
 
-        return lhs;
-    }
-
-    /**
-     * \brief     Subtract coordinate of lhs and rhs objects.
-     * \tparam T  Number type for sustract.
-     * \param lhs Left-hand side object.
-     * \param rhs Right-hand side object.
-     * \return    Result of sustract puts in lhs object.
-     */
-    template <class T>
-    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
-        operator-=(RobotData& lhs, const T& rhs)
-    {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
-        {
-            lhs.coordinates.at(i) = static_cast<int>(lhs.coordinates.at(i) - rhs);
-        }
-
-        return lhs;
-    }
-
-    /**
-     * \brief     Multiply coordinate of lhs and rhs objects.
-     * \tparam T  Number type for multiplication.
-     * \param lhs Left-hand side object.
-     * \param rhs Right-hand side object.
-     * \return    Result of division puts in lhs object.
-     */
-    template <class T>
-    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
-        operator*=(RobotData& lhs, const T& rhs)
-    {
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
-        {
-            lhs.coordinates.at(i) = static_cast<int>(lhs.coordinates.at(i) * rhs);
-        }
-
-        return lhs;
-    }
-
-    /**
-     * \brief         Divide coordinate of lhs and rhs objects.
-     * \tparam T      Number type for division.
-     * \param[in] lhs Left-hand side object.
-     * \param[in] rhs Right-hand side object.
-     * \return        Result of division puts in lhs object.
-     */
-    template <class T>
-    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
-        operator/=(RobotData& lhs, const T& rhs)
-    {
-        assert(rhs != 0);
-
-        for (std::size_t i = 0u; i < RobotData::NUMBER_OF_COORDINATES; ++i)
-        {
-            if (lhs.coordinates.at(i) == 0)
-            {
-                continue;
-            }
-
-            lhs.coordinates.at(i) = static_cast<int>(lhs.coordinates.at(i) / rhs);
-            if (lhs.coordinates.at(i) == 0)
-            {
-                lhs.coordinates.at(i) = 1;
-            }
-        }
-
-        return lhs;
-    }
-
-    /**
      * \brief         Sum coordinate of lhs and rhs objects.
      * \param[in] lhs Left-hand side object.
      * \param[in] rhs Right-hand side object.
@@ -397,7 +310,6 @@ struct RobotData
     friend constexpr RobotData operator+(const RobotData& lhs, const RobotData& rhs) noexcept
     {
         RobotData result = lhs;
-
         return result += rhs;
     }
 
@@ -410,7 +322,6 @@ struct RobotData
     friend constexpr RobotData operator-(const RobotData& lhs, const RobotData& rhs) noexcept
     {
         RobotData result = lhs;
-
         return result -= rhs;
     }
 
@@ -423,7 +334,6 @@ struct RobotData
     friend constexpr RobotData operator*(const RobotData& lhs, const RobotData& rhs) noexcept
     {
         RobotData result = lhs;
-
         return result *= rhs;
     }
 
@@ -433,11 +343,87 @@ struct RobotData
      * \param[in] rhs Right-hand side object.
      * \return        Result of division.
      */
-    friend constexpr RobotData operator/(const RobotData& lhs, const RobotData& rhs) noexcept
+    friend constexpr RobotData operator/(const RobotData& lhs, const RobotData& rhs)
     {
         RobotData result = lhs;
-
         return result /= rhs;
+    }
+
+    /**
+    * \brief         Sum coordinate of lhs and rhs objects.
+    * \tparam T      Type of number.
+    * \param[in] lhs Left-hand side object.
+    * \param[in] rhs Right-hand side object.
+    * \return        Result of sum puts in lhs object.
+    */
+    template <class T>
+    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
+        operator+=(RobotData& lhs, const T& rhs) noexcept
+    {
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        {
+            lhs.coordinates.at(i) = static_cast<int>(lhs.coordinates.at(i) * rhs);
+        }
+
+        return lhs;
+    }
+
+    /**
+     * \brief         Subtract coordinate of lhs and rhs objects.
+     * \tparam T      Type of number.
+     * \param[in] lhs Left-hand side object.
+     * \param[in] rhs Right-hand side object.
+     * \return        Result of sustraction puts in lhs object.
+     */
+    template <class T>
+    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
+        operator-=(RobotData& lhs, const T& rhs) noexcept
+    {
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        {
+            lhs.coordinates.at(i) = static_cast<int>(lhs.coordinates.at(i) * rhs);
+        }
+
+        return lhs;
+    }
+
+    /**
+     * \brief         Multiply coordinate of lhs and rhs objects.
+     * \tparam T      Type of number.
+     * \param[in] lhs Left-hand side object.
+     * \param[in] rhs Right-hand side object.
+     * \return        Result of multiplication puts in lhs object.
+     */
+    template <class T>
+    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
+        operator*=(RobotData& lhs, const T& rhs) noexcept
+    {
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        {
+            lhs.coordinates.at(i) = static_cast<int>(lhs.coordinates.at(i) * rhs);
+        }
+
+        return lhs;
+    }
+
+    /**
+     * \brief         Divide coordinate of lhs and rhs objects.
+     * \tparam T      Type of number.
+     * \param[in] lhs Left-hand side object.
+     * \param[in] rhs Right-hand side object.
+     * \return        Result of division puts in lhs object.
+     */
+    template <class T>
+    friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData&>
+        operator/=(RobotData& lhs, const T& rhs)
+    {
+        assert(rhs != 0);
+
+        for (std::size_t i = 0; i < RobotData::NUMBER_OF_COORDINATES; ++i)
+        {
+            lhs.coordinates.at(i) = static_cast<int>(lhs.coordinates.at(i) / rhs);
+        }
+        return lhs;
     }
 
     /**
@@ -451,7 +437,6 @@ struct RobotData
         operator+(const RobotData& lhs, const T& rhs) noexcept
     {
         RobotData result = lhs;
-
         return result += rhs;
     }
 
@@ -466,41 +451,34 @@ struct RobotData
         operator-(const RobotData& lhs, const T& rhs) noexcept
     {
         RobotData result = lhs;
-
         return result -= rhs;
     }
 
     /**
-    * \brief         Multiply coordinate of lhs and rhs objects.
-    * \tparam T      Number type for multiplication.
-    * \param[in] lhs Left-hand side object.
-    * \param[in] rhs Right-hand side object.
-    * \return        Result of multiplication.
-    */
+     * \brief         Multiply coordinate rhs object from lhs object.
+     * \param[in] lhs Left-hand side object.
+     * \param[in] rhs Right-hand side object.
+     * \return        Result of multiplication.
+     */
     template <class T>
     friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData>
-        operator*(const RobotData& lhs, const T& rhs)
+        operator*(const RobotData& lhs, const T& rhs) noexcept
     {
         RobotData result = lhs;
-
         return result *= rhs;
     }
 
     /**
-     * \brief         Divide coordinate of lhs and rhs objects.
-     * \tparam T      Number type for division.
+     * \brief         Divide coordinate rhs object from lhs object.
      * \param[in] lhs Left-hand side object.
      * \param[in] rhs Right-hand side object.
      * \return        Result of division.
      */
     template <class T>
     friend constexpr std::enable_if_t<std::is_arithmetic_v<T>, RobotData>
-        operator/(const RobotData& lhs, const T& rhs)
+        operator/(RobotData& lhs, const T& rhs)
     {
-        assert(rhs != 0);
-
         RobotData result = lhs;
-
         return result /= rhs;
     }
 
