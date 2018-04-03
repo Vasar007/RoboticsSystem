@@ -208,7 +208,7 @@ auto y = std::make_unique<int>(5) // Yes!
 ## Comments
 - Prefer one-line comment `//` then multiline `/**/`
 - Write comments only in English
-- Each comment should start with capital letter end with the period (`.`)
+- Each comment should start with capital letter and end with the period (`.`)
 - Notice an indentation between `//` and beginning of the comment
 - No words on open and close line multiline comment (doesn't work with code blocks comments)!
 - It's prefered to write the comments in places hard to understand
