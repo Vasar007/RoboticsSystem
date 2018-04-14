@@ -17,10 +17,10 @@ RobotImitator::RobotImitator(const int recivingPort, const int sendingPort,
                              QObject* parent)
     : QObject(parent),
       _receivingPort(recivingPort),
-      _receivingSocket(new QTcpServer(this)),
+      _receivingSocket(std::make_unique<QTcpServer>(this)),
       _clientSendingSocket(nullptr),
       _sendingPort(sendingPort),
-      _sendingSocket(new QTcpServer(this)),
+      _sendingSocket(std::make_unique<QTcpServer>(this)),
       _clientReceivingSocket(nullptr),
       _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
               CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>())
@@ -35,8 +35,8 @@ RobotImitator::RobotImitator(const int recivingPort, const int sendingPort,
 
 void RobotImitator::slotNewConnectionOnReceive()
 {
-    _printer.writeLine(std::cout, "\nWaiting for connections (OnReceive)...\n");
-    _logger.writeLine("\nReceivingSocket waiting for connections at",
+    _printer.writeLine(std::cout, "\nNew connection to receiving port\n");
+    _logger.writeLine("\nNew connection to receiving port at",
                       utils::getCurrentSystemTime());
 
     _clientSendingSocket = _receivingSocket->nextPendingConnection();
@@ -44,15 +44,12 @@ void RobotImitator::slotNewConnectionOnReceive()
     connect(_clientSendingSocket, &QTcpSocket::readyRead, this, &RobotImitator::slotReadFromClient);
     connect(_clientSendingSocket, &QTcpSocket::disconnected, this,
             &RobotImitator::slotClientDisconnectedOnReceive);
-
-    _printer.writeLine(std::cout, "Client connected to receiving port\n");
-    _logger.writeLine("Server started to receive at", utils::getCurrentSystemTime());
 }
 
 void RobotImitator::slotNewConnectionOnSend()
 {
-    _printer.writeLine(std::cout, "\nWaiting for connections (OnSend)...\n");
-    _logger.writeLine("\nSendingSocket waiting for connections at",
+    _printer.writeLine(std::cout, "\nNew connection to sending port\n");
+    _logger.writeLine("\nNew connection to sending port at",
                       utils::getCurrentSystemTime());
 
     _clientReceivingSocket = _sendingSocket->nextPendingConnection();
@@ -61,8 +58,6 @@ void RobotImitator::slotNewConnectionOnSend()
 
     connect(_clientReceivingSocket, &QTcpSocket::disconnected, this,
             &RobotImitator::slotClientDisconnectedOnSend);
-
-    _printer.writeLine(std::cout, "Client connected to sending port\n");
 }
 
 void RobotImitator::slotReadFromClient()
@@ -101,14 +96,14 @@ void RobotImitator::slotReadFromClient()
 
 void RobotImitator::slotClientDisconnectedOnReceive()
 {
-    _printer.writeLine(std::cout, "Client disconnected on receiving!");
+    _printer.writeLine(std::cout, "Client disconnected from receiving port!");
     _clientSendingSocket->close();
     _coorninateSystem.reset();
 }
 
 void RobotImitator::slotClientDisconnectedOnSend() const
 {
-    _printer.writeLine(std::cout, "Client disconnected on sending!");
+    _printer.writeLine(std::cout, "Client disconnected from sending port!");
     _clientReceivingSocket->close();
 }
 

@@ -22,11 +22,11 @@ Client::Client(const int layerPort, const std::string_view serverIP, const WorkM
                QObject* parent)
     : QObject(parent),
       _layerPort(layerPort),
-      _socketForLayer(new QTcpSocket(this)),
+      _socketForLayer(std::make_unique<QTcpSocket>(this)),
       _serverReceivingPort(0),
-      _receivingSocket(),
+      _receivingSocket(nullptr),
       _serverSendingPort(0),
-      _sendingSocket(),
+      _sendingSocket(nullptr),
       _serverIP(serverIP),
       _start(std::chrono::steady_clock::now()),
       _workMode(workMode),
@@ -41,20 +41,17 @@ Client::Client(const int layerPort, const std::string_view serverIP, const WorkM
             Qt::QueuedConnection);
 
     connect(this, &Client::signalToSend, this, &Client::slotSendDataToLayer);
-
-    _printer.writeLine(std::cout, "\nClient launched...\n");
-    _logger.writeLine("\nClient launched at", utils::getCurrentSystemTime());
 }
 
 Client::Client(const int serverReceivingPort, const int serverSendingPort,
                const std::string_view serverIP, const WorkMode workMode, QObject* parent)
     : QObject(parent),
       _layerPort(0),
-      _socketForLayer(),
+      _socketForLayer(nullptr),
       _serverReceivingPort(serverReceivingPort),
-      _receivingSocket(new QTcpSocket(this)),
+      _receivingSocket(std::make_unique<QTcpSocket>(this)),
       _serverSendingPort(serverSendingPort),
-      _sendingSocket(new QTcpSocket(this)),
+      _sendingSocket(std::make_unique<QTcpSocket>(this)),
       _serverIP(serverIP),
       _start(std::chrono::steady_clock::now()),
       _workMode(workMode),
@@ -73,9 +70,6 @@ Client::Client(const int serverReceivingPort, const int serverSendingPort,
             Qt::QueuedConnection);
 
     connect(this, &Client::signalToSend, this, &Client::slotSendDataToServer);
-
-    _printer.writeLine(std::cout, "\nClient launched...\n");
-    _logger.writeLine("\nClient launched at", utils::getCurrentSystemTime());
 }
 
 void Client::slotReadFromLayer()

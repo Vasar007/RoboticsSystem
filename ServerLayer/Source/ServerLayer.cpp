@@ -25,12 +25,12 @@ ServerLayer::ServerLayer(const int serverReceivingPort,  const int serverSending
                          const WorkMode workMode, QObject* parent)
     : QObject(parent),
       _layerPort(layerPort),
-      _layerSocket(new QTcpServer(this)),
+      _layerSocket(std::make_unique<QTcpServer>(this)),
       _clientSocket(nullptr),
       _serverReceivingPort(serverReceivingPort),
-      _receivingSocket(new QTcpSocket(this)),
+      _receivingSocket(std::make_unique<QTcpSocket>(this)),
       _serverSendingPort(serverSendingPort),
-      _sendingSocket(new QTcpSocket(this)),
+      _sendingSocket(std::make_unique<QTcpSocket>(this)),
       _serverIP(serverIP),
       _workMode(workMode),
       _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
@@ -60,15 +60,12 @@ ServerLayer::ServerLayer(const int serverReceivingPort,  const int serverSending
 
     connect(this, &ServerLayer::signalProcessAnswersStorage, this,
             &ServerLayer::slotProcessAnswersStorage);
-
-    _printer.writeLine(std::cout, "\nServerLayer launched...\n");
-    _logger.writeLine("\nServerLayer launched at", utils::getCurrentSystemTime());
 }
 
 void ServerLayer::slotNewClientConnection()
 {
-    _printer.writeLine(std::cout, "\nWaiting for connections from Clients...\n");
-    _logger.writeLine("\nServerLayer waiting for connections from Clients at",
+    _printer.writeLine(std::cout, "\nNew connection to layer port\n");
+    _logger.writeLine("\nNew connection to layer port at",
                       utils::getCurrentSystemTime());
 
     _clientSocket = _layerSocket->nextPendingConnection();
@@ -77,14 +74,11 @@ void ServerLayer::slotNewClientConnection()
 
     connect(_clientSocket, &QTcpSocket::readyRead, this, &ServerLayer::slotReadFromClient);
     connect(_clientSocket, &QTcpSocket::disconnected, this, &ServerLayer::slotClientDisconnected);
-
-    _printer.writeLine(std::cout, "Client connected to layer port\n");
-    _logger.writeLine("ServerLayer started to receive at", utils::getCurrentSystemTime());
 }
 
 void ServerLayer::slotClientDisconnected()
 {
-    _printer.writeLine(std::cout, "Client disconnected!");
+    _printer.writeLine(std::cout, "Client disconnected from layer port!");
     _clientSocket->close();
     _coorninateSystem.reset();
 }
