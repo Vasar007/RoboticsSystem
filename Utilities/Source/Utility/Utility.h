@@ -12,6 +12,7 @@
 
 #define DOUBLE_STATIC_CAST(Type, valueToCast) static_cast<Type>(static_cast<void*>(&valueToCast))
 
+
 // Forward declaration.
 class Client;
 class ServerImitator;

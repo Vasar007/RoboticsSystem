@@ -5,6 +5,9 @@
 #include <cassert>
 
 
+/**
+ * \brief My working namespace (Vasily Vasilyev).
+ */
 namespace vasily
 {
 

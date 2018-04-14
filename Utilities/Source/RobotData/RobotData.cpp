@@ -27,7 +27,7 @@ double RobotData::length() const
 
     for (std::size_t i = 0; i < NUMBER_OF_COORDINATES; ++i)
     {
-        result += coordinates.at(i) * coordinates.at(i) / (TRANSFER_NUMBER * TRANSFER_NUMBER);
+        result += 1.0 * coordinates.at(i) * coordinates.at(i) / (TRANSFER_NUMBER * TRANSFER_NUMBER);
     }
 
     return std::sqrt(result);
@@ -62,10 +62,10 @@ std::ostream& operator<<(std::ostream& out, const RobotData& robotData)
 std::wostream& operator<<(std::wostream& out, const RobotData& robotData)
 {
     std::copy(robotData.coordinates.begin(), robotData.coordinates.end(),
-        std::ostream_iterator<int, wchar_t>(out, L" "));
+              std::ostream_iterator<int, wchar_t>(out, L" "));
 
     std::copy(robotData.parameters.begin(), robotData.parameters.end(),
-        std::ostream_iterator<int, wchar_t>(out, L" "));
+              std::ostream_iterator<int, wchar_t>(out, L" "));
 
     return out;
 }

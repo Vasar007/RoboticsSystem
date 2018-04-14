@@ -10,96 +10,100 @@ inline const config::Config<std::string, std::string, std::string_view, int, int
 {
     { "distance_to_time.txt" },
     { "out.txt" },
-    { "192.168.1.21", 13 },
-    59002,
+    { "172.27.221.60", 14 },
     59003,
+    59002,
     8888,
     3,
-    { 830'000, -400'000, 539'000 },
+    { 830'000,  -400'000, 539'000 },
     { 1'320'000, 400'000, 960'000 },
     1000
 };
 
-ServerLayer::ServerLayer(const int serverSendingPort, const int serverRecivingPort,
-                         const std::string_view serverIP, const int layerPort, const int backlog,
-                         const WorkMode workMode)
-    : _bufferForClient(),
-      _messageWithIPForClient(),
-      _isRunningForClient(false),
-      _serverIP(serverIP),
+ServerLayer::ServerLayer(const int serverReceivingPort,  const int serverSendingPort,
+                         const std::string_view serverIP, const int layerPort,
+                         const WorkMode workMode, QObject* parent)
+    : QObject(parent),
       _layerPort(layerPort),
-      _backlog(backlog),
-      _clientSocket(0),
-      _layerSocket(),
-      _layerSocketAddress(),
+      _layerSocket(new QTcpServer(this)),
+      _clientSocket(nullptr),
+      _serverReceivingPort(serverReceivingPort),
+      _receivingSocket(new QTcpSocket(this)),
       _serverSendingPort(serverSendingPort),
-      _serverReceivingPort(serverRecivingPort),
+      _sendingSocket(new QTcpSocket(this)),
+      _serverIP(serverIP),
       _workMode(workMode),
       _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
               CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>()),
       _delayManager(_printer, _logger)
 {
+    _printer.writeLine(std::cout, "Server Receiving Port:", serverReceivingPort,
+                       "Server Sending Port:", serverSendingPort, "Server IP:", serverIP,
+                       "Layer Port:", layerPort);
+
+    connect(_layerSocket.get(), &QTcpServer::newConnection, this,
+            &ServerLayer::slotNewClientConnection);
+    
+    connect(this, &ServerLayer::signalToSendToClient, this, &ServerLayer::slotSendDataToClient);
+
+    connect(_receivingSocket.get(), &QTcpSocket::readyRead, this, &ServerLayer::slotReadFromServer);
+    connect(_receivingSocket.get(), &QTcpSocket::disconnected, this,
+            &ServerLayer::slotServerDisconnected, Qt::QueuedConnection);
+
+    connect(_sendingSocket.get(), &QTcpSocket::disconnected, this,
+            &ServerLayer::slotServerDisconnected, Qt::QueuedConnection);
+
+    connect(this, &ServerLayer::signalToSendToServer, this, &ServerLayer::slotSendDataToServer);
+
+    connect(this, &ServerLayer::signalProcessMessagesStorage, this,
+            &ServerLayer::slotProcessMessagesStorage);
+
+    connect(this, &ServerLayer::signalProcessAnswersStorage, this,
+            &ServerLayer::slotProcessAnswersStorage);
+
+    _printer.writeLine(std::cout, "\nServerLayer launched...\n");
+    _logger.writeLine("\nServerLayer launched at", utils::getCurrentSystemTime());
 }
 
-ServerLayer::~ServerLayer()
+void ServerLayer::slotNewClientConnection()
 {
-    closeSocket(_layerSocket);
+    _printer.writeLine(std::cout, "\nWaiting for connections from Clients...\n");
+    _logger.writeLine("\nServerLayer waiting for connections from Clients at",
+                      utils::getCurrentSystemTime());
+
+    _clientSocket = _layerSocket->nextPendingConnection();
+
+    _clientSocket->write("Test message from ServerLayer::LayerSocket.");
+
+    connect(_clientSocket, &QTcpSocket::readyRead, this, &ServerLayer::slotReadFromClient);
+    connect(_clientSocket, &QTcpSocket::disconnected, this, &ServerLayer::slotClientDisconnected);
+
+    _printer.writeLine(std::cout, "Client connected to layer port\n");
+    _logger.writeLine("ServerLayer started to receive at", utils::getCurrentSystemTime());
 }
 
-void ServerLayer::receiveFromServer()
+void ServerLayer::slotClientDisconnected()
 {
-    _printer.writeLine(std::cout, "\nReceiving thread for server started...\n");
+    _printer.writeLine(std::cout, "Client disconnected!");
+    _clientSocket->close();
+    _coorninateSystem.reset();
+}
 
-    while (true)
+void ServerLayer::slotServerDisconnected()
+{
+    _printer.writeLine(std::cout, "\nServer disconnected!");
+    tryReconnectToServer();
+}
+
+void ServerLayer::slotReadFromClient()
+{
+    if (_clientSocket->bytesAvailable() > 0)
     {
-        const auto [dataBuffer, flag] = receiveData(_receivingSocket, _messageWithIP, _buffer);
-        _isRunning.store(flag);
+        QByteArray array = _clientSocket->readAll();
+        ///qDebug() << array << '\n';
 
-        if (!_isRunning.load())
-        {
-            tryReconnectToServer();
-            continue;
-        }
-
-        if (!dataBuffer.empty())
-        {
-            sendData(_clientSocket, dataBuffer);
-        }
-        _logger.writeLine(_messageWithIP, '-', dataBuffer);
-    }
-}
-
-void ServerLayer::checkConnectionToServer(const long long& time)
-{
-    while (true)
-    {
-        _logger.writeLine(_lastReceivedPoint);
-        sendData(_sendingSocket, _lastReceivedPoint.toString());
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(time));
-    }
-}
-
-void ServerLayer::receiveFromClients()
-{
-    _printer.writeLine(std::cout, "\nReceive thread for clients started...\n");
-
-    while (true)
-    {
-        const auto [dataBuffer, status] = receiveData(_clientSocket, _messageWithIPForClient,
-                                                      _bufferForClient);
-        _logger.writeLine(_messageWithIPForClient, '-', dataBuffer);
-        _isRunningForClient.store(status);
-
-        if (!_isRunningForClient.load())
-        {
-            waitingForConnections();
-            continue;
-        }
-        if (dataBuffer.empty())
-        {
-            continue;
-        }
+        const std::string receivedData = array.toStdString();
+        _logger.writeLine(_clientSocket->localPort(), '-', receivedData); // messageWithIP
 
         switch (_workMode)
         {
@@ -111,11 +115,10 @@ void ServerLayer::receiveFromClients()
                 }
 
                 bool flag;
-                const auto robotData = utils::fromString<RobotData>(dataBuffer, flag);
+                const auto robotData = utils::fromString<RobotData>(receivedData, flag);
                 if (!flag || !checkCoordinates(robotData))
                 {
-                    sendData(_clientSocket, "INCORRECT COORDINATES: " + dataBuffer);
-                    continue;
+                    sendData("INCORRECT COORDINATES: " + receivedData, Whereto::CLIENT);
                 }
                 break;
             }
@@ -126,40 +129,111 @@ void ServerLayer::receiveFromClients()
 
             default:
                 assert(false);
+                break;
         }
 
-        std::lock_guard<std::mutex> lockGuard{ _mutex };
-        if (const auto [value, check] = utils::parseCoordinateSystem(dataBuffer); check)
+        if (const auto [value, check] = utils::parseCoordinateSystem(receivedData); check)
         {
-            sendData(_sendingSocket, dataBuffer);
+            sendData(receivedData, Whereto::SERVER);
             _coorninateSystem.emplace(value);
         }
         else if (_messagesStorage.empty())
         {
-            _messagesStorage = utils::parseData(dataBuffer);
+            _messagesStorage = utils::parseData(receivedData);
+            emit signalProcessMessagesStorage();
         }
         else
         {
-            for (auto&& datum : utils::parseData(dataBuffer))
+            for (auto&& datum : utils::parseData(receivedData))
             {
                 _messagesStorage.emplace_back(datum);
             }
+            emit signalProcessMessagesStorage();
         }
+    }
+}
+
+void ServerLayer::slotReadFromServer()
+{
+    if (_receivingSocket->bytesAvailable() > 0)
+    {
+        const QByteArray array = _receivingSocket->readAll();
+        const std::string data = array.toStdString();
+
+        _answersStorage.push_back(data);
+        ///sendData(data, Whereto::CLIENT);
+        emit signalProcessAnswersStorage();
+
+        _logger.writeLine(_receivingSocket->localPort(), '-', data);
+    }
+}
+
+void ServerLayer::slotSendDataToClient(const QByteArray& data) const
+{
+    _clientSocket->write(data);
+    _printer.writeLine(std::cout, "Sent data to client:", data.toStdString(), "successfully.\n");
+}
+
+void ServerLayer::slotSendDataToServer(const QByteArray& data) const
+{
+    _sendingSocket->write(data);
+    _printer.writeLine(std::cout, "Sent data to server:", data.toStdString(), "successfully.\n");
+}
+
+void ServerLayer::slotProcessMessagesStorage()
+{
+    while (!_messagesStorage.empty())
+    {
+        // Not move because RobotData is LiteralType (in such case move == copy).
+        const RobotData robotData = _messagesStorage.front();
+        sendData(robotData.toString(), Whereto::SERVER);
+
+        std::this_thread::sleep_for(_delayManager.calculateDuration(_lastReceivedPoint,
+                                                                    robotData));
+        _lastReceivedPoint = robotData;
+        _messagesStorage.pop_front();
+    }
+}
+
+void ServerLayer::slotProcessAnswersStorage()
+{
+    while (!_answersStorage.empty())
+    {
+        if (_clientSocket == nullptr)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            continue;
+        }
+
+        const std::string data = std::move(_answersStorage.front());
+        sendData(data, Whereto::CLIENT);
+
+        _answersStorage.pop_front();
+    }
+}
+
+void ServerLayer::checkConnectionToServer(const long long time)
+{
+    while (true)
+    {
+        sendData(_lastReceivedPoint.toString(), Whereto::SERVER);
+        _logger.writeLine(_lastReceivedPoint);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(time));
     }
 }
 
 bool ServerLayer::checkCoordinates(const RobotData& robotData) const
 {
     // Get default parameters for checking.
-    static const std::size_t kMainCoordinates =
-        CONFIG.get<CAST(Param::NUMBER_OF_MAIN_COORDINATES)>();
+    static const std::size_t kMainCoordinates  = CONFIG.get<CAST(Param::NUMBER_OF_MAIN_COORDINATES)>();
     static const std::array<int, 3> kMinCoords = CONFIG.get<CAST(Param::MIN_COORDINATES)>();
     static const std::array<int, 3> kMaxCoords = CONFIG.get<CAST(Param::MAX_COORDINATES)>();
 
     for (std::size_t i = 0; i < kMainCoordinates; ++i)
     {
         if (robotData.coordinates.at(i) < kMinCoords.at(i)
-            || robotData.coordinates.at(i) > kMaxCoords.at(i))
+         || robotData.coordinates.at(i) > kMaxCoords.at(i))
         {
             _printer.writeLine(std::cout, "ERROR 03: Incorrect coordinates to send!", robotData);
             return false;
@@ -169,108 +243,79 @@ bool ServerLayer::checkCoordinates(const RobotData& robotData) const
     return true;
 }
 
-void ServerLayer::process()
+void ServerLayer::sendData(const std::string& data, const Whereto recipient) const
 {
-    _printer.writeLine(std::cout, "\nWaiting for connections...\n");
-    _logger.writeLine("\nServer layer waiting for connections at", utils::getCurrentSystemTime());
-
-    while (!_isRunningForClient.load())
+    switch (recipient)
     {
-        _clientSocket = acceptSocket(_layerSocket, _messageWithIPForClient);
-        _isRunningForClient.store(true);
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        case Whereto::SERVER:
+            emit signalToSendToServer(data.c_str());
+            break;
+        
+        case Whereto::CLIENT:
+            emit signalToSendToClient(data.c_str());
+            break;
+        
+        default:
+            assert(false);
+            break;
     }
-}
-
-void ServerLayer::waitLoop()
-{
-    _printer.writeLine(std::cout, "\n\nLaunched layer...\n");
-
-    std::thread receiveThreadFromServer(&ServerLayer::receiveFromServer, this);
-    receiveThreadFromServer.detach();
-
-    waitingForConnections();
-
-    std::thread receiveThreadFromClients(&ServerLayer::receiveFromClients, this);
-    receiveThreadFromClients.detach();
-
-    _logger.writeLine("Server layer started to receive at", utils::getCurrentSystemTime());
-
-    while (true)
-    {
-        std::lock_guard<std::mutex> lockGuard{ _mutex };
-        while (!_messagesStorage.empty())
-        {
-            // Not move because RobotData is LiteralType.
-            const RobotData robotData = _messagesStorage.front();
-            sendData(_sendingSocket, robotData.toString());
-
-            std::this_thread::sleep_for(_delayManager.calculateDuration(_lastReceivedPoint,
-                                                                        robotData));
-            _lastReceivedPoint = robotData;
-            _messagesStorage.pop_front();
-        }
-    }
-}
-
-void ServerLayer::doConnection()
-{
-    const bool connectStatus = tryConnect(_serverSendingPort, _serverIP, _sendingSocket,
-                                          _sendingSocketAddress)
-                                && tryConnect(_serverReceivingPort, _serverIP, _receivingSocket,
-                                              _receivingSocketAddress);
-    _isRunning.store(connectStatus);
-}
-
-void ServerLayer::run()
-{
-    _isRunning.store(true);
-    _isRunningForClient.store(true);
-    waitLoop();
 }
 
 void ServerLayer::launch()
 {
-    initSocket(_layerSocket);
-    bindSocket(_layerSocket, _layerSocketAddress, _layerPort);
-
-    listenOn(_layerSocket, _backlog);
+    if (_layerSocket->listen(QHostAddress::Any, _layerPort))
+    {
+        _printer.writeLine(std::cout, "Layer server is started!");
+    }
+    else
+    {
+        _printer.writeLine(std::cout, "Layer server is not started!");
+    }
     doConnection();
 }
 
-void ServerLayer::waitingForConnections()
+bool ServerLayer::tryConnect(const int port, const std::string& ip, QTcpSocket* socketToConnect,
+                             const int msecs) const
 {
-    closeSocket(_clientSocket);
-    _isRunningForClient.store(false);
-    process();
-}
-
-std::string ServerLayer::getServerIP() const noexcept
-{
-    return _serverIP;
-}
-
-void ServerLayer::setServerIP(const std::string_view newServerIP)
-{
-    _serverIP = newServerIP;
-}
-
-void ServerLayer::tryReconnectToServer()
-{
-    while (!_isRunning.load())
+    if (socketToConnect->isOpen())
     {
-        closeSocket(_sendingSocket);
-        closeSocket(_receivingSocket);
+        socketToConnect->close();
+    }
 
-        initSocket(_sendingSocket);
-        initSocket(_receivingSocket);
+    socketToConnect->connectToHost(ip.c_str(), port);
 
-        doConnection();
+    if (socketToConnect->waitForConnected(msecs))
+    {
+        _printer.writeLine(std::cout, "Connected to Server!");
+        return true;
+    }
+
+    _printer.writeLine(std::cout, "Not connected to Server!");
+    return false;
+}
+
+void ServerLayer::doConnection()
+{
+    // Remember that sending socket should be connect to server receiving port
+    // and receiving socket should be connect to server sending port!
+    bool isConnected = tryConnect(_serverReceivingPort, _serverIP, _sendingSocket.get())
+                    && tryConnect(_serverSendingPort, _serverIP, _receivingSocket.get());
+    while (!isConnected)
+    {
+        isConnected = tryConnect(_serverReceivingPort, _serverIP, _sendingSocket.get())
+                   && tryConnect(_serverSendingPort, _serverIP, _receivingSocket.get());
 
         std::this_thread::sleep_for(
             std::chrono::milliseconds(CONFIG.get<CAST(Param::RECONNECTION_DELAY)>()));
     }
+
+    _printer.writeLine(std::cout, "\nServerLayer launched...\n");
+    _logger.writeLine("\nServerLayer launched at", utils::getCurrentSystemTime());
+}
+
+void ServerLayer::tryReconnectToServer()
+{
+    doConnection();
 }
 
 } // namespace vasily

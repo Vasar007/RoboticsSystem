@@ -56,27 +56,27 @@ public:
      * \brief			Default copy constructor.
      * \param[in] other Other object.
      */
-    Logger(const Logger& other)                 = delete;
+    Logger(const Logger& other) = delete;
 
     /**
      * \brief			Default copy assignment operator.
      * \param[in] other Other object.
      * \return			Return copied object.
      */
-    Logger& operator=(const Logger& other)      = delete;
+    Logger& operator=(const Logger& other) = delete;
 
     /**
      * \brief			 Default move constructor.
      * \param[out] other Other object.
      */
-    Logger(Logger&& other)                      = delete;
+    Logger(Logger&& other) = delete;
 
     /**
      * \brief			 Default move assignment operator.
      * \param[out] other Other object.
      * \return			 Return moved object.
      */
-    Logger& operator=(Logger&& other)           = delete;
+    Logger& operator=(Logger&& other) = delete;
 
     /**
      * \brief          Write (unlimited) data in output stream.

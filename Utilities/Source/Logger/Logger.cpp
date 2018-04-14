@@ -30,7 +30,9 @@ Logger::~Logger()
 void Logger::repoortError(const std::string_view message) const noexcept
 {
     std::cerr << message << '\n'; // Report error.
-    char sysMsg[64];
+    // 100 because no specification about length of the error message
+    // but at MSDN talks about 94 characters.
+    char sysMsg[100];
     std::cerr << "Error code: " << strerror_s(sysMsg, errno); // Get some info as to why.
 }
 

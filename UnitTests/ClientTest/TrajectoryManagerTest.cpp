@@ -103,7 +103,7 @@ void TrajectoryManagerTest::partialTrajectoryBuildingWithOneBreakingPoint()
 void TrajectoryManagerTest::partialTrajectoryBuildingWithManyBreakingPoints()
 {
     const danila::TrajectoryManager trajectoryManager;
-    std::vector<vasily::RobotData> inputPoints
+    const std::vector<vasily::RobotData> inputPoints
     {
         { {   0,   0,   0, 0, 0, 0 }, { 10, 2, 0 } },
         { { 100,   0,   0, 0, 0, 0 }, { 10, 2, 0 } },

@@ -24,7 +24,7 @@ std::string parseFullData(const std::string& data, const int numberOfCoords,
 
     strStorage.erase(std::remove(strStorage.begin(), strStorage.end(), ""), strStorage.end());
 
-    if (strStorage.size() % numberOfCoords != 0u)
+    if (strStorage.size() % numberOfCoords != 0)
     {
         return { "" };
     }
@@ -77,12 +77,13 @@ std::deque<vasily::RobotData> parseData(const std::string_view data)
 
 std::pair<vasily::CoordinateSystem, bool> parseCoordinateSystem(const std::string_view data)
 {
-    const bool parsedResult = data.size() == 1u && utils::isCorrectNumber(data);
+    const bool parsedResult = data.size() == 1 && utils::isCorrectNumber(data);
 
     if (!parsedResult)
     {
         return { vasily::CoordinateSystem::INVALID, parsedResult };
     }
+
     if (const int type = utils::stringToInt(data); 0 <= type && type <= 2)
     {
         return { static_cast<vasily::CoordinateSystem>(type), parsedResult };
