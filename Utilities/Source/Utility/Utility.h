@@ -13,10 +13,6 @@
 #define DOUBLE_STATIC_CAST(Type, valueToCast) static_cast<Type>(static_cast<void*>(&valueToCast))
 
 
-// Forward declaration.
-class Client;
-class ServerImitator;
-
 /**
  * \brief Unique namespace for utilities functions.
  */
@@ -65,17 +61,6 @@ inline std::string fromString(const std::string& str, bool& ok);
  */
 template <class T>
 std::unique_ptr<T>  copyUnique(const std::unique_ptr<T>& source);
-
-
-/**
- * \brief			  Own implementation of swapping.
- * \tparam T		  Datatype for swapping.
- * \param[out] first  First object for swapping.
- * \param[out] second Second object for swapping.
- */
-template <class T>
-void               swap(T& first, T& second) noexcept(std::is_nothrow_move_constructible_v<T>
-                                                      && std::is_nothrow_move_assignable_v<T>);
 
 
 /**
