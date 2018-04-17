@@ -21,7 +21,7 @@ namespace
     
     auto RANDOM_ENGINE = createRandomEngine();
 
-} // namespace
+} // anonymous namespace
 
 [[nodiscard]]
 int randomInt(const int exclusiveBorder)
@@ -32,11 +32,11 @@ int randomInt(const int exclusiveBorder)
     }
     if (exclusiveBorder < 0)
     {
-        std::uniform_int_distribution<int> distr(exclusiveBorder + 1, 0);
+        const std::uniform_int_distribution<int> distr(exclusiveBorder + 1, 0);
         return distr(RANDOM_ENGINE);
     }
 
-    std::uniform_int_distribution<int> distr(0, exclusiveBorder - 1);
+    const std::uniform_int_distribution<int> distr(0, exclusiveBorder - 1);
     return distr(RANDOM_ENGINE);
 }
 

@@ -45,7 +45,7 @@ double root3(double x)
 
 // x - array of size 2
 // return 2: 2 real roots x[0], x[1]
-// return 0: pair of complex roots: x[0]±i*x[1]
+// return 0: pair of complex roots: x[0]ï¿½i*x[1]
 int SolveP2(double* x, double a, double b) // solve equation x^2 + a*x + b = 0
 {
     double D = 0.25 * a * a - b;
@@ -65,7 +65,7 @@ int SolveP2(double* x, double a, double b) // solve equation x^2 + a*x + b = 0
 // x - array of size 3
 // In case 3 real roots: => x[0], x[1], x[2], return 3
 //         2 real roots: x[0], x[1],          return 2
-//         1 real root : x[0], x[1] ± i*x[2], return 1
+//         1 real root : x[0], x[1] ï¿½ i*x[2], return 1
 int SolveP3(double* x, double a, double b, double c) // solve cubic equation x^3 + a*x^2 + b*x + c = 0
 {
     double a2 = a * a;
@@ -193,7 +193,7 @@ static void dblSort3(double& a, double& b, double& c) // make: a <= b <= c
     double t;
     if (a > b)
     {
-    	SWAP(a,b); // now a<=b
+        SWAP(a,b); // now a<=b
     }
     if (c < b)
     {
@@ -248,9 +248,9 @@ int SolveP4De(double* x, double b, double c, double d) // solve equation x^4 + b
         if (c > 0) // sign = -1
         {
             x[0] = -sz3 / 2;
-            x[1] = (sz1 - sz2) / 2; // x[0]±i*x[1]
+            x[1] = (sz1 - sz2) / 2; // x[0]ï¿½i*x[1]
             x[2] = sz3 / 2;
-            x[3] = (-sz1 - sz2) / 2; // x[2]±i*x[3]
+            x[3] = (-sz1 - sz2) / 2; // x[2]ï¿½i*x[3]
             return 0;
         }
         // now: c<0 , sign = +1
@@ -262,7 +262,7 @@ int SolveP4De(double* x, double b, double c, double d) // solve equation x^4 + b
     } // if( res3>1 )	// 3 real roots, 
     // now resoventa have 1 real and pair of compex roots
     // x[0] - real root, and x[0]>0, 
-    // x[1]±i*x[2] - complex roots, 
+    // x[1]ï¿½i*x[2] - complex roots, 
     // x[0] must be >=0. But one times x[0]=~ 1e-17, so:
     if (x[0] < 0)
     {
@@ -301,8 +301,8 @@ double N4Step(double x, double a, double b, double c, double d) // one Newton st
 //-----------------------------------------------------------------------------
 // x - array of size 4
 // return 4: 4 real roots x[0], x[1], x[2], x[3], possible multiple roots
-// return 2: 2 real roots x[0], x[1] and complex x[2]±i*x[3], 
-// return 0: two pair of complex roots: x[0]±i*x[1],  x[2]±i*x[3], 
+// return 2: 2 real roots x[0], x[1] and complex x[2]ï¿½i*x[3], 
+// return 0: two pair of complex roots: x[0]ï¿½i*x[1],  x[2]ï¿½i*x[3], 
 int SolveP4(double* x, double a, double b, double c, double d)
 {
     // solve equation x^4 + a*x^3 + b*x^2 + c*x + d by Dekart-Euler method

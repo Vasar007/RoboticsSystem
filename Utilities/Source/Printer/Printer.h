@@ -54,33 +54,33 @@ public:
     /**
      * \brief Default destructor.
      */
-    ~Printer() noexcept                             = default;
+    ~Printer() = default;
 
     /**
      * \brief			Default copy constructor.
      * \param[in] other Other object.
      */
-    Printer(const Printer& other)                   = delete;
+    Printer(const Printer& other) = delete;
 
     /**
      * \brief			Default copy assignment operator.
      * \param[in] other Other object.
      * \return			Return copied object.
      */
-    Printer& operator=(const Printer& other)        = delete;
+    Printer& operator=(const Printer& other) = delete;
 
     /**
      * \brief			 Default move constructor.
      * \param[out] other Other object.
      */
-    Printer(Printer&& other) noexcept               = delete;
+    Printer(Printer&& other) = delete;
 
     /**
      * \brief			 Default move assignment operator.
      * \param[out] other Other object.
      * \return			 Return moved object.
      */
-    Printer& operator=(Printer&& other) noexcept    = delete;
+    Printer& operator=(Printer&& other) = delete;
 
     /**
      * \brief               Overloaded operator to print data to outstream with subclasses.
@@ -123,7 +123,7 @@ private:
     /**
      * \brief Default constructor.
      */
-    Printer()                                       = default;
+    Printer() = default;
 };
 
 #include "Printer.inl"

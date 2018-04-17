@@ -1,11 +1,13 @@
 #ifndef SERVER_LAYER
 #define SERVER_LAYER
 
-#include <mutex>
 #include <optional>
 
+#include <QObject>
+#include <QTcpSocket>
+#include <QTcpServer>
+
 #include "Utilities.h"
-#include "WinsockInterface.h"
 #include "DelayManager.h"
 
 
@@ -16,8 +18,9 @@ namespace vasily
  * \brief Class used to bind clients and robot as server.
  *        Also provides additional toolset to process received data.
  */
-class ServerLayer : public WinsockInterface
+class ServerLayer : public QObject
 {
+    Q_OBJECT
 public:
     /**
      * \brief Array of modes for layer how to process data.
@@ -36,9 +39,9 @@ public:
         DEFAULT_IN_FILE_NAME,
         DEFAULT_OUT_FILE_NAME,
         DEFAULT_SERVER_IP,
-        DEFAULT_SENDING_PORT_TO_SERVER,
         DEFAULT_RECEIVING_PORT_FROM_SERVER,
-        DEFAULT_CLIENT_PORT,
+        DEFAULT_SENDING_PORT_TO_SERVER,
+        DEFAULT_LAYER_PORT,
         NUMBER_OF_MAIN_COORDINATES,
         MIN_COORDINATES,
         MAX_COORDINATES,
@@ -55,150 +58,197 @@ public:
         CONFIG;
 
     /**
-     * \brief                        Constructor that initializes sockets, connects to server and
-     *                               creates socket to work with clients.
-     * \param[in] serverSendingPort  Server port to send.
-     * \param[in] serverRecivingPort Server port to recieve.
-     * \param[in] serverIP           Server IP address for connection.
-     * \param[in] layerPort          Additional port to communicate with clients.
-     * \param[in] backlog            The maximum length of the queue of pending connections.
-     * \param[in] workMode           Set work mode for layer to work with robot in safety
-     *                               or unsafety.
+     * \brief                         Constructor that initializes sockets, connects to server and
+     *                                creates socket to work with clients.
+     * \param[in] serverReceivingPort Server port to receiive.
+     * \param[in] serverSendingPort   Server port to send.
+     * \param[in] serverIP            Server IP address for connection.
+     * \param[in] layerPort           Additional port to communicate with clients.
+     * \param[in] workMode            Set work mode for layer to work with robot in safety
+     *                                or unsafety.
+     * \param[in] parent              The necessary data for Qt.
      */
     explicit ServerLayer(
+        const int serverReceivingPort   = CONFIG.get<CAST(Param::DEFAULT_RECEIVING_PORT_FROM_SERVER)>(),
         const int serverSendingPort     = CONFIG.get<CAST(Param::DEFAULT_SENDING_PORT_TO_SERVER)>(),
-        const int serverRecivingPort    = CONFIG.get<CAST(Param::DEFAULT_RECEIVING_PORT_FROM_SERVER)>(),
         const std::string_view serverIP = CONFIG.get<CAST(Param::DEFAULT_SERVER_IP)>(),
-        const int layerPort             = CONFIG.get<CAST(Param::DEFAULT_CLIENT_PORT)>(),
-        const int backlog               = 10,
-        const WorkMode workMode         = WorkMode::SAFE);
-
-    /**
-     * \brief			Deleted copy constructor.
-     * \param[in] other Other client object.
-     */
-                    ServerLayer(const ServerLayer& other)   = delete;
-
-    /**
-     * \brief			Deleted copy assignment operator.
-     * \param[in] other Other client object.
-     * \return			Returns nothing because it's deleted.
-     */
-    ServerLayer&    operator=(const ServerLayer& other)     = delete;
-
-    /**
-     * \brief			Deleted move constructor.
-     * \param[in] other Other client object.
-     */
-                    ServerLayer(ServerLayer&& other)        = delete;
-
-    /**
-     * \brief			Deleted move assignment operator.
-     * \param[in] other Other client object.
-     * \return			Returns nothing because it's deleted.
-     */
-    ServerLayer&    operator=(ServerLayer&& other)          = delete;
+        const int layerPort             = CONFIG.get<CAST(Param::DEFAULT_LAYER_PORT)>(),
+        const WorkMode workMode         = WorkMode::SAFE,
+        QObject* parent                 = nullptr);
 
     /**
      * \brief Destructor that closes client socket.
      */
-    virtual         ~ServerLayer();
+    virtual         ~ServerLayer() = default;
 
     /**
-     * \brief Main method which starts infinite working loop.
+     * \brief           Deleted copy constructor.
+     * \param[in] other Other client object.
      */
-    void            run() override;
+                    ServerLayer(const ServerLayer& other) = delete;
+
+    /**
+     * \brief           Deleted copy assignment operator.
+     * \param[in] other Other client object.
+     * \return          Returns nothing because it's deleted.
+     */
+    ServerLayer&    operator=(const ServerLayer& other) = delete;
+
+    /**
+     * \brief           Deleted move constructor.
+     * \param[in] other Other client object.
+     */
+                    ServerLayer(ServerLayer&& other) = delete;
+
+    /**
+     * \brief           Deleted move assignment operator.
+     * \param[in] other Other client object.
+     * \return          Returns nothing because it's deleted.
+     */
+    ServerLayer&    operator=(ServerLayer&& other) = delete;
 
     /**
      * \brief Process sockets.
      */
-    void            launch() override;
+    void            launch();
 
     /**
-     * \brief  Get server IP address.
-     * \return String which contains current server IP address.
-     */
-    std::string     getServerIP() const noexcept;
-
-    /**
-     * \brief                 Set server IP address.
-     * \param[in] newServerIP New server IP address as string.
-     */
-    void		    setServerIP(const std::string_view newServerIP);
-
-    /**
-     * \brief Additional function that receives data from server.
-     */
-    void		    receiveFromServer();
-
-    /**
-     * \brief Additional function that receives data from clients.
-     */
-    void            receiveFromClients();
-
-    /**
-     * \brief				Check if given point is not out of working coordinates.
+     * \brief               Check if given point is not out of working coordinates.
      * \param[in] robotData	Point to check.
-     * \return				True if point is correct, false otherwise.
+     * \return              True if point is correct, false otherwise.
      */
     bool		    checkCoordinates(const RobotData& robotData) const;
 
 
+signals:
+    /**
+     * \brief          Notify layer to send data to client.
+     * \param[in] data Data to be send.
+     */
+    void signalToSendToClient(const QByteArray& data) const;
+
+    /**
+     * \brief          Notify layer to send data to server.
+     * \param[in] data Data to be send.
+     */
+    void signalToSendToServer(const QByteArray& data) const;
+
+    /**
+     * \brief Notify layer that message from client was received and
+     *        needs to be processed.
+     */
+    void signalProcessMessagesStorage();
+
+    /**
+     * \brief Notify layer that answer from server was received and
+     *        needs to be processed.
+     */
+    void signalProcessAnswersStorage();
+
+
+private slots:
+    /**
+     * \brief Process new client connection to layer.
+     */
+    void slotNewClientConnection();
+
+    /**
+     * \brief Process client disconnection from layer.
+     */
+    void slotClientDisconnected();
+
+    /**
+     * \brief Process server disconnection from layer.
+     */
+    void slotServerDisconnected();
+
+    /**
+     * \brief Receive data from client
+     */
+    void slotReadFromClient();
+
+    /**
+     * \brief Receive data from server.
+     */
+    void slotReadFromServer();
+
+    /**
+     * \brief          Send data to client after notifying from signal.
+     * \param[in] data Data to be send.
+     */
+    void slotSendDataToClient(const QByteArray& data) const;
+
+    /**
+     * \brief          Send data to server after notifying from signal.
+     * \param[in] data Data to be send.
+     */
+    void slotSendDataToServer(const QByteArray& data) const;
+
+    /**
+     * \brief Process received message from client after notifying from signal.
+     */
+    void slotProcessMessagesStorage();
+
+    /**
+     * \brief Process received answer from server after notifying from signal.
+     */
+    void slotProcessAnswersStorage();
+
+
 protected:
     /**
-     * \brief Receive buffer that is used to keep answers from clients.
+     * \brief A set of constants used to specify the recipient in the send function.
      */
-    char		_bufferForClient[_MAXRECV];
+    enum class Whereto
+    {
+        SERVER,
+        CLIENT
+    };
 
     /**
-     * \brief Buffer that is used to keep clients addresses.
+     * \brief Implementation of type-safe output printer.
      */
-    char		_messageWithIPForClient[_MAXRECV];
+    printer::Printer&               _printer = printer::Printer::getInstance();
 
     /**
-     * \brief Flag used to define active connection to client.
+     * \brief Variable used to keep reciving port.
      */
-    std::atomic_bool _isRunningForClient;
+    int                             _layerPort;
+
+    /**
+     * \brief Connected socket used to receive data.
+     */
+    std::unique_ptr<QTcpServer>	    _layerSocket;
+
+    /**
+     * \brief Pointer to socket used to work with clients.
+     */
+    QTcpSocket*                     _clientSocket;
+
+    /**
+     * \brief Variable used to keep recieving server port.
+     */
+    int	                            _serverReceivingPort;
+
+    /**
+     * \brief Connected to server socket used to receive data.
+     */
+    std::unique_ptr<QTcpSocket>     _receivingSocket;
+
+    /**
+     * \brief Variable used to keep sending server port.
+     */
+    int                             _serverSendingPort;
+
+    /**
+     * \brief Connected to server socket used to send data.
+     */
+    std::unique_ptr<QTcpSocket>     _sendingSocket;
 
     /**
      * \brief Variable used to keep server IP address.
      */
-    std::string _serverIP;
-
-    /**
-     * \brief Variable used to keep server port.
-     */
-    int			_layerPort;
-
-    /**
-     * \brief The maximum length of the queue of pending connections.
-     */
-    int			_backlog;
-
-    /**
-    * \brief Connected client socket used to send and receive data.
-    */
-    SOCKET		_clientSocket;
-
-    /**
-     * \brief Connected client socket used to send and receive data.
-     */
-    SOCKET		_layerSocket;
-
-    /**
-     * \brief Structure used to keep socket address to send and receive data.
-     */
-    SOCKADDR_IN	_layerSocketAddress;
-
-    /**
-     * \brief Variable used to keep server port to send.
-     */
-    int			_serverSendingPort;
-
-    /**
-     * \brief Variable used to keep server port to recieve.
-     */
-    int			_serverReceivingPort;
+    std::string                     _serverIP;
 
     /**
      * \brief Variable used to keep coordinate type from client.
@@ -208,59 +258,63 @@ protected:
     /**
      * \brief Variable used to determine which layer are working in. 
      */
-    WorkMode                _workMode;
+    WorkMode                        _workMode;
 
     /**
      * \brief Last received data from client.
      */
-    RobotData	            _lastReceivedPoint;
+    RobotData                       _lastReceivedPoint;
 
     /**
      * \brief Queue used to keeps received messages from clients.
      */
-    std::deque<RobotData>   _messagesStorage;
+    std::deque<RobotData>           _messagesStorage;
 
     /**
-     * \brief Mutex to lock thread for safety.
+     * \brief Queue used to keeps received messages from server.
      */
-    std::mutex              _mutex;
+    std::deque<std::string>         _answersStorage;
 
     /**
      * \brief Logger used to write received data to file.
      */
-    logger::Logger          _logger;  // ORDER DEPENDENCY => 1.
+    logger::Logger                  _logger;  // ORDER DEPENDENCY => 1.
 
     /**
      * \brief Class used to calculate delays.
      */
-    DelayManager            _delayManager;  // ORDER DEPENDENCY => 2.
+    DelayManager                    _delayManager;  // ORDER DEPENDENCY => 2.
 
-
-    /**
-     * \brief Try to establish a connection to a specified socket again.
-     */
-    void tryReconnectToServer();
 
     /**
      * \brief          Check connection to robot every time.
      * \param[in] time Period time to check.
      */
-    void checkConnectionToServer(const long long& time);
+    void checkConnectionToServer(const long long time);
 
     /**
-     * \brief Additional loop which has a handler for connections.
+     * \brief               Send data on a connected socket.
+     * \param[in] data      A buffer containing the data to be transmitted.
+     * \param[in] recipient Specifies the recipient.
      */
-    void process();
+    void sendData(const std::string& data, const Whereto recipient) const;
 
     /**
-     * \brief Wait for clients connections.
+     * \brief                        Establishe a connection to a specified socket.
+     * \param[in] port               Port for connection.
+     * \param[in] ip                 IP address for connection.
+     * \param[out] socketToConnect   A descriptor identifying an unconnected socket.
+     * \param[in] msecs              Time which Qt waits until the socket is connected. If this
+     *                               parameter is -1, function will not time out.
+     * \return                       If no error occurs, connect returns true, false otherwise.
      */
-    void waitingForConnections();
+    bool tryConnect(const int port, const std::string& ip, QTcpSocket* socketToConnect,
+                    const int msecs = 3000) const;
 
     /**
-     * \brief Main infinite working loop. All network logic should be placed here.
+     * \brief Try to establish a connection to server again.
      */
-    void waitLoop() override;
+    void tryReconnectToServer();
 
     /**
      * \brief Additional method which contains all connection calls. 
