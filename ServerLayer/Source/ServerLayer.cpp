@@ -11,8 +11,8 @@ inline const config::Config<std::string, std::string, std::string_view, int, int
     { "distance_to_time.txt" },
     { "out.txt" },
     { "172.27.221.60", 14 },
-    59003,
     59002,
+    59003,
     8888,
     3,
     { 830'000,  -400'000, 539'000 },
@@ -33,8 +33,8 @@ ServerLayer::ServerLayer(const int serverReceivingPort,  const int serverSending
       _sendingSocket(std::make_unique<QTcpSocket>(this)),
       _serverIP(serverIP),
       _workMode(workMode),
-      _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
-              CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>()),
+      _logger(CONFIG.get<Param::DEFAULT_IN_FILE_NAME>(),
+              CONFIG.get<Param::DEFAULT_OUT_FILE_NAME>()),
       _delayManager(_printer, _logger)
 {
     _printer.writeLine(std::cout, "Server Receiving Port:", serverReceivingPort,
@@ -97,7 +97,7 @@ void ServerLayer::slotReadFromClient()
         ///qDebug() << array << '\n';
 
         const std::string receivedData = array.toStdString();
-        _logger.writeLine(_clientSocket->localPort(), '-', receivedData); // messageWithIP
+        _logger.writeLine(_clientSocket->localPort(), '-', receivedData);
 
         switch (_workMode)
         {
@@ -182,8 +182,7 @@ void ServerLayer::slotProcessMessagesStorage()
         const RobotData robotData = _messagesStorage.front();
         sendData(robotData.toString(), Whereto::SERVER);
 
-        std::this_thread::sleep_for(_delayManager.calculateDuration(_lastReceivedPoint,
-                                                                    robotData));
+        std::this_thread::sleep_for(_delayManager.calculateDuration(_lastReceivedPoint, robotData));
         _lastReceivedPoint = robotData;
         _messagesStorage.pop_front();
     }
@@ -220,9 +219,9 @@ void ServerLayer::checkConnectionToServer(const long long time)
 bool ServerLayer::checkCoordinates(const RobotData& robotData) const
 {
     // Get default parameters for checking.
-    static const std::size_t kMainCoordinates  = CONFIG.get<CAST(Param::NUMBER_OF_MAIN_COORDINATES)>();
-    static const std::array<int, 3> kMinCoords = CONFIG.get<CAST(Param::MIN_COORDINATES)>();
-    static const std::array<int, 3> kMaxCoords = CONFIG.get<CAST(Param::MAX_COORDINATES)>();
+    static const std::size_t kMainCoordinates = CONFIG.get<Param::NUMBER_OF_MAIN_COORDINATES>();
+    static const std::array<int, 3> kMinCoords = CONFIG.get<Param::MIN_COORDINATES>();
+    static const std::array<int, 3> kMaxCoords = CONFIG.get<Param::MAX_COORDINATES>();
 
     for (std::size_t i = 0; i < kMainCoordinates; ++i)
     {
@@ -268,8 +267,8 @@ void ServerLayer::launch()
     doConnection();
 }
 
-bool ServerLayer::tryConnect(const int port, const std::string& ip, QTcpSocket* socketToConnect,
-                             const int msecs) const
+bool ServerLayer::tryConnect(const int port, const std::string& ip,
+                             QTcpSocket* const socketToConnect, const int msecs) const
 {
     if (socketToConnect->isOpen())
     {
@@ -300,7 +299,7 @@ void ServerLayer::doConnection()
                    && tryConnect(_serverSendingPort, _serverIP, _receivingSocket.get());
 
         std::this_thread::sleep_for(
-            std::chrono::milliseconds(CONFIG.get<CAST(Param::RECONNECTION_DELAY)>()));
+            std::chrono::milliseconds(CONFIG.get<Param::RECONNECTION_DELAY>()));
     }
 
     _printer.writeLine(std::cout, "\nServerLayer launched...\n");

@@ -15,13 +15,12 @@ int main(int argc, char *argv[])
     constexpr int  kServerPort = 8888;
     constexpr int  kServerReceivingPort = 9998;
     constexpr int  kServerSendingPort = 9999;
-    constexpr char kServerIP[] = "192.168.0.100";
+    constexpr char kServerIP[] = "192.168.0.101";
 
     // Make sure that you use right client: 1 - debug, 2 - for layer, 3 - for robot.
-    ///vasily::Client client(kServerReceivingPort, kServerSendingPort, kServerIP,
-    ///                      vasily::Client::WorkMode::STRAIGHTFORWARD);
+    ///vasily::Client client(kServerReceivingPort, kServerSendingPort, kServerIP);
 
-    vasily::Client client(kServerPort, kServerIP, vasily::Client::WorkMode::INDIRECT);
+    vasily::Client client(kServerPort, kServerIP);
 
     ///vasily::Client client{};
 

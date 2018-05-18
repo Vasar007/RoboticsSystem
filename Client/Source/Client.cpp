@@ -13,8 +13,8 @@ inline const config::Config<std::string, std::string, std::string_view, int, int
     { "in.txt" },
     { "out.txt" },
     { "172.27.221.60", 14 },
-    59003,
     59002,
+    59003,
     1000
 };
  
@@ -30,8 +30,8 @@ Client::Client(const int layerPort, const std::string_view serverIP, const WorkM
       _serverIP(serverIP),
       _start(std::chrono::steady_clock::now()),
       _workMode(workMode),
-      _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
-              CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>())
+      _logger(CONFIG.get<Param::DEFAULT_IN_FILE_NAME>(),
+              CONFIG.get<Param::DEFAULT_OUT_FILE_NAME>())
 {
     _printer.writeLine(std::cout, "Layer Port:", layerPort, "Layer IP:", serverIP);
 
@@ -55,8 +55,8 @@ Client::Client(const int serverReceivingPort, const int serverSendingPort,
       _serverIP(serverIP),
       _start(std::chrono::steady_clock::now()),
       _workMode(workMode),
-      _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
-              CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>())
+      _logger(CONFIG.get<Param::DEFAULT_IN_FILE_NAME>(),
+              CONFIG.get<Param::DEFAULT_OUT_FILE_NAME>())
 {
     _printer.writeLine(std::cout, "Server Receiving Port:", serverReceivingPort,
                        "Server Sending Port:", serverSendingPort, "Server IP:", serverIP);
@@ -98,13 +98,14 @@ void Client::slotReadFromServer()
         const std::string receivedData = array.toStdString();
 
         _duration = std::chrono::steady_clock::now() - _start;
-        ///_start = std::chrono::steady_clock::now();
+        _isReceive.store(true);
 
         _printer.writeLine(std::cout, _receivingSocket->localPort(), '-', receivedData);
         _logger.writeLine(_receivingSocket->localPort(), '-', receivedData);
 
         _printer.writeLine(std::cout, "Duration:", _duration.count(), "seconds");
         _logger.writeLine("Duration:", _duration.count(), "seconds");
+        updateVertices(_duration.count(), _robotData);
     }
 }
 
@@ -133,6 +134,18 @@ void Client::checkConnection(const long long time)
         sendCoordinates(_robotData);
         std::this_thread::sleep_for(std::chrono::milliseconds(time));
     }
+}
+
+void Client::updateVertices(const double time, const vasily::RobotData& robotData)
+{
+  
+    const double distance = utils::distance(_lastReachedPoint.coordinates.begin(),
+                                            _lastReachedPoint.coordinates.begin() + 2,
+                                            robotData.coordinates.begin(), 0.0, 10'000.0);
+    _distance.emplace_back(distance);
+    _velocity.emplace_back(_distance.back() / time);
+    _time.emplace_back(time);
+    _lastReachedPoint = robotData;
 }
 
 void Client::run()
@@ -212,16 +225,121 @@ void Client::waitLoop()
                 {
                     sendCoordinates(_robotData);
                 }
-                else if (input == "test")
+                else if (input == "test1")
                 {
                     _robotData = RobotData::getDefaultPosition();
-                    constexpr int kNumberOfIterations = 1000;
+                    constexpr int kNumberOfIterations = 2'000;
                     constexpr int kDefaultMultiplier  = 100;
                     for (int i = 1; i <= kNumberOfIterations; ++i)
                     {
-                        _robotData.coordinates.at(Handler::Y) += kDefaultMultiplier * i
-                                                              * (i & 1 ? 1 : -1);
+                        if (i % 2 == 0)
+                        {
+                            _robotData.coordinates.at(Handler::Y) = kDefaultMultiplier * ((i + 1) / 2);
+                        }
+                        else
+                        {
+                            _robotData.coordinates.at(Handler::Y) = -kDefaultMultiplier * ((i + 1) / 2);
+                        }
+
                         sendCoordinates(_robotData);
+                        while (!_isReceive.load())
+                        {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                        }
+                        _isReceive.store(false);
+                    }
+                }
+                else if (input == "test2")
+                {
+                    _robotData = RobotData::getDefaultPosition();
+                    constexpr int kNumberOfIterations = 450;
+                    constexpr int kDefaultMultiplier = 100;
+                    _robotData.coordinates.at(Handler::W) += kDefaultMultiplier * kNumberOfIterations;
+                    sendCoordinates(_robotData);
+                    int cache = 0;
+                    for (int i = 1; i <= kNumberOfIterations; ++i)
+                    {
+                        if (i % 2 == 0)
+                        {
+                            const int temp = kDefaultMultiplier * ((i + 1) / 2);
+                            _robotData.coordinates.at(Handler::W) += temp - cache;
+                            cache = temp;
+                        }
+                        else
+                        {
+                            const int temp = -kDefaultMultiplier * ((i + 1) / 2);
+                            _robotData.coordinates.at(Handler::W) += temp - cache;
+                            cache = temp;
+                        }
+
+                        sendCoordinates(_robotData);
+                        while (!_isReceive.load())
+                        {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                        }
+                        _isReceive.store(false);
+                    }
+                }
+                else if (input == "test3")
+                {
+                    _robotData = RobotData::getDefaultPosition();
+                    constexpr int kNumberOfIterations = 450;
+                    constexpr int kDefaultMultiplier = 100;
+                    _robotData.coordinates.at(Handler::P) -= kDefaultMultiplier * kNumberOfIterations;
+                    sendCoordinates(_robotData);
+                    int cache = 0;
+                    for (int i = 1; i <= kNumberOfIterations; ++i)
+                    {
+                        if (i % 2 == 0)
+                        {
+                            const int temp = kDefaultMultiplier * ((i + 1) / 2);
+                            _robotData.coordinates.at(Handler::P) += temp - cache;
+                            cache = temp;
+                        }
+                        else
+                        {
+                            const int temp = -kDefaultMultiplier * ((i + 1) / 2);
+                            _robotData.coordinates.at(Handler::P) += temp - cache;
+                            cache = temp;
+                        }
+
+                        sendCoordinates(_robotData);
+                        while (!_isReceive.load())
+                        {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                        }
+                        _isReceive.store(false);
+                    }
+                }
+                else if (input == "test4")
+                {
+                    _robotData = RobotData::getDefaultPosition();
+                    constexpr int kNumberOfIterations = 450;
+                    constexpr int kDefaultMultiplier = 100;
+                    _robotData.coordinates.at(Handler::R) += kDefaultMultiplier * kNumberOfIterations;
+                    sendCoordinates(_robotData);
+                    int cache = 0;
+                    for (int i = 1; i <= kNumberOfIterations; ++i)
+                    {
+                        if (i % 2 == 0)
+                        {
+                            const int temp = kDefaultMultiplier * ((i + 1) / 2);
+                            _robotData.coordinates.at(Handler::R) += temp - cache;
+                            cache = temp;
+                        }
+                        else
+                        {
+                            const int temp = -kDefaultMultiplier * ((i + 1) / 2);
+                            _robotData.coordinates.at(Handler::R) += temp - cache;
+                            cache = temp;
+                        }
+
+                        sendCoordinates(_robotData);
+                        while (!_isReceive.load())
+                        {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                        }
+                        _isReceive.store(false);
                     }
                 }
                 break;
@@ -243,7 +361,7 @@ RobotData Client::getRobotData() const noexcept
     return _robotData;
 }
 
-bool Client::tryConnect(const int port, const std::string& ip, QTcpSocket* socketToConnect,
+bool Client::tryConnect(const int port, const std::string& ip, QTcpSocket* const socketToConnect,
                         const bool isNeedToSendSystem, const int msecs) const
 {
     if (socketToConnect->isOpen())
@@ -289,7 +407,7 @@ void Client::launch()
                            && tryConnect(_serverSendingPort, _serverIP, _receivingSocket.get());
                 
                 std::this_thread::sleep_for(
-                    std::chrono::milliseconds(CONFIG.get<CAST(Param::RECONNECTION_DELAY)>()));
+                    std::chrono::milliseconds(CONFIG.get<Param::RECONNECTION_DELAY>()));
             }
             break;
 
@@ -300,7 +418,7 @@ void Client::launch()
                 isConnected = tryConnect(_layerPort, _serverIP, _socketForLayer.get(), true);
                 
                 std::this_thread::sleep_for(
-                    std::chrono::milliseconds(CONFIG.get<CAST(Param::RECONNECTION_DELAY)>()));
+                    std::chrono::milliseconds(CONFIG.get<Param::RECONNECTION_DELAY>()));
             }
             break;
 

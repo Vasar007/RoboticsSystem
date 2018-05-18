@@ -14,11 +14,11 @@ int main(int argc, char *argv[])
 
     constexpr int  kServerReceivingPort = 9998;
     constexpr int  kServerSendingPort = 9999;
-    constexpr char kServerIP[] = "192.168.0.100";
+    constexpr char kServerIP[] = "192.168.0.101";
     constexpr int  kLayerPort = 8888;
 
-    vasily::ServerLayer serverLayer(kServerReceivingPort, kServerSendingPort, kServerIP,
-                                    kLayerPort);
+    vasily::ServerLayer serverLayer(kServerReceivingPort, kServerSendingPort, kServerIP, kLayerPort);
+
     ///vasily::ServerLayer serverLayer{};
 
     serverLayer.launch();

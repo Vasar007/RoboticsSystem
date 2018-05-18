@@ -10,7 +10,7 @@ namespace vasily
 
 std::string RobotData::toString() const
 {
-    std::stringstream stringStream;
+    std::stringstream stringStream{};
 
     std::copy(coordinates.begin(), coordinates.end(), 
               std::ostream_iterator<int>(stringStream, " "));
@@ -24,12 +24,10 @@ std::string RobotData::toString() const
 double RobotData::length() const
 {
     double result = 0.0;
-
     for (std::size_t i = 0; i < NUMBER_OF_COORDINATES; ++i)
     {
         result += 1.0 * coordinates.at(i) * coordinates.at(i) / (TRANSFER_NUMBER * TRANSFER_NUMBER);
     }
-
     return std::sqrt(result);
 }
 

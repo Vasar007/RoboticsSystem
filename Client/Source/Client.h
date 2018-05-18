@@ -34,7 +34,7 @@ public:
     /**
      * \brief Array of constant to get parameters from config.
      */
-    enum class Param : std::size_t
+    enum Param : std::size_t
     {
         DEFAULT_IN_FILE_NAME,
         DEFAULT_OUT_FILE_NAME,
@@ -74,9 +74,9 @@ public:
      * \param[in] parent              The necessary data for Qt.
      */
     explicit    Client(
-        const int serverReceivingPort   = CONFIG.get<CAST(Param::DEFAULT_RECEIVING_PORT_FROM_SERVER)>(),
-        const int serverSendingPort     = CONFIG.get<CAST(Param::DEFAULT_SENDING_PORT_TO_SERVER)>(), 
-        const std::string_view serverIP = CONFIG.get<CAST(Param::DEFAULT_SERVER_IP)>(),
+        const int serverReceivingPort   = CONFIG.get<Param::DEFAULT_RECEIVING_PORT_FROM_SERVER>(),
+        const int serverSendingPort     = CONFIG.get<Param::DEFAULT_SENDING_PORT_TO_SERVER>(), 
+        const std::string_view serverIP = CONFIG.get<Param::DEFAULT_SERVER_IP>(),
         const WorkMode workMode         = WorkMode::STRAIGHTFORWARD,
         QObject* parent                 = nullptr);
 
@@ -231,6 +231,31 @@ protected:
     RobotData                                          _robotData;
 
     /**
+     * \brief Container that keeps distance between every two last points.
+     */
+    std::vector<double>                                _distance;
+
+    /**
+     * \brief Container that keeps velocity of robot movement.
+     */
+    std::vector<double>                                _velocity;
+
+    /**
+     * \brief Container that keeps duration of robot movement.
+     */
+    std::vector<double>                                _time;
+
+    /**
+     * \brief Flag used to determine whether a response is accepted from the server.
+     */
+    std::atomic_bool                                   _isReceive{};
+
+    /**
+     * \brief Keep last reached robot's point.
+     */
+    vasily::RobotData                                  _lastReachedPoint;
+
+    /**
      * \brief Variable used to keep server IP address.
      */
     std::string                                        _serverIP;
@@ -276,7 +301,7 @@ protected:
      *                               parameter is -1, function will not time out.
      * \return                       If no error occurs, connect returns true, false otherwise.
      */
-    bool        tryConnect(const int port, const std::string& ip, QTcpSocket* socketToConnect,
+    bool        tryConnect(const int port, const std::string& ip, QTcpSocket* const socketToConnect,
                            const bool isNeedToSendSystem = false, const int msecs = 3000) const;
 
     /**
@@ -306,6 +331,8 @@ protected:
      * \endcode
      */
     void        checkConnection(const long long time);
+
+    void updateVertices(const double time, const vasily::RobotData& robotData);
 };
 
 } // namespace vasily

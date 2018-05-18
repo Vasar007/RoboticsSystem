@@ -58,7 +58,7 @@ void Logger::writeLineImpl(const T& t, const Args&... args)
 template <class... Args>
 void Logger::write(const Args&... args)
 {
-    std::lock_guard<std::mutex> lockGuard{ _mutex };
+    std::lock_guard lockGuard(_mutex);
     if (outFile)
     {
         writeImpl(args...);
@@ -72,7 +72,7 @@ void Logger::write(const Args&... args)
 template <class... Args>
 void Logger::writeLine(const Args&... args)
 {
-    std::lock_guard<std::mutex> lockGuard{ _mutex };
+    std::lock_guard lockGuard(_mutex);
     if (outFile)
     {
         writeLineImpl(args...);
