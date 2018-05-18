@@ -34,7 +34,7 @@ public:
     /**
      * \brief Array of constant to get parameters from config.
      */
-    enum class Param : std::size_t
+    enum Param : std::size_t
     {
         DEFAULT_IN_FILE_NAME,
         DEFAULT_OUT_FILE_NAME,
@@ -69,10 +69,10 @@ public:
      * \param[in] parent              The necessary data for Qt.
      */
     explicit ServerLayer(
-        const int serverReceivingPort   = CONFIG.get<CAST(Param::DEFAULT_RECEIVING_PORT_FROM_SERVER)>(),
-        const int serverSendingPort     = CONFIG.get<CAST(Param::DEFAULT_SENDING_PORT_TO_SERVER)>(),
-        const std::string_view serverIP = CONFIG.get<CAST(Param::DEFAULT_SERVER_IP)>(),
-        const int layerPort             = CONFIG.get<CAST(Param::DEFAULT_LAYER_PORT)>(),
+        const int serverReceivingPort   = CONFIG.get<Param::DEFAULT_RECEIVING_PORT_FROM_SERVER>(),
+        const int serverSendingPort     = CONFIG.get<Param::DEFAULT_SENDING_PORT_TO_SERVER>(),
+        const std::string_view serverIP = CONFIG.get<Param::DEFAULT_SERVER_IP>(),
+        const int layerPort             = CONFIG.get<Param::DEFAULT_LAYER_PORT>(),
         const WorkMode workMode         = WorkMode::SAFE,
         QObject* parent                 = nullptr);
 
@@ -308,7 +308,7 @@ protected:
      *                               parameter is -1, function will not time out.
      * \return                       If no error occurs, connect returns true, false otherwise.
      */
-    bool tryConnect(const int port, const std::string& ip, QTcpSocket* socketToConnect,
+    bool tryConnect(const int port, const std::string& ip, QTcpSocket* const socketToConnect,
                     const int msecs = 3000) const;
 
     /**

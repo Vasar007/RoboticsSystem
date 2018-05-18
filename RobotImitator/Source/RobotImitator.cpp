@@ -22,8 +22,8 @@ RobotImitator::RobotImitator(const int recivingPort, const int sendingPort,
       _sendingPort(sendingPort),
       _sendingSocket(std::make_unique<QTcpServer>(this)),
       _clientReceivingSocket(nullptr),
-      _logger(CONFIG.get<CAST(Param::DEFAULT_IN_FILE_NAME)>(),
-              CONFIG.get<CAST(Param::DEFAULT_OUT_FILE_NAME)>())
+      _logger(CONFIG.get<Param::DEFAULT_IN_FILE_NAME>(),
+              CONFIG.get<Param::DEFAULT_OUT_FILE_NAME>())
 {
     _printer.writeLine(std::cout, "Receiving Port:", recivingPort, "Sending Port:", sendingPort);
 
@@ -135,7 +135,8 @@ std::chrono::milliseconds RobotImitator::calculateDuration(const RobotData& robo
     // Calculate distance between two points, which contains only first 3 coordinates.
     const double distance = utils::distance(_lastReceivedData.coordinates.begin(),
                                             _lastReceivedData.coordinates.begin() + 2,
-                                            robotData.coordinates.begin(), 0.0, 10'000.0);
+                                            robotData.coordinates.begin(), 0.0,
+                                            1.0 * RobotData::TRANSFER_NUMBER);
     _lastReceivedData = robotData;
 
     constexpr long long kMultiplier = 65;

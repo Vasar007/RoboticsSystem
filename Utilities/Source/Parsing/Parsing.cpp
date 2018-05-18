@@ -64,7 +64,7 @@ std::deque<vasily::RobotData> parseData(const std::string_view data)
     std::deque<vasily::RobotData> result;
 
     std::stringstream rawData(data.data());
-    vasily::RobotData robotData;
+    vasily::RobotData robotData{};
     while (rawData >> robotData)
     {
         if (!rawData.fail())

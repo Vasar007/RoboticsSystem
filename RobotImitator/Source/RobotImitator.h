@@ -3,6 +3,8 @@
 
 #include <chrono>
 #include <optional>
+#include <string>
+#include <memory>
 
 #include <QObject>
 #include <QTcpServer>
@@ -24,7 +26,7 @@ public:
     /**
      * \brief Array of constant to get parameters from config.
      */
-    enum class Param : std::size_t
+    enum Param : std::size_t
     {
         DEFAULT_IN_FILE_NAME,
         DEFAULT_OUT_FILE_NAME

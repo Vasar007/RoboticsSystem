@@ -4,8 +4,6 @@
 #include <tuple>
 
 
-#define CAST(x) static_cast<std::size_t>(x)
-
 /**
  * \brief Additional namespace to process lots of config parameters and constants in classes.
  */
